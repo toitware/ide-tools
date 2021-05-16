@@ -1,0 +1,493 @@
+---
+comment: >
+  Don't edit the JSON file, but edit the YAML file instead.
+  Use npx js-yaml < syntaxes/toit.tmLanguage.yaml > syntaxes/toit.tmLanguage.json
+  Use the scope inspector from the command palette with the Developer: Inspect Editor Tokens and Scopes
+
+"$schema": https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json
+
+name: Toit
+
+firstLineMatch: ^#!/.*\btoitc?\b|(^#!/usr/bin/env toitc?)
+
+patterns:
+- include: "#comment"
+- include: "#import-section"
+- include: "#export-section"
+- include: "#class-section"
+- include: "#toplevel-section"
+
+repository:
+  import-section:
+    name: meta.import.toit
+    begin: ^import\b    # Section starts with an `import` (no indentation).
+    end: ^(?!\s)        # Ends a non-indented different section. (Note the negative look-ahead to avoid consuming the next token).
+    beginCaptures:
+      0:
+        name: constant.language.import-export-all.import.toit
+    patterns:
+    - include: "#comment"
+    - name: constant.language.import-export-all.show.toit
+      match: \bshow\b
+    - name: constant.language.import-export-all.as.toit
+      match: \bas\b
+    - name: constant.language.import-export-all.import_all.toit
+      match: \*
+
+  export-section:
+    name: meta.export.toit
+    begin: ^export\b    # Section starts with an `export` (no indentation).
+    end: ^(?!\s)        # Ends a non-indented different section. (Note the negative look-ahead to avoid consuming the next token).
+    beginCaptures:
+      0:
+        name: constant.language.import-export-all.export.toit
+    patterns:
+    - include: "#comment"
+    - name: constant.language.import-export-all.export_all.toit
+      match: \*
+
+  class-section:
+    name: meta.class.toit
+    begin: ^(?:(abstract)[ ]+)?(class|monitor|interface)\b
+    end: ^(?=[^\s/]|/[^/*])        # Ends with a non-indented different section. (Note the negative look-ahead to avoid consuming the next token).
+    beginCaptures:
+      1:
+        name: keyword.control.toit
+      2:
+        name: keyword.control.toit
+    patterns:
+    - include: "#comment"
+    - name: meta.class.members
+      begin: ^(?=\s\s[^\s])
+      end: ^(?=[^\s/]|/[^/*])
+      patterns:
+      - include: "#comment"
+      - include: "#member-section"
+    - name: meta.class.signature
+      begin: (\b\w+\b)
+      end: ":"
+      beginCaptures:
+        1:
+          name: storage.type.class.toit
+      patterns:
+      - include: "#comment"
+      - name: meta.extends.clause.toit
+        match: \b(extends)\s+(\w+)\b
+        captures:
+          1:
+            name: keyword.control.extends.toit
+          2:
+            name: entity.other.inherited-class
+      - name: keyword.control.extends.toit
+        match: \bextends\b
+      - name: keyword.control.implements.toit
+        match: \bimplements\b
+      - include: "#type-name"
+
+  toplevel-section:
+    name: meta.toplevel.toit
+    patterns:
+    - include: "#comment"
+    - include: "#type-annotation"
+    - name: meta.toplevel.signature
+      begin: (_?\p{Alpha}\w*[=]?)
+      # Ends (and thus starts the body) with a ":" (unless that's for a block),
+      #   or something that isn't intended by 2.
+      end: (?=\:(?![_\p{Alpha}])|^\s{0,2}(?:[^\s/]|/[^/*]))
+      beginCaptures:
+        1:
+          name: storage.type.function
+      patterns:
+      - include: "#signature-part2"
+    - name: meta.toplevel.body
+      # Starts with
+      #  - a `:=` or `::=`  (a global), or
+      #  - code that is intended by 2.
+      begin: (:=|::=)|(:)|^\s{2}(?=[^\s/])
+      # Ends if we reach something that isn't indented *unless* it's a comment.
+      end: (?=^([^\s/]|/[^/*]))
+      beginCaptures:
+        1:
+          name: keyword.control.toit
+      patterns:
+      - include: "#expressions"
+
+  member-section:
+    name: meta.member.toit
+    patterns:
+    - include: "#comment"
+    - name: keyword.control.toit
+      match: (\bstatic\b|\babstract\b|\boperator\b)
+    - name: meta.member.signature
+      begin: (\bconstructor\b)(\._?\p{Alpha}\w*)?|(_?\p{Alpha}\w*[=]?|==|<<|>>>|>>|<=|>=|<|>|\+|-|\*|/|%|\^|&|\||\[\]\=|\[\]|\[\.\.\])
+      # Ends (and thus starts the body) with a ":" (unless that's for a block),
+      #   or something that isn't intended by 4.
+      end: (?=\:(?![_\p{Alpha}])|^\s{0,4}(?:[^\s/]|/[^/*]))
+      beginCaptures:
+        1:
+          name: keyword.control.toit
+        2:
+          name: storage.type.function
+        3:
+          name: storage.type.function
+      patterns:
+      - include: "#signature-part2"
+    - include: "#type-annotation"
+    - name: meta.member.body
+      # Starts with
+      #  - a `:=` or `::=`  (a global), or
+      #  - code that is intended by 2.
+      begin: (:=|::=)|(:)|^\s{4}(?=[^\s/])
+      # Ends if we reach something that is indented by two or less *unless* it's a comment.
+      end: (?=^\s{0,2}([^\s/]|/[^/*]))
+      beginCaptures:
+        1:
+          name: keyword.control.toit
+      patterns:
+      - include: "#expressions"
+
+  # Second part of the signature.
+  # At this point the function/variable name has been colored and we are just
+  # seeing parameters/type-annotations.
+  signature-part2:
+    name: meta.member.signature.part2.toit
+    patterns:
+    - include: "#type-annotation"
+    - include: "#comment"
+    - name: meta.parameter.setting.toit
+      match: (--)?(this)?\.(_?\p{Alpha}\w*)  # Don't color the dot. Makes it nicer?
+      captures:
+        1:
+          name: variable.parameter.named.setting.toit
+        2:
+          patterns:
+          - include: "#special-variable"
+        3:
+          name: variable.parameter.named.setting.toit
+          patterns:
+          - include: "#invalid_non_expression"
+    - name: variable.parameter.toit
+      match: (--)?(:)?(_?\p{Alpha}\w*)
+      captures:
+        2:
+          name: keyword.control.block_marker.toit
+        3:
+          patterns:
+          - include: "#invalid_non_expression"
+    - name: meta.parameter.default_value.toit
+      begin: (=)\s*
+      end: '^|\s|:'
+      beginCaptures:
+        1:
+          name: keyword.control.toit
+      patterns:
+      - include: "#comment"
+      - include: "#character"
+      - include: "#number"
+      - include: "#constant"
+      - include: "#string"
+      - include: "#type-name"
+      - include: "#delimited"
+      - include: "#keyword"
+
+  type-annotation:
+    patterns:
+    - name: entity.name.type.annotation.toit
+      begin: '(/|->) *(?=_?\p{Alpha})'
+      end: (?=[^\w.?])
+      beginCaptures:
+        1:
+          name: keyword.control.return_type.toit
+
+  keyword:
+    patterns:
+    - name: keyword.control.toit
+      match: &keywords \b(assert|and|or|not|if|for|else|try|finally|call|while|break|continue|throw|static|abstract|return)\b
+    - name: keyword.control.pseudo.toit
+      match: \bunreachable\b
+    - name: keyword.control.type_check.toit
+      match: \b(is|as)\b
+
+  invalid_non_expression: # Some expressions that are not valid in the signature. These will be highlighted as red.
+    patterns:
+    - name: invalid.illegal.non_expression.toit
+      match: *keywords
+    - name: invalid.illegal.non_expression.toit
+      match: \b(is|as)\b
+    - name: invalid.illegal.non_expression.toit
+      match: \b(super|this)\b
+
+  expressions:
+    patterns:
+    - include: "#variable-declaration"
+    - include: "#named-arg"
+    - include: "#delimited"
+    - include: "#comment"
+    - include: "#character"
+    - include: "#number"
+    - include: "#operator-assignment"
+    - include: "#operator"
+    - include: "#control"
+    - include: "#keyword"
+    - include: "#constant"
+    - include: "#string"
+    - include: "#primitive"
+    - include: "#special-variable"
+    - include: "#type-name"
+
+  variable-declaration:
+    patterns:
+    - name: meta.variable.toit
+      match: (\w+)\s*(\:=|\:\:=)
+      captures:
+        1:
+          name: variable.other.toit
+        2:
+          name: keyword.control.toit
+    - name: meta.variable.toit
+      match: (\w+)\s*(\/)\s*([_\w.]+[?]?)\s*(\:=|\:\:=)
+      captures:
+        1:
+          name: variable.other.toit
+        2:
+          name: keyword.control.toit
+        3:
+          name: meta.variable.type.toit
+          patterns:
+          - include: "#type-name"
+        4:
+          name: keyword.control.toit
+
+  delimited:
+    patterns:
+    - name: meta.delimited.parenthesis
+      begin: (\()
+      end: (\))
+      beginCaptures:
+        1:
+          name: keyword.operator.toit
+      endCaptures:
+        1:
+          name: keyword.operator.toit
+      patterns:
+      - include: "#expressions"
+
+    - name: meta.delimited.brackets
+      begin: (#?\[)
+      end: (\])
+      beginCaptures:
+        1:
+          name: keyword.operator.toit
+      endCaptures:
+        1:
+          name: keyword.operator.toit
+      patterns:
+      - include: "#expressions"
+
+    - name: meta.delimited.braces
+      begin: (\{)
+      end: (\})
+      beginCaptures:
+        1:
+          name: keyword.operator.toit
+      endCaptures:
+        1:
+          name: keyword.operator.toit
+      patterns:
+      - include: "#expressions"
+
+  operator-assignment:
+    patterns:
+    - name: keyword.control.toit
+      match: (=|<<=|>>>=|>>=|//=|\+=|-=|/=|\*=|%=|~=|\^=|&=)
+
+  operator:
+    patterns:
+    - name: keyword.control.toit
+      match: (!=|==|>=|<=|<|>|\*|\+|-|%|//|/|<<|>>>|>>|&|\||\^|~|[.][.])
+
+  control:
+    patterns:
+    - name: keyword.control.toit
+      match: (:|\?|;)
+
+  constant:
+    patterns:
+    - name: constant.language.toit
+      match: \b(null|true|false)\b
+    - name: constant.numeric.capitalized_user_constants.toit
+      match: \b[A-Z][A-Z0-9_]+\b
+
+  number:
+    name: constant.numeric.toit
+    patterns:
+    - include: "#number-double"
+    - include: "#number-decimal"
+
+  number-double:
+    patterns:
+    - name: constant.numeric.float.toit
+      match: (?<!\w)-?([0-9](_(?=[0-9]))?)+[eE][+-]?([0-9](_(?=[0-9]))?)+
+    - name: constant.numeric.float.toit
+      match: (?<!\w)-?([0-9](_(?=[0-9]))?)+\.([0-9](_(?=[0-9]))?)+([eE][+-]?([0-9](_(?=[0-9]))?)+)?
+    - name: constant.numeric.float.toit
+      match: (?<!\w)-?\.([0-9](_(?=[0-9]))?)+([eE][+-]?([0-9](_(?=[0-9]))?)+)?
+    - name: constant.numeric.float.hex.toit
+      match: (?<!\w)-?0[xX]([0-9a-fA-F](_(?=[0-9a-fA-F]))?)+[pP][+-]?([0-9](_(?=[0-9]))?)+
+    - name: constant.numeric.float.hex.toit
+      match: (?<!\w)-?0[xX]([0-9a-fA-F](_(?=[0-9a-fA-F]))?)+\.([0-9a-fA-F](_(?=[0-9a-fA-F]))?)+[pP][+-]?([0-9](_(?=[0-9]))?)+
+    - name: constant.numeric.float.hex.toit
+      match: (?<!\w)-?0[xX]\.([0-9a-fA-F](_(?=[0-9a-fA-F]))?)+[pP][+-]?([0-9](_(?=[0-9]))?)+
+
+  number-decimal:
+    patterns:
+    - name: constant.numeric.dec.toit
+      match: (?<!\w)-?([0-9](_(?=[0-9]))?)+\b
+    - name: constant.numeric.dec.hex.toit
+      match: (?<!\w)-?0[xX]([0-9a-fA-F](_(?=[0-9a-fA-F]))?)+\b
+    - name: constant.numeric.dec.bin.toit
+      match: (?<!\w)-?0[bB]([01](_(?=[01]))?)+\b
+
+  character:
+    patterns:
+    - name: constant.numeric.character.toit
+      match: \'[^'\\]'|'\\[0abfnrtv$\\\"'nr]'|'\\x[a-fA-F0-9]{2}'|'\\u[a-fA-F0-9]{4}'
+    - name: invalid.illegal.character.toit
+      match: \'\\?..+\'
+
+  string:
+    patterns:
+    - include: "#empty-string"
+    - include: "#single-line-string"
+    - include: "#multi-line-string"
+
+  empty-string:
+    patterns:
+    - name: string.quoted.double.toit
+      match: '""(?!")'
+
+  single-line-string:
+    name: string.quoted.double.toit
+    begin: '"(?!")'
+    end: '"'
+    patterns:
+    - name: constant.character.escape.toit
+      match: \\.
+    - include: "#interpolated"
+
+  multi-line-string:
+    name: string.quoted.double.toit
+    begin: '"""'
+    end: '"""'
+    patterns:
+    - name: constant.character.escape.toit
+      match: \\.
+    - include: "#interpolated"
+
+  interpolated:
+    name: meta.string.interpolated.delimited.toit
+    patterns:
+    # HACK to force a different color.
+    #  any element without style inherits from outer (in this case 'string').
+    #  However, we want variable-references (which are without style) not to have
+    #    string colors. Therefore we force it to have a different color.
+    - name:  variable.other.interpolated.delimited.color_hack.toit
+      begin: (\$\()
+      end: (\))
+      beginCaptures:
+        1:
+          name: keyword.control.string_interpolation.toit
+      endCaptures:
+        1:
+          name: keyword.control.string_interpolation.toit
+      patterns:
+      - include: "#expressions"
+    - name: variable.other.interpolated.color_hack.toit
+      match: (\$)(\w+(?:\.\w+|\[[^]]*\])*)
+      captures:
+        1:
+          name: keyword.control.string_interpolation.toit
+        2:
+          name: meta.interpolated.expression
+          patterns:
+          - include: "#expressions"
+
+  special-variable:
+    patterns:
+    - name: variable.language.special.toit
+      match: \b(this|it|super)\b
+
+  named-arg:
+    patterns:
+    # Alternative would be variable.paramater.function-call.named.toit, but that sticks out too much.
+    - name: variable.language.special.named.toit
+      match: --no-[a-zA-Z_]\w*
+    - name: variable.language.special.named.toit
+      match: --\w+
+
+  type-name:
+    patterns:
+    # We want to color constants differently from types.
+    # Our heuristic says:
+    #  - single capitalized character -> a type: 'class A'.
+    #  - single capitalized character followed by a number -> also a type: `class C1`.
+    #  - capitalized identifier with at least on lower-case character: a type.
+    - name: entity.name.type.toit
+      match: \b_?[A-Z][0-9]*\b[?]?
+    - name: entity.name.type.toit
+      match: \b_?[A-Z][A-Z_]*[a-z]\w*\b[?]?
+    - name: entity.name.type.shorts.toit
+      match: \b(int|bool|float|string)\b[?]?
+    - name: entity.name.type.any_none.toit
+      match: \b(any|none)\b
+
+  primitive:
+    patterns:
+    - name: support.function.builtin.toit
+      match: \#primitive\b
+
+  comment:
+    patterns:
+    - include: "#multi-line-comment"
+    - include: "#single-line-comment"
+
+  multi-line-comment:
+    patterns:
+    - name: comment.block.toit
+      begin: \s*(/\*)(?!\*)
+      end: (\*/)
+      beginCaptures:
+        0:
+          name: punctuation.definition.comment.toit
+      endCaptures:
+        0:
+          name: punctuation.definition.comment.toit
+      patterns:
+      - include: "#multi-line-comment"
+    - name: comment.block.toit
+      match: \s*(/\*\*/)
+      captures:
+        0:
+          name: punctuation.definition.comment.toit
+    - name: comment.block.documentation.toit
+      begin: \s*(/\*\*)(?!/)
+      end: (\*/)
+      beginCaptures:
+        0:
+          name: punctuation.definition.comment.toit
+      endCaptures:
+        0:
+          name: punctuation.definition.comment.toit
+      patterns:
+      - include: "#multi-line-comment"
+
+  single-line-comment:
+    patterns:
+    - begin: \s*(//)
+      end: "(?=^)"
+      beginCaptures:
+        1:
+          name: comment.line.double-slash.toit
+      contentName: comment.line.double-slash.toit
+
+scopeName: source.toit
