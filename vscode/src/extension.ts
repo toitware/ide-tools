@@ -20,9 +20,11 @@ function workspaceFolders(): Set<string> {
     }
     Workspace.workspaceFolders.forEach(folder => {
       let str = folder.uri.toString();
-      if (str.charAt(str.length - 1) !== p.sep) str += p.sep;
+      if (str.charAt(str.length - 1) !== p.sep) {
+          str += p.sep;
+      }
       _workspaceFolders?.add(str);
-    })
+    });
   }
   return _workspaceFolders as Set<string>;
 }
@@ -31,18 +33,22 @@ Workspace.onDidChangeWorkspaceFolders(() => _workspaceFolders = undefined);
 
 function getOuterMostWorkspaceFolder(folder: WorkspaceFolder): WorkspaceFolder {
   let str = folder.uri.toString();
-  if (str.charAt(str.length - 1) !== p.sep) str += p.sep
+  if (str.charAt(str.length - 1) !== p.sep) {
+      str += p.sep;
+  }
   let index = str.indexOf(p.sep);
   let folders = workspaceFolders();
   while (index !== -1) {
     let sub = str.substring(0, index + 1);
-    if (folders.has(sub)) return Workspace.getWorkspaceFolder(Uri.parse(sub))!;
+    if (folders.has(sub)) {
+        return Workspace.getWorkspaceFolder(Uri.parse(sub))!;
+    }
     index = str.indexOf(p.sep, index + 1);
   }
   return folder;
 }
 
-function startToitLsp(context: ExtensionContext,
+function startToitLsp(_: ExtensionContext,
                       outputChannel: OutputChannel,
                       config: any) : LanguageClient {
   let workingDir = config.workingDir;
@@ -70,7 +76,7 @@ function startToitLsp(context: ExtensionContext,
   // If the extension is launched in debug mode then the debug server options are used
   // Otherwise the normal ones are used
   let serverOptions: ServerOptions;
-  if (debugClientToServer && platform() != 'linux') {
+  if (debugClientToServer && platform() !== 'linux') {
     debugClientToServer = false;
     Window.showInformationMessage("Client-Server debugging is only available on Linux");
   }
@@ -111,7 +117,9 @@ function startToitLsp(context: ExtensionContext,
     outputChannel: outputChannel,
     documentSelector: documentSelector,
   };
-  if (workspaceFolder) clientOptions.workspaceFolder = workspaceFolder;
+  if (workspaceFolder) {
+      clientOptions.workspaceFolder = workspaceFolder;
+  }
 
   let result = new LanguageClient('toitLanguageServer', 'Language Server', serverOptions, clientOptions);
   result.start();
@@ -156,7 +164,7 @@ export function activate(context: ExtensionContext) {
         workspaceFolder: outerFolder,
         scheme: "file",
         pattern: new RelativePattern(outerFolder, "**/*"),
-      }
+      };
     }
     let path = uri.fsPath;
     let workingDir: string|undefined = p.dirname(path);
@@ -172,11 +180,13 @@ export function activate(context: ExtensionContext) {
       scheme: "file",
       // Clients outside the working-dir only go one level deep.
       pattern: pattern,
-    }
+    };
   }
 
   function didOpenTextDocument(document: TextDocument): void {
-    if (document.languageId !== 'toit') return;
+    if (document.languageId !== 'toit') {
+        return;
+    }
 
     let config = computeClientConfiguration(document);
 
@@ -198,17 +208,21 @@ export function activate(context: ExtensionContext) {
   }
 
   function didCloseTextDocument(document: TextDocument): void {
-    if (document.languageId !== 'toit') return;
+    if (document.languageId !== 'toit') {
+        return;
+    }
 
     let config = computeClientConfiguration(document);
 
     // We keep the non-file client until deactivation.
-    if (config.scheme !== "file") return;
+    if (config.scheme !== "file") {
+        return;
+    }
 
     let workingDir = config.workingDir!;
     if (clients.has(workingDir)) {
       let oldCount = clientCounts.get(workingDir)!;
-      if (oldCount == 1) {
+      if (oldCount === 1) {
         let client = clients.get(workingDir)!;
         clients.delete(workingDir);
         clientCounts.delete(workingDir);
@@ -236,7 +250,11 @@ export function activate(context: ExtensionContext) {
 
 export function deactivate(): Thenable<void> {
   let promises: Thenable<void>[] = [];
-  if (nonFileClient) promises.push(nonFileClient.stop());
-  for (let client of clients.values()) promises.push(client.stop());
+  if (nonFileClient) {
+      promises.push(nonFileClient.stop());
+  }
+  for (let client of clients.values()) {
+      promises.push(client.stop());
+  }
   return Promise.all(promises).then(() => undefined);
 }
