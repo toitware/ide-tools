@@ -11,11 +11,18 @@
         "Programming Languages"
     ],
     "activationEvents": [
-        "onLanguage:toit"
+        "onLanguage:toit",
+        "onCommand:toit.hello"
     ],
     "icon": "images/toitware_logo.png",
     "main": "./dist/extension.js",
     "contributes": {
+        "commands": [
+            {
+                "command": "toit.hello",
+                "title": "Say hello to my little friend!"
+            }
+        ],
         "languages": [
             {
                 "id": "toit",
@@ -40,6 +47,11 @@
             "type": "object",
             "title": "Toit",
             "properties": {
+                "toit.Path": {
+                    "type": "string",
+                    "default": "toit",
+                    "description": "The path to the 'toit' command line tool."
+                },
                 "toitLanguageServer.toitPath": {
                     "type": [
                         "string",
@@ -88,6 +100,7 @@
         "webpack": "webpack --mode development",
         "webpack-dev": "webpack --mode development --watch",
         "compile": "tsc -p ./",
+        "test-compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
@@ -99,7 +112,7 @@
         "tslint": "^5.20.1",
         "typescript": "^3.9.5",
         "vscode": "^1.1.37",
-        "webpack": "^4.43.0",
+        "webpack": "^4.46.0",
         "webpack-cli": "^3.3.12"
     },
     "dependencies": {
