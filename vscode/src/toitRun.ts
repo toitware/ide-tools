@@ -15,44 +15,61 @@ function list_devices(toit_pwd: string): Promise<string[]> {
   });
 }
 
-function check_auth(toit_pwd: string): Promise<boolean> {
-  let auth_info_cmd = `${toit_pwd} auth info -o short`
-  return new Promise((resolve) => {
+function auth_info(toit_pwd: string): Promise<AuthInfo> {
+  let auth_info_cmd = `${toit_pwd} auth info -s -o json`
+  return new Promise((resolve, reject) => {
     cp.exec(auth_info_cmd, (error, stdout) => {
       if (error) {
-        return resolve(false);
+        return reject();
       }
-      resolve (stdout == 'authenticated');
+      resolve(Object.assign(new AuthInfo(), stdout));
     });
   });
 }
 
+class AuthInfo {
+  email?: string;
+  id?: string;
+  name?: string;
+  organization_id?: string;
+  organization_name?: string;
+  status: string = 'unauthenticated';
+}
 
 function ensure_auth(toit_pwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    if (check_auth(toit_pwd)) return resolve();
+    let info = auth_info(toit_pwd).then(info => {
+      if (info.status == 'authenticated') return resolve();
+    });
 
     let user_prompt_options: InputBoxOptions = {
       prompt: 'Enter your e-mail for toit.io',
     };
-    let user = Window.showInputBox(user_prompt_options);
-    if (!user) return reject();
-
     let password_prompt_options: InputBoxOptions = {
-      prompt: `Enter your password for ${user}`,
+      prompt: `Enter your password for toit.io`,
       password: true
     };
-    let password = Window.showInputBox(password_prompt_options);
-    if (!password) return reject();
+    let user: string
+    let password: string
+    Window.showInputBox(user_prompt_options)
+    .then( (u?: string) => {
+      if (!u) return reject();
+      user = u
+    })
+    .then( () => Window.showInputBox(password_prompt_options))
+    .then( (pw?: string) => {
+      if (!pw) return reject();
+      password = pw
+    }).then( () => {
+      let auth_login_cmd = `${toit_pwd} auth login -u ${user} -p ${password}`
 
-    let auth_login_cmd = `${toit_pwd} auth login -u ${user}`
-
-    cp.exec(auth_login_cmd, (error) => {
-      if (error) {
-        reject("Login failed.");
-      } else {
-        resolve();
-      }
+      cp.exec(auth_login_cmd, (error, stdout, stderr) => {
+        if (error) {
+          reject(`Login failed: ${stderr}`);
+        } else {
+          resolve();
+        }
+      });
     });
   });
 }
