@@ -1,4 +1,5 @@
 import cp = require('child_process');
+import { resolve } from 'url';
 import { workspace as Workspace, commands as Commands, window as Window, ExtensionContext, OutputChannel, InputBoxOptions, window } from "vscode";
 
 function list_devices(toit_pwd: string): Promise<string[]> {
@@ -15,14 +16,14 @@ function list_devices(toit_pwd: string): Promise<string[]> {
   });
 }
 
-function login(toit_pwd: string, user: string, password: string): Promise<boolean> {
+function login(toit_pwd: string, user: string, password: string): Promise<void> {
   let auth_login_cmd = `${toit_pwd} auth login -u ${user} -p ${password}`
-  return new Promise((resolve, _reject) =>
-    cp.exec(auth_login_cmd, (error, _stdout, _stderr) => {
+  return new Promise((resolve, reject) =>
+    cp.exec(auth_login_cmd, (error, _stdout, stderr) => {
       if (error) {
-        return resolve(false);
+        return reject(stderr);
       }
-      return resolve(true);
+      resolve();
     }));
 }
 
@@ -49,15 +50,15 @@ interface AuthInfo {
   status: string;
 }
 
-async function ensure_auth(toit_pwd: string): Promise<boolean> {
+async function ensure_auth(toit_pwd: string): Promise<void> {
   let info = await auth_info(toit_pwd);
-  if (info.status == 'authenticated') return new Promise((resolve) => resolve(true));
+  if (info.status == 'authenticated') return;
 
   let user_prompt_options: InputBoxOptions = {
     prompt: 'Enter your e-mail for toit.io',
   };
   let user = await Window.showInputBox(user_prompt_options);
-  if (!user) return new Promise((resolve) => resolve(false));
+  if (!user) return new Promise((_resolve, reject) => reject('No username provided'));
 
 
   let password_prompt_options: InputBoxOptions = {
@@ -65,9 +66,13 @@ async function ensure_auth(toit_pwd: string): Promise<boolean> {
     password: true
   };
   let password = await Window.showInputBox(password_prompt_options);
-  if (!password) return new Promise((resolve) => resolve(false));
+  if (!password) return new Promise((_resolve, reject) => reject('No password provided'));
 
-  return await login(toit_pwd, user, password);
+  try {
+    return await login(toit_pwd, user, password);
+  } catch (reason) {
+    return new Promise((_resolve, reject) => reject(reason));
+  }
 }
 
 async function runCommand(toit_output: OutputChannel) {
@@ -79,7 +84,11 @@ async function runCommand(toit_output: OutputChannel) {
 
   let file_path = editor.document.fileName;
   if (!file_path.endsWith('.toit')) return Window.showErrorMessage(`Unable to run ${file_path}.`);
-  if (!(await ensure_auth(toit_pwd))) return Window.showErrorMessage(`Unable to login.`);
+  try {
+    await ensure_auth(toit_pwd);
+  } catch (reason) {
+    return Window.showErrorMessage(`Unable to login: ${reason}.`);
+  }
 
   try {
     let device_names = await list_devices(toit_pwd);
