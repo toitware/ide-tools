@@ -36,41 +36,29 @@ class AuthInfo {
   status: string = 'unauthenticated';
 }
 
-function ensure_auth(toit_pwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    let info = auth_info(toit_pwd).then(info => {
-      if (info.status == 'authenticated') return resolve();
-    });
+async function ensure_auth(toit_pwd: string) {
+  let info = await auth_info(toit_pwd);
+  if (info.status == 'authenticated') return;
 
-    let user_prompt_options: InputBoxOptions = {
-      prompt: 'Enter your e-mail for toit.io',
-    };
-    let password_prompt_options: InputBoxOptions = {
-      prompt: `Enter your password for toit.io`,
-      password: true
-    };
-    let user: string
-    let password: string
-    Window.showInputBox(user_prompt_options)
-    .then( (u?: string) => {
-      if (!u) return reject();
-      user = u
-    })
-    .then( () => Window.showInputBox(password_prompt_options))
-    .then( (pw?: string) => {
-      if (!pw) return reject();
-      password = pw
-    }).then( () => {
-      let auth_login_cmd = `${toit_pwd} auth login -u ${user} -p ${password}`
+  let user_prompt_options: InputBoxOptions = {
+    prompt: 'Enter your e-mail for toit.io',
+  };
+  let password_prompt_options: InputBoxOptions = {
+    prompt: `Enter your password for toit.io`,
+    password: true
+  };
+  let user = await Window.showInputBox(user_prompt_options);
+  if (!user) throw "Failed to login: no user"
 
-      cp.exec(auth_login_cmd, (error, stdout, stderr) => {
-        if (error) {
-          reject(`Login failed: ${stderr}`);
-        } else {
-          resolve();
-        }
-      });
-    });
+  let password = await Window.showInputBox(password_prompt_options);
+  if (!password) throw "Failed to login: no password";
+  let auth_login_cmd = `${toit_pwd} auth login -u ${user} -p ${password}`
+
+  cp.exec(auth_login_cmd, (error, _stdout, stderr) => {
+    if (error) {
+      throw `Login failed: ${stderr}`;
+    }
+    return;
   });
 }
 
