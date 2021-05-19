@@ -1,5 +1,5 @@
 import cp = require('child_process');
-import { workspace as Workspace, commands as Commands, window as Window, ExtensionContext, OutputChannel, InputBoxOptions } from "vscode";
+import { workspace as Workspace, commands as Commands, window as Window, ExtensionContext, OutputChannel, InputBoxOptions, window } from "vscode";
 
 function list_devices(toit_pwd: string): Promise<string[]> {
   let list_devices_cmd = toit_pwd + ' devices --active --names -o short';
@@ -15,75 +15,86 @@ function list_devices(toit_pwd: string): Promise<string[]> {
   });
 }
 
+function login(toit_pwd: string, user: string, password: string): Promise<boolean> {
+  let auth_login_cmd = `${toit_pwd} auth login -u ${user} -p ${password}`
+  return new Promise((resolve, _reject) =>
+    cp.exec(auth_login_cmd, (error, _stdout, _stderr) => {
+      if (error) {
+        return resolve(false);
+      }
+      return resolve(true);
+    }));
+}
+
+
 function auth_info(toit_pwd: string): Promise<AuthInfo> {
   let auth_info_cmd = `${toit_pwd} auth info -s -o json`
   return new Promise((resolve, reject) => {
-    cp.exec(auth_info_cmd, (error, stdout) => {
+    cp.exec(auth_info_cmd, (error, stdout, stderr) => {
       if (error) {
-        return reject();
+        return reject(stderr);
       }
-      resolve(Object.assign(new AuthInfo(), stdout));
+      let auth_info: AuthInfo = JSON.parse(stdout);
+      resolve(auth_info);
     });
   });
 }
 
-class AuthInfo {
+interface AuthInfo {
   email?: string;
   id?: string;
   name?: string;
   organization_id?: string;
   organization_name?: string;
-  status: string = 'unauthenticated';
+  status: string;
 }
 
-async function ensure_auth(toit_pwd: string) {
+async function ensure_auth(toit_pwd: string): Promise<boolean> {
   let info = await auth_info(toit_pwd);
-  if (info.status == 'authenticated') return;
+  if (info.status == 'authenticated') return new Promise((resolve) => resolve(true));
 
   let user_prompt_options: InputBoxOptions = {
     prompt: 'Enter your e-mail for toit.io',
   };
+  let user = await Window.showInputBox(user_prompt_options);
+  if (!user) return new Promise((resolve) => resolve(false));
+
+
   let password_prompt_options: InputBoxOptions = {
     prompt: `Enter your password for toit.io`,
     password: true
   };
-  let user = await Window.showInputBox(user_prompt_options);
-  if (!user) throw "Failed to login: no user"
-
   let password = await Window.showInputBox(password_prompt_options);
-  if (!password) throw "Failed to login: no password";
-  let auth_login_cmd = `${toit_pwd} auth login -u ${user} -p ${password}`
+  if (!password) return new Promise((resolve) => resolve(false));
 
-  cp.exec(auth_login_cmd, (error, _stdout, stderr) => {
-    if (error) {
-      throw `Login failed: ${stderr}`;
-    }
-    return;
-  });
+  return await login(toit_pwd, user, password);
+}
+
+async function runCommand(toit_output: OutputChannel) {
+  // The code you place here will be executed every time your command is executed
+  // Display a message box to the user
+  let toit_pwd : string = Workspace.getConfiguration('toit').get('Path','toit');
+  let editor = Window.activeTextEditor;
+  if (!editor) return Window.showErrorMessage('No active file.');
+
+  let file_path = editor.document.fileName;
+  if (!file_path.endsWith('.toit')) return Window.showErrorMessage(`Unable to run ${file_path}.`);
+  if (!(await ensure_auth(toit_pwd))) return Window.showErrorMessage(`Unable to login.`);
+
+  try {
+    let device_names = await list_devices(toit_pwd);
+    let device_name = await Window.showQuickPick(device_names);
+    if (!device_name) throw 'No device selected.'
+
+    let command_process = cp.spawn('toit',['dev','-d', device_name, 'run', file_path]);
+    toit_output.show();
+    command_process.stdout.on('data', data => toit_output.append(`${data}`));
+    command_process.stderr.on('data', data => toit_output.append(`${data}`));
+  } catch (reason) {
+    Window.showErrorMessage(`Run app failed: ${reason}`)
+  }
 }
 
 export function createRunCommand(toit_output: OutputChannel) {
-  return () => {
-    // The code you place here will be executed every time your command is executed
-    // Display a message box to the user
-    let toit_pwd : string = Workspace.getConfiguration('toit').get('Path','toit');
-    let editor = Window.activeTextEditor;
-    if (!editor) return Window.showErrorMessage('No active file.');
-
-    let file_path = editor.document.fileName;
-    if (!file_path.endsWith('.toit')) return Window.showErrorMessage(`Unable to run ${file_path}`);
-
-    ensure_auth(toit_pwd)
-    .then(() => list_devices(toit_pwd))
-    .then(device_names => Window.showQuickPick(device_names))
-    .then(device_name => {
-      if (!device_name) throw 'No device selected.'
-      let command_process = cp.spawn('toit',['dev','-d', device_name, 'run',file_path]);
-      toit_output.show();
-      command_process.stdout.on('data', data => toit_output.append(`${data}`));
-      command_process.stderr.on('data', data => toit_output.append(`${data}`));
-    }).catch((reason) => {
-      Window.showErrorMessage(`Failed to run app ${file_path}. ${reason}`);
-    });
-  };
+  return () => { runCommand(toit_output) };
 }
