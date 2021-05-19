@@ -3,7 +3,7 @@ import { LanguageClient, LanguageClientOptions, ServerOptions, DocumentSelector 
 import { platform } from 'os';
 import * as fs from 'fs';
 import * as p from 'path';
-import { createRunCommand, runCommand } from './toitRun'
+import { createRunCommand } from './toitRun'
 
 // Untitled documents, or documents outside all workspaces go to a default client.
 let nonFileClient: LanguageClient;
