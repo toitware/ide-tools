@@ -142,7 +142,7 @@ function startToitLsp(_: ExtensionContext,
 }
 
 export function activate(context: ExtensionContext) {
-  let toit_output = Window.createOutputChannel("Toit");
+  let toit_output = Window.createOutputChannel('Toit');
   context.subscriptions.push(Commands.registerCommand('toit.hello', createRunCommand(toit_output)));
 
   let outputChannel: OutputChannel = Window.createOutputChannel('Toit LSP Server');
