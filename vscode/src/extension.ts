@@ -3,7 +3,7 @@ import { LanguageClient, LanguageClientOptions, ServerOptions, DocumentSelector 
 import { platform } from 'os';
 import * as fs from 'fs';
 import * as p from 'path';
-import { runCommand } from './toitRun'
+import { createRunCommand, runCommand } from './toitRun'
 
 // Untitled documents, or documents outside all workspaces go to a default client.
 let nonFileClient: LanguageClient;
@@ -142,7 +142,8 @@ function startToitLsp(_: ExtensionContext,
 }
 
 export function activate(context: ExtensionContext) {
-  context.subscriptions.push(Commands.registerCommand('toit.hello', runCommand));
+  let toit_output = Window.createOutputChannel("Toit");
+  context.subscriptions.push(Commands.registerCommand('toit.hello', createRunCommand(toit_output)));
 
   let outputChannel: OutputChannel = Window.createOutputChannel('Toit LSP Server');
 
