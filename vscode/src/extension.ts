@@ -6,6 +6,7 @@ import { platform } from 'os';
 import * as fs from 'fs';
 import * as p from 'path';
 import { createRunCommand } from './toitRun'
+import { createDeployCommand } from './toitDeploy'
 
 // Untitled documents, or documents outside all workspaces go to a default client.
 let nonFileClient: LanguageClient;
@@ -146,6 +147,7 @@ function startToitLsp(_: ExtensionContext,
 export function activate(context: ExtensionContext) {
   let toit_output = Window.createOutputChannel('Toit');
   context.subscriptions.push(Commands.registerCommand('toit.devRun', createRunCommand(toit_output)));
+  context.subscriptions.push(Commands.registerCommand('toit.devDeploy', createDeployCommand(toit_output)));
 
   let outputChannel: OutputChannel = Window.createOutputChannel('Toit LSP Server');
 

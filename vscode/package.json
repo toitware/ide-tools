@@ -12,7 +12,8 @@
     ],
     "activationEvents": [
         "onLanguage:toit",
-        "onCommand:toit.devRun"
+        "onCommand:toit.devRun",
+        "onCommand:toit.devDeploy"
     ],
     "icon": "images/toitware_logo.png",
     "main": "./dist/extension.js",
@@ -20,7 +21,11 @@
         "commands": [
             {
                 "command": "toit.devRun",
-                "title": "Toit: Run Toit a app on a device."
+                "title": "Toit: Run a Toit app on a device."
+            },
+            {
+                "command": "toit.devDeploy",
+                "title": "Toit: Deploy a Toit app on a device."
             }
         ],
         "languages": [
