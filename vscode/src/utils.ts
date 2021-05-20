@@ -1,19 +1,13 @@
 "use strict";
 
+import { promisify } from 'util';
 import cp = require('child_process');
 import { window as Window, InputBoxOptions } from "vscode";
+const execFile = promisify(cp.execFile);
 
-function listDevices(toitExec: string): Promise<string[]> {
-  return new Promise((resolve, reject) => {
-    cp.execFile(toitExec, ['devices', '--active', '--names', '-o', 'short'], (error, stdout, stderr) => {
-      if (error) {
-        reject(stderr);
-      } else {
-        const deviceNames = stdout.split('\n');
-        resolve(deviceNames);
-      }
-    });
-  });
+async function listDevices(toitExec: string): Promise<string[]> {
+  const { stdout } = await execFile(toitExec, ['devices', '--active', '--names', '-o', 'short']);
+  return stdout.split('\n');
 }
 
 export async function selectDevice(toitExec: string): Promise<string> {
@@ -23,26 +17,13 @@ export async function selectDevice(toitExec: string): Promise<string> {
   return deviceName;
 }
 
-function login(toitExec: string, user: string, password: string): Promise<void> {
-  return new Promise((resolve, reject) =>
-    cp.execFile(toitExec, ['auth', 'login', '-u', user, '-p', password], (error, _stdout, stderr) => {
-      if (error) {
-        return reject(stderr);
-      }
-      resolve();
-    }));
+async function login(toitExec: string, user: string, password: string): Promise<void> {
+  await execFile(toitExec, ['auth', 'login', '-u', user, '-p', password]);
 }
 
-function authInfo(toitExec: string): Promise<AuthInfo> {
-  return new Promise((resolve, reject) => {
-    cp.execFile(toitExec, ['auth', 'info', '-s', '-o', 'json'], (error, stdout, stderr) => {
-      if (error) {
-        return reject(stderr);
-      }
-      const authInfo: AuthInfo = JSON.parse(stdout);
-      resolve(authInfo);
-    });
-  });
+async function authInfo(toitExec: string): Promise<AuthInfo> {
+  const { stdout } = await execFile(toitExec, ['auth', 'info', '-s', '-o', 'json']);
+  return JSON.parse(stdout);
 }
 
 interface AuthInfo {
