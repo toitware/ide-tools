@@ -44,20 +44,16 @@ export async function ensureAuth(toitExec: string): Promise<void> {
     prompt: 'Enter your e-mail for toit.io',
   };
   const user = await Window.showInputBox(userPromptOptions);
-  if (!user) { return new Promise((_resolve, reject) => reject('No e-mail provided')); }
+  if (!user) { throw new Error('No e-mail provided'); }
 
   const passwordPromptOptions: InputBoxOptions = {
     prompt: `Enter your password for toit.io`,
     password: true
   };
   const password = await Window.showInputBox(passwordPromptOptions);
-  if (!password) { return new Promise((_resolve, reject) => reject('No password provided')); }
+  if (!password) { throw new Error('No password provided'); }
 
-  try {
-    return await login(toitExec, user, password);
-  } catch (e) {
-    return new Promise((_resolve, reject) => reject(e.message));
-  }
+  return await login(toitExec, user, password);
 }
 
 export function currentFilePath(suffix: string): string {
