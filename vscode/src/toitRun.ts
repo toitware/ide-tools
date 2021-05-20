@@ -15,6 +15,13 @@ function list_devices(toit_pwd: string): Promise<string[]> {
   });
 }
 
+async function select_device(toit_pwd: string): Promise<string> {
+  let device_names = await list_devices(toit_pwd);
+  let device_name = await Window.showQuickPick(device_names);
+  if (!device_name) throw 'No device selected.';
+  return device_name;
+}
+
 function login(toit_pwd: string, user: string, password: string): Promise<void> {
   let auth_login_cmd = `${toit_pwd} auth login -u ${user} -p ${password}`
   return new Promise((resolve, reject) =>
@@ -72,13 +79,26 @@ async function ensure_auth(toit_pwd: string): Promise<void> {
   }
 }
 
-async function runCommand(toit_output: OutputChannel) {
-  let toit_pwd : string = Workspace.getConfiguration('toit').get('Path','toit');
+function filePath(suffix: string): string {
   let editor = Window.activeTextEditor;
-  if (!editor) return Window.showErrorMessage('No active file.');
+  if (!editor) throw 'No active file.';
 
   let file_path = editor.document.fileName;
-  if (!file_path.endsWith('.toit')) return Window.showErrorMessage(`Unable to run ${file_path}.`);
+  if (!file_path.endsWith(suffix)) throw `Non-'${suffix}'-file: ${file_path}.`;
+
+  return file_path;
+}
+
+async function runCommand(toit_output: OutputChannel) {
+  let toit_pwd : string = Workspace.getConfiguration('toit').get('Path','toit');
+
+  let file_path: string
+  try {
+    file_path = filePath('.toit');
+  } catch (reason) {
+    return Window.showErrorMessage(`Unable to run file: ${reason}`);
+  }
+
   try {
     await ensure_auth(toit_pwd);
   } catch (reason) {
@@ -86,9 +106,7 @@ async function runCommand(toit_output: OutputChannel) {
   }
 
   try {
-    let device_names = await list_devices(toit_pwd);
-    let device_name = await Window.showQuickPick(device_names);
-    if (!device_name) throw 'No device selected.'
+    let device_name = await select_device(toit_pwd);
 
     let command_process = cp.spawn('toit',['dev','-d', device_name, 'run', file_path]);
     toit_output.show();
