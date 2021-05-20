@@ -1,28 +1,28 @@
 "use strict";
 
-import { promisify } from 'util';
+import { promisify } from "util";
 import { InputBoxOptions, window as Window } from "vscode";
-import cp = require('child_process');
+import cp = require("child_process");
 const execFile = promisify(cp.execFile);
 
-async function listDevices(toitExec: string): Promise<string[]> {
-  const { stdout } = await execFile(toitExec, ['devices', '--active', '--names', '-o', 'short']);
-  return stdout.split('\n');
+async function listDevices (toitExec: string): Promise<string[]> {
+  const { stdout } = await execFile(toitExec, [ "devices", "--active", "--names", "-o", "short" ]);
+  return stdout.split("\n");
 }
 
-export async function selectDevice(toitExec: string): Promise<string> {
+export async function selectDevice (toitExec: string): Promise<string> {
   const deviceNames = await listDevices(toitExec);
   const deviceName = await Window.showQuickPick(deviceNames);
-  if (!deviceName) throw new Error('No device selected.');
+  if (!deviceName) throw new Error("No device selected.");
   return deviceName;
 }
 
-async function login(toitExec: string, user: string, password: string): Promise<void> {
-  await execFile(toitExec, ['auth', 'login', '-u', user, '-p', password]);
+async function login (toitExec: string, user: string, password: string): Promise<void> {
+  await execFile(toitExec, [ "auth", "login", "-u", user, "-p", password ]);
 }
 
-async function authInfo(toitExec: string): Promise<AuthInfo> {
-  const { stdout } = await execFile(toitExec, ['auth', 'info', '-s', '-o', 'json']);
+async function authInfo (toitExec: string): Promise<AuthInfo> {
+  const { stdout } = await execFile(toitExec, [ "auth", "info", "-s", "-o", "json" ]);
   return JSON.parse(stdout);
 }
 
@@ -36,29 +36,29 @@ interface AuthInfo {
 }
 
 
-export async function ensureAuth(toitExec: string): Promise<void> {
+export async function ensureAuth (toitExec: string): Promise<void> {
   const info = await authInfo(toitExec);
-  if (info.status === 'authenticated') return;
+  if (info.status === "authenticated") return;
 
   const userPromptOptions: InputBoxOptions = {
-    prompt: 'Enter your e-mail for toit.io',
+    "prompt": "Enter your e-mail for toit.io"
   };
   const user = await Window.showInputBox(userPromptOptions);
-  if (!user) throw new Error('No e-mail provided');
+  if (!user) throw new Error("No e-mail provided");
 
   const passwordPromptOptions: InputBoxOptions = {
-    prompt: `Enter your password for toit.io`,
-    password: true
+    "prompt": `Enter your password for toit.io`,
+    "password": true
   };
   const password = await Window.showInputBox(passwordPromptOptions);
-  if (!password) throw new Error('No password provided');
+  if (!password) throw new Error("No password provided");
 
   return await login(toitExec, user, password);
 }
 
-export function currentFilePath(suffix: string): string {
+export function currentFilePath (suffix: string): string {
   const editor = Window.activeTextEditor;
-  if (!editor) throw new Error('No active file.');
+  if (!editor) throw new Error("No active file.");
 
   const filePath = editor.document.fileName;
   if (!filePath.endsWith(suffix)) throw new Error(`Non-'${suffix}'-file: ${filePath}.`);
