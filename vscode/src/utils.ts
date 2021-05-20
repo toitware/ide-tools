@@ -3,31 +3,31 @@
 import cp = require('child_process');
 import { window as Window, InputBoxOptions } from "vscode";
 
-function list_devices(toit_pwd: string): Promise<string[]> {
-  let list_devices_cmd = toit_pwd + ' devices --active --names -o short';
+function listDevices(toitExec: string): Promise<string[]> {
+  const listDevicesCmd = toitExec + ' devices --active --names -o short';
   return new Promise((resolve, reject) => {
-    cp.exec(list_devices_cmd, (error, stdout, stderr) => {
+    cp.exec(listDevicesCmd, (error, stdout, stderr) => {
       if (error) {
         reject(stderr);
       } else {
-        let device_names = stdout.split('\n');
-        resolve(device_names);
+        const deviceNames = stdout.split('\n');
+        resolve(deviceNames);
       }
     });
   });
 }
 
-export async function select_device(toit_pwd: string): Promise<string> {
-  let device_names = await list_devices(toit_pwd);
-  let device_name = await Window.showQuickPick(device_names);
-  if (!device_name) throw 'No device selected.';
-  return device_name;
+export async function selectDevice(toitExec: string): Promise<string> {
+  const deviceNames = await listDevices(toitExec);
+  const deviceName = await Window.showQuickPick(deviceNames);
+  if (!deviceName) { throw new Error('No device selected.'); }
+  return deviceName;
 }
 
-function login(toit_pwd: string, user: string, password: string): Promise<void> {
-  let auth_login_cmd = `${toit_pwd} auth login -u ${user} -p ${password}`
+function login(toitExec: string, user: string, password: string): Promise<void> {
+  const authLoginCmd = `${toitExec} auth login -u ${user} -p ${password}`;
   return new Promise((resolve, reject) =>
-    cp.exec(auth_login_cmd, (error, _stdout, stderr) => {
+    cp.exec(authLoginCmd, (error, _stdout, stderr) => {
       if (error) {
         return reject(stderr);
       }
@@ -35,15 +35,15 @@ function login(toit_pwd: string, user: string, password: string): Promise<void> 
     }));
 }
 
-function auth_info(toit_pwd: string): Promise<AuthInfo> {
-  let auth_info_cmd = `${toit_pwd} auth info -s -o json`
+function authInfo(toitExec: string): Promise<AuthInfo> {
+  const authInfoCmd = `${toitExec} auth info -s -o json`;
   return new Promise((resolve, reject) => {
-    cp.exec(auth_info_cmd, (error, stdout, stderr) => {
+    cp.exec(authInfoCmd, (error, stdout, stderr) => {
       if (error) {
         return reject(stderr);
       }
-      let auth_info: AuthInfo = JSON.parse(stdout);
-      resolve(auth_info);
+      const authInfo: AuthInfo = JSON.parse(stdout);
+      resolve(authInfo);
     });
   });
 }
@@ -52,42 +52,42 @@ interface AuthInfo {
   email?: string;
   id?: string;
   name?: string;
-  organization_id?: string;
-  organization_name?: string;
+  organizationID?: string;
+  organizationName?: string;
   status: string;
 }
 
 
-export async function ensure_auth(toit_pwd: string): Promise<void> {
-  let info = await auth_info(toit_pwd);
-  if (info.status == 'authenticated') return;
+export async function ensureAuth(toitExec: string): Promise<void> {
+  const info = await authInfo(toitExec);
+  if (info.status === 'authenticated') {return;}
 
-  let user_prompt_options: InputBoxOptions = {
+  const userPromptOptions: InputBoxOptions = {
     prompt: 'Enter your e-mail for toit.io',
   };
-  let user = await Window.showInputBox(user_prompt_options);
-  if (!user) return new Promise((_resolve, reject) => reject('No e-mail provided'));
+  const user = await Window.showInputBox(userPromptOptions);
+  if (!user) { return new Promise((_resolve, reject) => reject('No e-mail provided')); }
 
-  let password_prompt_options: InputBoxOptions = {
+  const passwordPromptOptions: InputBoxOptions = {
     prompt: `Enter your password for toit.io`,
     password: true
   };
-  let password = await Window.showInputBox(password_prompt_options);
-  if (!password) return new Promise((_resolve, reject) => reject('No password provided'));
+  const password = await Window.showInputBox(passwordPromptOptions);
+  if (!password) { return new Promise((_resolve, reject) => reject('No password provided')); }
 
   try {
-    return await login(toit_pwd, user, password);
-  } catch (reason) {
-    return new Promise((_resolve, reject) => reject(reason));
+    return await login(toitExec, user, password);
+  } catch (e) {
+    return new Promise((_resolve, reject) => reject(e.message));
   }
 }
 
-export function filePath(suffix: string): string {
-  let editor = Window.activeTextEditor;
-  if (!editor) throw 'No active file.';
+export function currentFilePath(suffix: string): string {
+  const editor = Window.activeTextEditor;
+  if (!editor) { throw new Error('No active file.'); }
 
-  let file_path = editor.document.fileName;
-  if (!file_path.endsWith(suffix)) throw `Non-'${suffix}'-file: ${file_path}.`;
+  const filePath = editor.document.fileName;
+  if (!filePath.endsWith(suffix)) { throw new Error(`Non-'${suffix}'-file: ${filePath}.`); }
 
-  return file_path;
+  return filePath;
 }

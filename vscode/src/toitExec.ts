@@ -2,54 +2,54 @@
 
 import cp = require('child_process');
 import { workspace as Workspace, window as Window, OutputChannel } from "vscode";
-import { ensure_auth, select_device} from "./utils";
+import { ensureAuth, selectDevice} from "./utils";
 
 function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-function filePath(suffix: string): string {
-  let editor = Window.activeTextEditor;
-  if (!editor) throw 'No active file.';
+function currentFilePath(suffix: string): string {
+  const editor = Window.activeTextEditor;
+  if (!editor) { throw new Error('No active file.'); }
 
-  let file_path = editor.document.fileName;
-  if (!file_path.endsWith(suffix)) throw `Non-'${suffix}'-file: ${file_path}.`;
+  const filePath = editor.document.fileName;
+  if (!filePath.endsWith(suffix)) { throw new Error(`Non-'${suffix}'-file: ${filePath}.`); }
 
-  return file_path;
+  return filePath;
 }
 
-async function executeCommand(toit_output: OutputChannel, cmd: string, extension: string) {
-  let toit_pwd : string = Workspace.getConfiguration('toit').get('Path','toit');
+async function executeCommand(toitOutput: OutputChannel, cmd: string, extension: string) {
+  const toitExec : string = Workspace.getConfiguration('toit').get('Path','toit');
 
-  let file_path: string
+  let filePath: string;
   try {
-    file_path = filePath(extension);
-  } catch (reason) {
-    return Window.showErrorMessage(`Unable to ${cmd} file: ${reason}`);
+    filePath = currentFilePath(extension);
+  } catch (e) {
+    return Window.showErrorMessage(`Unable to ${cmd} file: ${e.message}`);
   }
 
   try {
-    await ensure_auth(toit_pwd);
-  } catch (reason) {
-    return Window.showErrorMessage(`Login failed: ${reason}.`);
+    await ensureAuth(toitExec);
+  } catch (e) {
+    return Window.showErrorMessage(`Login failed: ${e.message}.`);
   }
 
   try {
-    let device_name = await select_device(toit_pwd);
+    const deviceName = await selectDevice(toitExec);
 
-    let command_process = cp.spawn('toit',['dev','-d', device_name, cmd, file_path]);
-    toit_output.show();
-    command_process.stdout.on('data', data => toit_output.append(`${data}`));
-    command_process.stderr.on('data', data => toit_output.append(`${data}`));
-  } catch (reason) {
-    Window.showErrorMessage(`${capitalize(cmd)} app failed: ${reason}`)
+    const commandProcess = cp.spawn('toit',['dev','-d', deviceName, cmd, filePath]);
+    toitOutput.show();
+    commandProcess.stdout.on('data', data => toitOutput.append(`${data}`));
+    commandProcess.stderr.on('data', data => toitOutput.append(`${data}`));
+  } catch (e) {
+    Window.showErrorMessage(`${capitalize(cmd)} app failed: ${e.message}`);
   }
 }
 
-export function createRunCommand(toit_output: OutputChannel) {
-  return () => { executeCommand(toit_output, 'run', '.toit') };
+export function createRunCommand(toitOutput: OutputChannel): () => void {
+  return () => { executeCommand(toitOutput, 'run', '.toit'); };
 }
 
-export function createDeployCommand(toit_output: OutputChannel) {
-  return () => { executeCommand(toit_output, 'deploy', '.yaml') };
+export function createDeployCommand(toitOutput: OutputChannel): () => void {
+  return () => { executeCommand(toitOutput, 'deploy', '.yaml'); };
 }
