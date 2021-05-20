@@ -4,9 +4,8 @@ import cp = require('child_process');
 import { window as Window, InputBoxOptions } from "vscode";
 
 function listDevices(toitExec: string): Promise<string[]> {
-  const listDevicesCmd = toitExec + ' devices --active --names -o short';
   return new Promise((resolve, reject) => {
-    cp.exec(listDevicesCmd, (error, stdout, stderr) => {
+    cp.execFile(toitExec, ['devices', '--active', '--names', '-o', 'short'], (error, stdout, stderr) => {
       if (error) {
         reject(stderr);
       } else {
@@ -25,9 +24,8 @@ export async function selectDevice(toitExec: string): Promise<string> {
 }
 
 function login(toitExec: string, user: string, password: string): Promise<void> {
-  const authLoginCmd = `${toitExec} auth login -u ${user} -p ${password}`;
   return new Promise((resolve, reject) =>
-    cp.exec(authLoginCmd, (error, _stdout, stderr) => {
+    cp.execFile(toitExec, ['auth', 'login', '-u', user, '-p', password], (error, _stdout, stderr) => {
       if (error) {
         return reject(stderr);
       }
@@ -36,9 +34,8 @@ function login(toitExec: string, user: string, password: string): Promise<void> 
 }
 
 function authInfo(toitExec: string): Promise<AuthInfo> {
-  const authInfoCmd = `${toitExec} auth info -s -o json`;
   return new Promise((resolve, reject) => {
-    cp.exec(authInfoCmd, (error, stdout, stderr) => {
+    cp.execFile(toitExec, ['auth', 'info', '-s', '-o', 'json'], (error, stdout, stderr) => {
       if (error) {
         return reject(stderr);
       }
