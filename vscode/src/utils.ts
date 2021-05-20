@@ -1,8 +1,8 @@
 "use strict";
 
 import { promisify } from 'util';
+import { InputBoxOptions, window as Window } from "vscode";
 import cp = require('child_process');
-import { window as Window, InputBoxOptions } from "vscode";
 const execFile = promisify(cp.execFile);
 
 async function listDevices(toitExec: string): Promise<string[]> {

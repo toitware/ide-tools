@@ -1,8 +1,8 @@
 "use strict";
 
 import cp = require('child_process');
-import { workspace as Workspace, window as Window, OutputChannel } from "vscode";
-import { ensureAuth, selectDevice} from "./utils";
+import { OutputChannel, window as Window, workspace as Workspace } from "vscode";
+import { ensureAuth, selectDevice } from "./utils";
 
 function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
