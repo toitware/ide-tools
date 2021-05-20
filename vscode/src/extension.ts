@@ -1,3 +1,5 @@
+"use strict";
+
 import { commands as Commands, workspace as Workspace, ExtensionContext, window as Window, OutputChannel, TextDocument, WorkspaceFolder, Uri, RelativePattern } from 'vscode';
 import { LanguageClient, LanguageClientOptions, ServerOptions, DocumentSelector } from 'vscode-languageclient';
 import { platform } from 'os';

@@ -1,3 +1,5 @@
+"use strict";
+
 import cp = require('child_process');
 import { workspace as Workspace, window as Window, OutputChannel, InputBoxOptions } from "vscode";
 
