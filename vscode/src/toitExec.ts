@@ -19,7 +19,7 @@ function currentFilePath(suffix: string): string {
 }
 
 async function executeCommand(toitOutput: OutputChannel, cmd: string, extension: string) {
-  const toitExec : string = Workspace.getConfiguration('toit').get('Path','toit');
+  const toitExec : string = Workspace.getConfiguration('toit').get('Path', 'toit');
 
   let filePath: string;
   try {
@@ -37,7 +37,7 @@ async function executeCommand(toitOutput: OutputChannel, cmd: string, extension:
   try {
     const deviceName = await selectDevice(toitExec);
 
-    const commandProcess = cp.spawn('toit',['dev','-d', deviceName, cmd, filePath]);
+    const commandProcess = cp.spawn('toit',['dev', '-d', deviceName, cmd, filePath]);
     toitOutput.show();
     commandProcess.stdout.on('data', data => toitOutput.append(`${data}`));
     commandProcess.stderr.on('data', data => toitOutput.append(`${data}`));
