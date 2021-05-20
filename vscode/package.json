@@ -20,7 +20,7 @@
         "commands": [
             {
                 "command": "toit.devRun",
-                "title": "Toit: Run Toit app on a device."
+                "title": "Toit: Run Toit a app on a device."
             }
         ],
         "languages": [
