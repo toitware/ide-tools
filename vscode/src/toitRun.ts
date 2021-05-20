@@ -73,8 +73,6 @@ async function ensure_auth(toit_pwd: string): Promise<void> {
 }
 
 async function runCommand(toit_output: OutputChannel) {
-  // The code you place here will be executed every time your command is executed
-  // Display a message box to the user
   let toit_pwd : string = Workspace.getConfiguration('toit').get('Path','toit');
   let editor = Window.activeTextEditor;
   if (!editor) return Window.showErrorMessage('No active file.');
