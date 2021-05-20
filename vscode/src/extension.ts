@@ -1,10 +1,11 @@
 "use strict";
 
-import { workspace as Workspace, ExtensionContext, window as Window, OutputChannel, TextDocument, WorkspaceFolder, Uri, RelativePattern } from 'vscode';
+import { commands as Commands, workspace as Workspace, ExtensionContext, window as Window, OutputChannel, TextDocument, WorkspaceFolder, Uri, RelativePattern } from 'vscode';
 import { LanguageClient, LanguageClientOptions, ServerOptions, DocumentSelector } from 'vscode-languageclient';
 import { platform } from 'os';
 import * as fs from 'fs';
 import * as p from 'path';
+import { createRunCommand } from './toitRun'
 
 // Untitled documents, or documents outside all workspaces go to a default client.
 let nonFileClient: LanguageClient;
@@ -143,6 +144,9 @@ function startToitLsp(_: ExtensionContext,
 }
 
 export function activate(context: ExtensionContext) {
+  let toit_output = Window.createOutputChannel('Toit');
+  context.subscriptions.push(Commands.registerCommand('toit.devRun', createRunCommand(toit_output)));
+
   let outputChannel: OutputChannel = Window.createOutputChannel('Toit LSP Server');
 
   function computeClientConfiguration(document: TextDocument) {
