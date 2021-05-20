@@ -10,10 +10,10 @@ function capitalize(str: string): string {
 
 function currentFilePath(suffix: string): string {
   const editor = Window.activeTextEditor;
-  if (!editor) { throw new Error('No active file.'); }
+  if (!editor) throw new Error('No active file.');
 
   const filePath = editor.document.fileName;
-  if (!filePath.endsWith(suffix)) { throw new Error(`Non-'${suffix}'-file: ${filePath}.`); }
+  if (!filePath.endsWith(suffix)) throw new Error(`Non-'${suffix}'-file: ${filePath}.`);
 
   return filePath;
 }

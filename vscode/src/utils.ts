@@ -13,7 +13,7 @@ async function listDevices(toitExec: string): Promise<string[]> {
 export async function selectDevice(toitExec: string): Promise<string> {
   const deviceNames = await listDevices(toitExec);
   const deviceName = await Window.showQuickPick(deviceNames);
-  if (!deviceName) { throw new Error('No device selected.'); }
+  if (!deviceName) throw new Error('No device selected.');
   return deviceName;
 }
 
@@ -38,30 +38,30 @@ interface AuthInfo {
 
 export async function ensureAuth(toitExec: string): Promise<void> {
   const info = await authInfo(toitExec);
-  if (info.status === 'authenticated') {return;}
+  if (info.status === 'authenticated') return;
 
   const userPromptOptions: InputBoxOptions = {
     prompt: 'Enter your e-mail for toit.io',
   };
   const user = await Window.showInputBox(userPromptOptions);
-  if (!user) { throw new Error('No e-mail provided'); }
+  if (!user) throw new Error('No e-mail provided');
 
   const passwordPromptOptions: InputBoxOptions = {
     prompt: `Enter your password for toit.io`,
     password: true
   };
   const password = await Window.showInputBox(passwordPromptOptions);
-  if (!password) { throw new Error('No password provided'); }
+  if (!password) throw new Error('No password provided');
 
   return await login(toitExec, user, password);
 }
 
 export function currentFilePath(suffix: string): string {
   const editor = Window.activeTextEditor;
-  if (!editor) { throw new Error('No active file.'); }
+  if (!editor) throw new Error('No active file.');
 
   const filePath = editor.document.fileName;
-  if (!filePath.endsWith(suffix)) { throw new Error(`Non-'${suffix}'-file: ${filePath}.`); }
+  if (!filePath.endsWith(suffix)) throw new Error(`Non-'${suffix}'-file: ${filePath}.`);
 
   return filePath;
 }
