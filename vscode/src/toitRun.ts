@@ -1,6 +1,5 @@
 import cp = require('child_process');
-import { resolve } from 'url';
-import { workspace as Workspace, commands as Commands, window as Window, ExtensionContext, OutputChannel, InputBoxOptions, window } from "vscode";
+import { workspace as Workspace, window as Window, OutputChannel, InputBoxOptions } from "vscode";
 
 function list_devices(toit_pwd: string): Promise<string[]> {
   let list_devices_cmd = toit_pwd + ' devices --active --names -o short';
