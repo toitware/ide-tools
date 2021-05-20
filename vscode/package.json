@@ -27,7 +27,6 @@
                 "command": "toit.devDeploy",
                 "title": "Toit: Deploy a Toit app on a device."
             }
-
         ],
         "languages": [
             {
