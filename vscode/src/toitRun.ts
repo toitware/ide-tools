@@ -26,7 +26,6 @@ function login(toit_pwd: string, user: string, password: string): Promise<void> 
     }));
 }
 
-
 function auth_info(toit_pwd: string): Promise<AuthInfo> {
   let auth_info_cmd = `${toit_pwd} auth info -s -o json`
   return new Promise((resolve, reject) => {
@@ -57,8 +56,7 @@ async function ensure_auth(toit_pwd: string): Promise<void> {
     prompt: 'Enter your e-mail for toit.io',
   };
   let user = await Window.showInputBox(user_prompt_options);
-  if (!user) return new Promise((_resolve, reject) => reject('No username provided'));
-
+  if (!user) return new Promise((_resolve, reject) => reject('No e-mail provided'));
 
   let password_prompt_options: InputBoxOptions = {
     prompt: `Enter your password for toit.io`,
@@ -86,7 +84,7 @@ async function runCommand(toit_output: OutputChannel) {
   try {
     await ensure_auth(toit_pwd);
   } catch (reason) {
-    return Window.showErrorMessage(`Unable to login: ${reason}.`);
+    return Window.showErrorMessage(`Login failed: ${reason}.`);
   }
 
   try {
