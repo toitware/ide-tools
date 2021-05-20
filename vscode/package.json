@@ -12,15 +12,15 @@
     ],
     "activationEvents": [
         "onLanguage:toit",
-        "onCommand:toit.hello"
+        "onCommand:toit.devRun"
     ],
     "icon": "images/toitware_logo.png",
     "main": "./dist/extension.js",
     "contributes": {
         "commands": [
             {
-                "command": "toit.hello",
-                "title": "Say hello to my little friend!"
+                "command": "toit.devRun",
+                "title": "Toit: Run Toit app on a device."
             }
         ],
         "languages": [
