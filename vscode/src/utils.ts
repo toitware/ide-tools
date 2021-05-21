@@ -5,7 +5,7 @@ import { InputBoxOptions, OutputChannel, window as Window } from "vscode";
 import cp = require("child_process");
 const execFile = promisify(cp.execFile);
 
-class CommandContext {
+export class CommandContext {
   outputs: Map<string, OutputChannel> = new Map();
 
   outputChannel(name: string): OutputChannel {
