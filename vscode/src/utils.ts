@@ -53,18 +53,18 @@ class DeviceItem implements Device, QuickPickItem {
   }
 }
 
-async function listDevices (toitExec: string): Promise<DeviceItem[]> {
+async function listDevices(toitExec: string): Promise<DeviceItem[]> {
   const out = Window.createOutputChannel("lol");
-  out.show
+  out.show;
   const { stdout } = await execFile(toitExec, [ "devices", "--active", "--names", "-o", "json" ]);
-  const devices = stdout.split("\n")
-  .filter(str => str !== "")
-  .map(json => JSON.parse(json) as Device)
-  .map(device => new DeviceItem(device));
+  const devices = stdout.split("\n").
+    filter(str => str !== "").
+    map(json => JSON.parse(json) as Device).
+    map(device => new DeviceItem(device));
   return devices;
 }
 
-export async function selectDevice (toitExec: string): Promise<Device> {
+export async function selectDevice(toitExec: string): Promise<Device> {
   const deviceItems = await listDevices(toitExec);
   const deviceName = await Window.showQuickPick(deviceItems);
   if (!deviceName) throw new Error("No device selected.");
@@ -93,7 +93,7 @@ interface AuthInfo {
   /* eslint-enable @typescript-eslint/naming-convention */
 }
 
-export async function ensureAuth (toitExec: string): Promise<void> {
+export async function ensureAuth(toitExec: string): Promise<void> {
   const info = await authInfo(toitExec);
   if (info.status === "authenticated") return;
 

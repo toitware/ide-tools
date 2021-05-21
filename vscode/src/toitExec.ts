@@ -38,7 +38,7 @@ async function executeCommand(cmdContext: CommandContext, cmd: string, extension
     const device: Device = await selectDevice(toitExec);
 
     const commandProcess = cp.spawn("toit", [ "dev", "-d", device.name, cmd, filePath ]);
-    let toitOutput: OutputChannel = cmdContext.outputChannel(device.device_id, device.name);
+    const toitOutput: OutputChannel = cmdContext.outputChannel(device.device_id, device.name);
     toitOutput.show();
     commandProcess.stdout.on("data", data => toitOutput.append(`${data}`));
     commandProcess.stderr.on("data", data => toitOutput.append(`${data}`));
