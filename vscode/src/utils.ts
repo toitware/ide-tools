@@ -102,7 +102,7 @@ export async function ensureAuth(toitExec: string): Promise<void> {
   if (!user) throw new Error("No e-mail provided");
 
   const passwordPromptOptions: InputBoxOptions = {
-    "prompt": `Enter your password for toit.io`,
+    "prompt": "Enter your password for toit.io",
     "password": true
   };
   const password = await Window.showInputBox(passwordPromptOptions);
