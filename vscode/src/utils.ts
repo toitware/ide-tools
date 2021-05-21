@@ -1,31 +1,66 @@
 "use strict";
 
 import { promisify } from "util";
-import { InputBoxOptions, OutputChannel, window as Window } from "vscode";
+import { InputBoxOptions, OutputChannel, QuickPickItem, window as Window } from "vscode";
 import cp = require("child_process");
 const execFile = promisify(cp.execFile);
 
 export class CommandContext {
   outputs: Map<string, OutputChannel> = new Map();
 
-  outputChannel(name: string): OutputChannel {
-    let output = this.outputs.get(name);
+  outputChannel(id: string, name: string): OutputChannel {
+    let output = this.outputs.get(id);
     if (output) return output;
 
     output = Window.createOutputChannel(`Toit (${name})`);
-    this.outputs.set(name, output);
+    this.outputs.set(id, output);
     return output;
   }
 }
 
-async function listDevices(toitExec: string): Promise<string[]> {
-  const { stdout } = await execFile(toitExec, [ "devices", "--active", "--names", "-o", "short" ]);
-  return stdout.split("\n");
+export interface Device {
+  device_id: string;
+  is_simulator: boolean;
+  name: string;
+  configure_firmware: string;
+  last_seen: string;
+  running_firmware: string;
 }
 
-export async function selectDevice(toitExec: string): Promise<string> {
-  const deviceNames = await listDevices(toitExec);
-  const deviceName = await Window.showQuickPick(deviceNames);
+class DeviceItem implements Device, QuickPickItem {
+  device_id: string;
+  is_simulator: boolean;
+  name: string;
+  configure_firmware: string;
+  last_seen: string;
+  running_firmware: string;
+  label: string;
+
+  constructor(device: Device) {
+    this.device_id = device.device_id;
+    this.is_simulator = device.is_simulator;
+    this.name = device.name;
+    this.configure_firmware = device.configure_firmware;
+    this.last_seen = device.last_seen;
+    this.running_firmware = device.running_firmware;
+    this.label = this.name;
+  }
+}
+
+async function listDevices (toitExec: string): Promise<DeviceItem[]> {
+  const out = Window.createOutputChannel("lol");
+  out.show
+  const { stdout } = await execFile(toitExec, [ "devices", "--active", "--names", "-o", "json" ]);
+  const devices = stdout.split("\n")
+  .filter(str => str !== "")
+  .map(json => JSON.parse(json) as Device)
+  .map(device => new DeviceItem(device));
+  return devices;
+}
+
+export async function selectDevice (toitExec: string): Promise<Device> {
+  const deviceItems = await listDevices(toitExec);
+  const deviceName = await Window.showQuickPick(deviceItems);
   if (!deviceName) throw new Error("No device selected.");
   return deviceName;
 }
@@ -43,13 +78,12 @@ interface AuthInfo {
   email?: string;
   id?: string;
   name?: string;
-  organizationID?: string;
-  organizationName?: string;
+  organization_id?: string;    // Breaking naming convention to mimic json from console.
+  organization_name?: string;  // Breaking naming convention to mimic json from console.
   status: string;
 }
 
-
-export async function ensureAuth(toitExec: string): Promise<void> {
+export async function ensureAuth (toitExec: string): Promise<void> {
   const info = await authInfo(toitExec);
   if (info.status === "authenticated") return;
 
