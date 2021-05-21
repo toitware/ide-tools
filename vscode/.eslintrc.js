@@ -56,7 +56,7 @@ module.exports = {
         "quotes": ["error","double", { "allowTemplateLiterals": true , "avoidEscape": true }],
         "semi-style": "error",
         "space-before-blocks": "error",
-        "space-before-function-paren": ["warn"],
+        "space-before-function-paren": ["warn", "never"],
         "space-unary-ops": "error",
         "switch-colon-spacing": "error"
     },

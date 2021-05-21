@@ -4,11 +4,11 @@ import cp = require("child_process");
 import { OutputChannel, window as Window, workspace as Workspace } from "vscode";
 import { CommandContext, ensureAuth, selectDevice } from "./utils";
 
-function capitalize (str: string): string {
+function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-function currentFilePath (suffix: string): string {
+function currentFilePath(suffix: string): string {
   const editor = Window.activeTextEditor;
   if (!editor) throw new Error("No active file.");
 
@@ -18,7 +18,7 @@ function currentFilePath (suffix: string): string {
   return filePath;
 }
 
-async function executeCommand (cmdContext: CommandContext, cmd: string, extension: string) {
+async function executeCommand(cmdContext: CommandContext, cmd: string, extension: string) {
   const toitExec : string = Workspace.getConfiguration("toit").get("Path", "toit");
 
   let filePath: string;
@@ -38,7 +38,7 @@ async function executeCommand (cmdContext: CommandContext, cmd: string, extensio
     const deviceName = await selectDevice(toitExec);
 
     const commandProcess = cp.spawn("toit", [ "dev", "-d", deviceName, cmd, filePath ]);
-    let toitOutput: OutputChannel = cmdContext.outputChannel(deviceName);
+    const toitOutput: OutputChannel = cmdContext.outputChannel(deviceName);
     toitOutput.show();
     commandProcess.stdout.on("data", data => toitOutput.append(`${data}`));
     commandProcess.stderr.on("data", data => toitOutput.append(`${data}`));
@@ -47,13 +47,13 @@ async function executeCommand (cmdContext: CommandContext, cmd: string, extensio
   }
 }
 
-export function createRunCommand (cmdContext: CommandContext): () => void {
+export function createRunCommand(cmdContext: CommandContext): () => void {
   return () => {
     executeCommand(cmdContext, "run", ".toit");
   };
 }
 
-export function createDeployCommand (cmdContext: CommandContext): () => void {
+export function createDeployCommand(cmdContext: CommandContext): () => void {
   return () => {
     executeCommand(cmdContext, "deploy", ".yaml");
   };

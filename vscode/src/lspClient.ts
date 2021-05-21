@@ -1,16 +1,16 @@
 "use strict";
 
-import * as fs from 'fs';
-import { platform } from 'os';
-import * as p from 'path';
-import { ExtensionContext, OutputChannel, RelativePattern, TextDocument, Uri, window as Window, workspace as Workspace, WorkspaceFolder } from 'vscode';
-import { DocumentSelector, LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-languageclient';
+import * as fs from "fs";
+import { platform } from "os";
+import * as p from "path";
+import { ExtensionContext, OutputChannel, RelativePattern, TextDocument, Uri, window as Window, workspace as Workspace, WorkspaceFolder } from "vscode";
+import { DocumentSelector, LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-languageclient";
 
 // Untitled documents, or documents outside all workspaces go to a default client.
 let nonFileClient: LanguageClient;
-let clients: Map<string, LanguageClient> = new Map();
-let clientCounts: Map<string, number> = new Map();
-let _workspaceFolders: Set<string>|undefined = undefined;
+const clients: Map<string, LanguageClient> = new Map();
+const clientCounts: Map<string, number> = new Map();
+let _workspaceFolders: Set<string>|undefined;
 
 function workspaceFolders(): Set<string> {
   if (_workspaceFolders === undefined) {
@@ -21,7 +21,7 @@ function workspaceFolders(): Set<string> {
     Workspace.workspaceFolders.forEach(folder => {
       let str = folder.uri.toString();
       if (str.charAt(str.length - 1) !== p.sep) {
-          str += p.sep;
+        str += p.sep;
       }
       _workspaceFolders?.add(str);
     });
@@ -34,14 +34,14 @@ Workspace.onDidChangeWorkspaceFolders(() => _workspaceFolders = undefined);
 function getOuterMostWorkspaceFolder(folder: WorkspaceFolder): WorkspaceFolder {
   let str = folder.uri.toString();
   if (str.charAt(str.length - 1) !== p.sep) {
-      str += p.sep;
+    str += p.sep;
   }
   let index = str.indexOf(p.sep);
-  let folders = workspaceFolders();
+  const folders = workspaceFolders();
   while (index !== -1) {
-    let sub = str.substring(0, index + 1);
+    const sub = str.substring(0, index + 1);
     if (folders.has(sub)) {
-        return Workspace.getWorkspaceFolder(Uri.parse(sub))!;
+      return Workspace.getWorkspaceFolder(Uri.parse(sub))!;
     }
     index = str.indexOf(p.sep, index + 1);
   }
@@ -49,22 +49,22 @@ function getOuterMostWorkspaceFolder(folder: WorkspaceFolder): WorkspaceFolder {
 }
 
 function startToitLsp(_: ExtensionContext,
-                      outputChannel: OutputChannel,
-                      config: any) : LanguageClient {
-  let workingDir = config.workingDir;
-  let workspaceFolder = config.workspaceFolder;
-  let scheme = config.scheme;
-  let pattern = config.pattern;
-  let lspSettings = Workspace.getConfiguration('toitLanguageServer', workspaceFolder);
-  var toitPath = lspSettings.get('toitPath');
-  var lspArguments: Array<string> | string | null | undefined = lspSettings.get('arguments');
-  var debugClientToServer = !!lspSettings.get('debug.clientToServer');
+  outputChannel: OutputChannel,
+  config: any) : LanguageClient {
+  const workingDir = config.workingDir;
+  const workspaceFolder = config.workspaceFolder;
+  const scheme = config.scheme;
+  const pattern = config.pattern;
+  const lspSettings = Workspace.getConfiguration("toitLanguageServer", workspaceFolder);
+  let toitPath = lspSettings.get("toitPath");
+  let lspArguments: Array<string> | string | null | undefined = lspSettings.get("arguments");
+  let debugClientToServer = !!lspSettings.get("debug.clientToServer");
 
   if (toitPath === null || toitPath === undefined) {
     toitPath = "toit"; // Assume `toit` is visible in the global environment.
   }
   if (lspArguments === null || lspArguments === undefined) {
-    lspArguments = ["tool", "lsp"];
+    lspArguments = [ "tool", "lsp" ];
   }
 
   if (typeof lspArguments === "string") {
@@ -76,52 +76,52 @@ function startToitLsp(_: ExtensionContext,
   // If the extension is launched in debug mode then the debug server options are used
   // Otherwise the normal ones are used
   let serverOptions: ServerOptions;
-  if (debugClientToServer && platform() !== 'linux') {
+  if (debugClientToServer && platform() !== "linux") {
     debugClientToServer = false;
     Window.showInformationMessage("Client-Server debugging is only available on Linux");
   }
   if (debugClientToServer) {
-    var toitCommand = (toitPath as string);
-    for (var arg of lspArguments) {
+    let toitCommand = (toitPath as string);
+    for (const arg of lspArguments) {
       toitCommand += ' "' + arg + '"';
     }
-    var logFile = "/tmp/debug_client_to_server-" + (new Date().toISOString()) + ".log";
-    var args = ['-c', 'tee "' + logFile + '" | ' + toitCommand];
+    const logFile = "/tmp/debug_client_to_server-" + (new Date().toISOString()) + ".log";
+    const args = [ "-c", 'tee "' + logFile + '" | ' + toitCommand ];
 
     serverOptions = {
-      command: '/bin/bash',
-      args: args,
-      options: {
-        cwd: workingDir,
+      "command": "/bin/bash",
+      "args": args,
+      "options": {
+        "cwd": workingDir
       }
     };
   } else {
     serverOptions = {
-      command: toitPath as string,
-      args: lspArguments,
-      options: {
-        cwd: workingDir,
+      "command": toitPath as string,
+      "args": lspArguments,
+      "options": {
+        "cwd": workingDir
       }
     };
   }
 
   // Options of the language client
-  let documentSelector: DocumentSelector = [{
-    language: 'toit',
-    scheme: scheme,
-    pattern: pattern,
+  const documentSelector: DocumentSelector = [{
+    "language": "toit",
+    "scheme": scheme,
+    "pattern": pattern
   }];
 
-  let clientOptions: LanguageClientOptions = {
-    diagnosticCollectionName: 'toit-lsp-server',
-    outputChannel: outputChannel,
-    documentSelector: documentSelector,
+  const clientOptions: LanguageClientOptions = {
+    "diagnosticCollectionName": "toit-lsp-server",
+    "outputChannel": outputChannel,
+    "documentSelector": documentSelector
   };
   if (workspaceFolder) {
-      clientOptions.workspaceFolder = workspaceFolder;
+    clientOptions.workspaceFolder = workspaceFolder;
   }
 
-  let result = new LanguageClient('toitLanguageServer', 'Language Server', serverOptions, clientOptions);
+  const result = new LanguageClient("toitLanguageServer", "Language Server", serverOptions, clientOptions);
   result.start();
   let isReady = false;
   let startFail = false;
@@ -143,52 +143,52 @@ function startToitLsp(_: ExtensionContext,
 }
 
 export function activateLsp(context: ExtensionContext): void {
-  let outputChannel: OutputChannel = Window.createOutputChannel('Toit LSP Server');
+  const outputChannel: OutputChannel = Window.createOutputChannel("Toit LSP Server");
 
   function computeClientConfiguration(document: TextDocument) {
-    let uri = document.uri;
-    if (uri.scheme !== 'file') {
+    const uri = document.uri;
+    if (uri.scheme !== "file") {
       return {
-        workingDir: undefined,
-        workspaceFolder: undefined,
-        scheme: uri.scheme,
-        pattern: undefined,
+        "workingDir": undefined,
+        "workspaceFolder": undefined,
+        "scheme": uri.scheme,
+        "pattern": undefined
       };
     }
-    let folder = Workspace.getWorkspaceFolder(uri);
+    const folder = Workspace.getWorkspaceFolder(uri);
     if (folder) {
-      let outerFolder = getOuterMostWorkspaceFolder(folder);
-      let workingDir = outerFolder.uri.fsPath;
+      const outerFolder = getOuterMostWorkspaceFolder(folder);
+      const workingDir = outerFolder.uri.fsPath;
       return {
-        workingDir: workingDir,
-        workspaceFolder: outerFolder,
-        scheme: "file",
-        pattern: new RelativePattern(outerFolder, "**/*"),
+        "workingDir": workingDir,
+        "workspaceFolder": outerFolder,
+        "scheme": "file",
+        "pattern": new RelativePattern(outerFolder, "**/*")
       };
     }
-    let path = uri.fsPath;
+    const path = uri.fsPath;
     let workingDir: string|undefined = p.dirname(path);
-    let pattern = new RelativePattern(workingDir, "*");
+    const pattern = new RelativePattern(workingDir, "*");
     // Can't use a non-existing directory as working directory.
     while (!fs.existsSync(workingDir) ||
         !fs.statSync(workingDir).isDirectory) {
       workingDir = p.dirname(workingDir);
     }
     return {
-      workingDir: workingDir,
-      workspaceFolder: undefined,
-      scheme: "file",
+      "workingDir": workingDir,
+      "workspaceFolder": undefined,
+      "scheme": "file",
       // Clients outside the working-dir only go one level deep.
-      pattern: pattern,
+      "pattern": pattern
     };
   }
 
   function didOpenTextDocument(document: TextDocument): void {
-    if (document.languageId !== 'toit') {
-        return;
+    if (document.languageId !== "toit") {
+      return;
     }
 
-    let config = computeClientConfiguration(document);
+    const config = computeClientConfiguration(document);
 
     if (config.scheme !== "file") {
       if (!nonFileClient) {
@@ -196,34 +196,34 @@ export function activateLsp(context: ExtensionContext): void {
       }
       return;
     }
-    let workingDir = config.workingDir!;
+    const workingDir = config.workingDir!;
     if (!clients.has(workingDir)) {
-      let client = startToitLsp(context, outputChannel, config);
+      const client = startToitLsp(context, outputChannel, config);
       clients.set(workingDir, client);
       clientCounts.set(workingDir, 1);
     } else {
-      let oldCount = clientCounts.get(workingDir)!;
+      const oldCount = clientCounts.get(workingDir)!;
       clientCounts.set(workingDir, oldCount + 1);
     }
   }
 
   function didCloseTextDocument(document: TextDocument): void {
-    if (document.languageId !== 'toit') {
-        return;
+    if (document.languageId !== "toit") {
+      return;
     }
 
-    let config = computeClientConfiguration(document);
+    const config = computeClientConfiguration(document);
 
     // We keep the non-file client until deactivation.
     if (config.scheme !== "file") {
-        return;
+      return;
     }
 
-    let workingDir = config.workingDir!;
+    const workingDir = config.workingDir!;
     if (clients.has(workingDir)) {
-      let oldCount = clientCounts.get(workingDir)!;
+      const oldCount = clientCounts.get(workingDir)!;
       if (oldCount === 1) {
-        let client = clients.get(workingDir)!;
+        const client = clients.get(workingDir)!;
         clients.delete(workingDir);
         clientCounts.delete(workingDir);
         client.stop();
@@ -236,9 +236,9 @@ export function activateLsp(context: ExtensionContext): void {
   Workspace.onDidOpenTextDocument(didOpenTextDocument);
   Workspace.textDocuments.forEach(didOpenTextDocument);
   Workspace.onDidChangeWorkspaceFolders(event => {
-    for (let folder of event.removed) {
-      let uriString = folder.uri.toString();
-      let client = clients.get(uriString);
+    for (const folder of event.removed) {
+      const uriString = folder.uri.toString();
+      const client = clients.get(uriString);
       if (client) {
         clients.delete(uriString);
         client.stop();
@@ -249,12 +249,12 @@ export function activateLsp(context: ExtensionContext): void {
 }
 
 export function deactivateLsp(): Thenable<void> {
-  let promises: Thenable<void>[] = [];
+  const promises: Thenable<void>[] = [];
   if (nonFileClient) {
-      promises.push(nonFileClient.stop());
+    promises.push(nonFileClient.stop());
   }
-  for (let client of clients.values()) {
-      promises.push(client.stop());
+  for (const client of clients.values()) {
+    promises.push(client.stop());
   }
   return Promise.all(promises).then(() => undefined);
 }
