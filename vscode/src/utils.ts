@@ -19,21 +19,27 @@ export class CommandContext {
 }
 
 export interface Device {
+  // The JSON from console does not follow the naming-convention.
+  /* eslint-disable @typescript-eslint/naming-convention */
   device_id: string;
   is_simulator: boolean;
   name: string;
   configure_firmware: string;
   last_seen: string;
   running_firmware: string;
+  /* eslint-enable @typescript-eslint/naming-convention */
 }
 
 class DeviceItem implements Device, QuickPickItem {
+  // The JSON from console does not follow the naming-convention.
+  /* eslint-disable @typescript-eslint/naming-convention */
   device_id: string;
   is_simulator: boolean;
   name: string;
   configure_firmware: string;
   last_seen: string;
   running_firmware: string;
+  /* eslint-enable @typescript-eslint/naming-convention */
   label: string;
 
   constructor(device: Device) {
@@ -74,13 +80,17 @@ async function authInfo(toitExec: string): Promise<AuthInfo> {
   return JSON.parse(stdout);
 }
 
+// Breaks naming convention to mimic console json format.
 interface AuthInfo {
+  // The JSON from console does not follow the naming-convention.
+  /* eslint-disable @typescript-eslint/naming-convention */
   email?: string;
   id?: string;
   name?: string;
-  organization_id?: string;    // Breaking naming convention to mimic json from console.
-  organization_name?: string;  // Breaking naming convention to mimic json from console.
+  organization_id?: string;
+  organization_name?: string;
   status: string;
+  /* eslint-enable @typescript-eslint/naming-convention */
 }
 
 export async function ensureAuth (toitExec: string): Promise<void> {
