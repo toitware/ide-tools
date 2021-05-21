@@ -54,8 +54,6 @@ class DeviceItem implements Device, QuickPickItem {
 }
 
 async function listDevices(toitExec: string): Promise<DeviceItem[]> {
-  const out = Window.createOutputChannel("lol");
-  out.show;
   const { stdout } = await execFile(toitExec, [ "devices", "--active", "--names", "-o", "json" ]);
   const devices = stdout.split("\n").
     filter(str => str !== "").
