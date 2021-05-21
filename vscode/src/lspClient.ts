@@ -3,9 +3,8 @@
 import * as fs from 'fs';
 import { platform } from 'os';
 import * as p from 'path';
-import { commands as Commands, ExtensionContext, OutputChannel, RelativePattern, TextDocument, Uri, window as Window, workspace as Workspace, WorkspaceFolder } from 'vscode';
+import { ExtensionContext, OutputChannel, RelativePattern, TextDocument, Uri, window as Window, workspace as Workspace, WorkspaceFolder } from 'vscode';
 import { DocumentSelector, LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-languageclient';
-import { createDeployCommand, createRunCommand } from './toitExec';
 
 // Untitled documents, or documents outside all workspaces go to a default client.
 let nonFileClient: LanguageClient;
@@ -144,10 +143,6 @@ function startToitLsp(_: ExtensionContext,
 }
 
 export function activateLsp(context: ExtensionContext): void {
-  let toitOutput = Window.createOutputChannel('Toit');
-  context.subscriptions.push(Commands.registerCommand('toit.devRun', createRunCommand(toitOutput)));
-  context.subscriptions.push(Commands.registerCommand('toit.devDeploy', createDeployCommand(toitOutput)));
-
   let outputChannel: OutputChannel = Window.createOutputChannel('Toit LSP Server');
 
   function computeClientConfiguration(document: TextDocument) {
