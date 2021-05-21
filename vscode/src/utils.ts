@@ -1,9 +1,22 @@
 "use strict";
 
 import { promisify } from "util";
-import { InputBoxOptions, window as Window } from "vscode";
+import { InputBoxOptions, OutputChannel, window as Window } from "vscode";
 import cp = require("child_process");
 const execFile = promisify(cp.execFile);
+
+class CommandContext {
+  outputs: Map<string, OutputChannel> = new Map();
+
+  outputChannel(name: string): OutputChannel {
+    let output = this.outputs.get(name);
+    if (output) return output;
+
+    output = Window.createOutputChannel(`Toit (${name})`);
+    this.outputs.set(name, output);
+    return output;
+  }
+}
 
 async function listDevices (toitExec: string): Promise<string[]> {
   const { stdout } = await execFile(toitExec, [ "devices", "--active", "--names", "-o", "short" ]);
