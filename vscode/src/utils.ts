@@ -1,7 +1,7 @@
 "use strict";
 
 import { promisify } from "util";
-import { InputBoxOptions, OutputChannel, QuickPickItem, window as Window } from "vscode";
+import { InputBoxOptions, OutputChannel, QuickPickItem, Terminal, window as Window } from "vscode";
 import cp = require("child_process");
 const execFile = promisify(cp.execFile);
 
@@ -25,6 +25,17 @@ export class CommandContext {
     output = Window.createOutputChannel(`Toit (${name})`);
     this.outputs.set(id, output);
     return output;
+  }
+
+  serials: Map<string, Terminal> = new Map();
+
+  serialTerminal(port: string): Terminal {
+    let serial = this.serials.get(port);
+    if (serial && !serial.exitStatus) return serial;
+
+    serial = Window.createTerminal(`Toit serial (${port})`);
+    this.serials.set(port, serial);
+    return serial;
   }
 }
 
@@ -151,4 +162,17 @@ export function currentFilePath(suffix: string): string {
   if (!filePath.endsWith(suffix)) throw new Error(`Non-'${suffix}'-file: ${filePath}.`);
 
   return filePath;
+}
+
+async function listPorts(toitExec: string): Promise<string[]> {
+  const { stdout } = await execFile(toitExec, ["serial", "ports"]);
+  return stdout.split("\n").filter(str => str !== "");
+}
+
+export async function selectPort(toitExec: string): Promise<string> {
+  const ports = await listPorts(toitExec);
+  const port = await Window.showQuickPick(ports, { "placeHolder": "Pick a port" });
+  if (!port) throw new Error("No port selected.");
+
+  return port;
 }
