@@ -1,7 +1,7 @@
 "use strict";
 
 import cp = require("child_process");
-import { OutputChannel, window as Window, workspace as Workspace } from "vscode";
+import { OutputChannel, window as Window } from "vscode";
 import { CommandContext, Device, ensureAuth, selectDevice } from "./utils";
 
 function capitalize(str: string): string {
@@ -18,9 +18,7 @@ function currentFilePath(suffix: string): string {
   return filePath;
 }
 
-async function executeCommand(cmdContext: CommandContext, cmd: string, extension: string) {
-  const toitExec : string = Workspace.getConfiguration("toit").get("Path", "toit");
-
+async function executeCommand(ctx: CommandContext, cmd: string, extension: string) {
   let filePath: string;
   try {
     filePath = currentFilePath(extension);
@@ -29,16 +27,16 @@ async function executeCommand(cmdContext: CommandContext, cmd: string, extension
   }
 
   try {
-    await ensureAuth(toitExec);
+    await ensureAuth(ctx);
   } catch (e) {
     return Window.showErrorMessage(`Login failed: ${e.message}.`);
   }
 
   try {
-    const device: Device = await selectDevice(cmdContext, toitExec);
+    const device: Device = await selectDevice(ctx);
 
     const commandProcess = cp.spawn("toit", [ "dev", "-d", device.name, cmd, filePath ]);
-    const toitOutput: OutputChannel = cmdContext.outputChannel(device.device_id, device.name);
+    const toitOutput: OutputChannel = ctx.outputChannel(device.device_id, device.name);
     toitOutput.show();
     commandProcess.stdout.on("data", data => toitOutput.append(`${data}`));
     commandProcess.stderr.on("data", data => toitOutput.append(`${data}`));
