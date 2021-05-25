@@ -5,7 +5,7 @@ import { activateLsp, deactivateLsp } from "./lspClient";
 import { createDeployCommand, createRunCommand } from "./toitExec";
 import { CommandContext } from "./utils";
 
-export function activate (context: ExtensionContext): void {
+export function activate(context: ExtensionContext): void {
   const cmdContext = new CommandContext();
   context.subscriptions.push(Commands.registerCommand("toit.devRun", createRunCommand(cmdContext)));
   context.subscriptions.push(Commands.registerCommand("toit.devDeploy", createDeployCommand(cmdContext)));

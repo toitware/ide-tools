@@ -42,7 +42,7 @@ module.exports = {
         "comma-dangle": ["warn"],
         "comma-spacing": ["warn", { "before": false, "after": true }],
         "func-call-spacing": ["error"],
-        "indent": ["error", 2],
+        "indent": ["error", 2, { "FunctionDeclaration": {"body": 1, "parameters": 2}}],
         "linebreak-style": "warn",
         "new-cap": "error",
         "new-parens": "error",
@@ -56,7 +56,7 @@ module.exports = {
         "quotes": ["error","double", { "allowTemplateLiterals": true , "avoidEscape": true }],
         "semi-style": "error",
         "space-before-blocks": "error",
-        "space-before-function-paren": ["warn"],
+        "space-before-function-paren": ["warn", "never"],
         "space-unary-ops": "error",
         "switch-colon-spacing": "error"
     },

@@ -18,23 +18,23 @@ export class CommandContext {
   }
 }
 
-async function listDevices (toitExec: string): Promise<string[]> {
+async function listDevices(toitExec: string): Promise<string[]> {
   const { stdout } = await execFile(toitExec, [ "devices", "--active", "--names", "-o", "short" ]);
   return stdout.split("\n");
 }
 
-export async function selectDevice (toitExec: string): Promise<string> {
+export async function selectDevice(toitExec: string): Promise<string> {
   const deviceNames = await listDevices(toitExec);
   const deviceName = await Window.showQuickPick(deviceNames);
   if (!deviceName) throw new Error("No device selected.");
   return deviceName;
 }
 
-async function login (toitExec: string, user: string, password: string): Promise<void> {
+async function login(toitExec: string, user: string, password: string): Promise<void> {
   await execFile(toitExec, [ "auth", "login", "-u", user, "-p", password ]);
 }
 
-async function authInfo (toitExec: string): Promise<AuthInfo> {
+async function authInfo(toitExec: string): Promise<AuthInfo> {
   const { stdout } = await execFile(toitExec, [ "auth", "info", "-s", "-o", "json" ]);
   return JSON.parse(stdout);
 }
@@ -49,7 +49,7 @@ interface AuthInfo {
 }
 
 
-export async function ensureAuth (toitExec: string): Promise<void> {
+export async function ensureAuth(toitExec: string): Promise<void> {
   const info = await authInfo(toitExec);
   if (info.status === "authenticated") return;
 
@@ -69,7 +69,7 @@ export async function ensureAuth (toitExec: string): Promise<void> {
   return await login(toitExec, user, password);
 }
 
-export function currentFilePath (suffix: string): string {
+export function currentFilePath(suffix: string): string {
   const editor = Window.activeTextEditor;
   if (!editor) throw new Error("No active file.");
 
