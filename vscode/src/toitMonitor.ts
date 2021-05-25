@@ -2,10 +2,16 @@
 
 import cp = require("child_process");
 import { window as Window, workspace as Workspace } from "vscode";
-import { CommandContext, selectPort } from "./utils";
+import { CommandContext, ensureAuth, selectPort } from "./utils";
 
 async function serialMonitor(ctx: CommandContext) {
   const toitExec : string = Workspace.getConfiguration("toit").get("Path", "toit");
+  try {
+    await ensureAuth(toitExec);
+  } catch (e) {
+    return Window.showErrorMessage(`Login failed: ${e.message}.`);
+  }
+
   try {
     const port = await selectPort(toitExec);
     const terminal = ctx.serialTerminal(port);
