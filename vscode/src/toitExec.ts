@@ -35,7 +35,7 @@ async function executeCommand(cmdContext: CommandContext, cmd: string, extension
   }
 
   try {
-    const device: Device = await selectDevice(toitExec);
+    const device: Device = await selectDevice(cmdContext, toitExec);
 
     const commandProcess = cp.spawn("toit", [ "dev", "-d", device.name, cmd, filePath ]);
     const toitOutput: OutputChannel = cmdContext.outputChannel(device.device_id, device.name);
