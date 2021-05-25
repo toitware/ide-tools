@@ -49,8 +49,8 @@ function getOuterMostWorkspaceFolder(folder: WorkspaceFolder): WorkspaceFolder {
 }
 
 function startToitLsp(_: ExtensionContext,
-  outputChannel: OutputChannel,
-  config: any) : LanguageClient {
+    outputChannel: OutputChannel,
+    config: any) : LanguageClient {
   const workingDir = config.workingDir;
   const workspaceFolder = config.workspaceFolder;
   const scheme = config.scheme;
