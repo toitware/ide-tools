@@ -1,31 +1,70 @@
 "use strict";
 
 import { promisify } from "util";
-import { InputBoxOptions, OutputChannel, window as Window } from "vscode";
+import { InputBoxOptions, OutputChannel, QuickPickItem, window as Window } from "vscode";
 import cp = require("child_process");
 const execFile = promisify(cp.execFile);
 
 export class CommandContext {
   outputs: Map<string, OutputChannel> = new Map();
 
-  outputChannel(name: string): OutputChannel {
-    let output = this.outputs.get(name);
+  outputChannel(id: string, name: string): OutputChannel {
+    let output = this.outputs.get(id);
     if (output) return output;
 
     output = Window.createOutputChannel(`Toit (${name})`);
-    this.outputs.set(name, output);
+    this.outputs.set(id, output);
     return output;
   }
 }
 
-async function listDevices(toitExec: string): Promise<string[]> {
-  const { stdout } = await execFile(toitExec, [ "devices", "--active", "--names", "-o", "short" ]);
-  return stdout.split("\n");
+export interface Device {
+  // The JSON from console does not follow the naming-convention.
+  /* eslint-disable @typescript-eslint/naming-convention */
+  device_id: string;
+  is_simulator: boolean;
+  name: string;
+  configure_firmware: string;
+  last_seen: string;
+  running_firmware: string;
+  /* eslint-enable @typescript-eslint/naming-convention */
 }
 
-export async function selectDevice(toitExec: string): Promise<string> {
-  const deviceNames = await listDevices(toitExec);
-  const deviceName = await Window.showQuickPick(deviceNames);
+class DeviceItem implements Device, QuickPickItem {
+  // The JSON from console does not follow the naming-convention.
+  /* eslint-disable @typescript-eslint/naming-convention */
+  device_id: string;
+  is_simulator: boolean;
+  name: string;
+  configure_firmware: string;
+  last_seen: string;
+  running_firmware: string;
+  /* eslint-enable @typescript-eslint/naming-convention */
+  label: string;
+
+  constructor(device: Device) {
+    this.device_id = device.device_id;
+    this.is_simulator = device.is_simulator;
+    this.name = device.name;
+    this.configure_firmware = device.configure_firmware;
+    this.last_seen = device.last_seen;
+    this.running_firmware = device.running_firmware;
+    this.label = this.name;
+  }
+}
+
+async function listDevices(toitExec: string): Promise<DeviceItem[]> {
+  const { stdout } = await execFile(toitExec, [ "devices", "--active", "--names", "-o", "json" ]);
+  const devices = stdout.split("\n").
+    filter(str => str !== "").
+    map(json => JSON.parse(json) as Device).
+    map(device => new DeviceItem(device));
+  return devices;
+}
+
+export async function selectDevice(toitExec: string): Promise<Device> {
+  const deviceItems = await listDevices(toitExec);
+  const deviceName = await Window.showQuickPick(deviceItems);
   if (!deviceName) throw new Error("No device selected.");
   return deviceName;
 }
@@ -39,13 +78,17 @@ async function authInfo(toitExec: string): Promise<AuthInfo> {
   return JSON.parse(stdout);
 }
 
+// Breaks naming convention to mimic console json format.
 interface AuthInfo {
+  // The JSON from console does not follow the naming-convention.
+  /* eslint-disable @typescript-eslint/naming-convention */
   email?: string;
   id?: string;
   name?: string;
-  organizationID?: string;
-  organizationName?: string;
+  organization_id?: string;
+  organization_name?: string;
   status: string;
+  /* eslint-enable @typescript-eslint/naming-convention */
 }
 
 async function consoleContext(toitExec: string): Promise<string> {
@@ -66,7 +109,7 @@ export async function ensureAuth(toitExec: string): Promise<void> {
   if (!user) throw new Error("No e-mail provided");
 
   const passwordPromptOptions: InputBoxOptions = {
-    "prompt": `Enter your password for toit.io`,
+    "prompt": "Enter your password for toit.io",
     "password": true
   };
   const password = await Window.showInputBox(passwordPromptOptions);
