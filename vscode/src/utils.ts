@@ -6,6 +6,16 @@ import cp = require("child_process");
 const execFile = promisify(cp.execFile);
 
 export class CommandContext {
+  lastSelectedDevice?: DeviceItem;
+
+  lastDevice(): DeviceItem | undefined {
+    return this.lastSelectedDevice;
+  }
+
+  setLastDevice(device: DeviceItem): void {
+    this.lastSelectedDevice = device;
+  }
+
   outputs: Map<string, OutputChannel> = new Map();
 
   outputChannel(id: string, name: string): OutputChannel {
@@ -62,11 +72,26 @@ async function listDevices(toitExec: string): Promise<DeviceItem[]> {
   return devices;
 }
 
-export async function selectDevice(toitExec: string): Promise<Device> {
+function preferLastPicked(ctx: CommandContext, devices: DeviceItem[]) {
+  const lastDevice = ctx.lastDevice();
+  if (!lastDevice) return;
+
+  const i = devices.findIndex(device => device.device_id === lastDevice.device_id);
+  if (i < 1) return;
+
+  const temp = devices[0];
+  devices[0] = devices[i];
+  devices[i] = temp;
+}
+
+export async function selectDevice(ctx: CommandContext, toitExec: string): Promise<Device> {
   const deviceItems = await listDevices(toitExec);
-  const deviceName = await Window.showQuickPick(deviceItems);
-  if (!deviceName) throw new Error("No device selected.");
-  return deviceName;
+  preferLastPicked(ctx, deviceItems);
+  const device = await Window.showQuickPick(deviceItems, { "placeHolder": "Pick a device" });
+  if (!device) throw new Error("No device selected.");
+
+  ctx.setLastDevice(device);
+  return device;
 }
 
 async function login(toitExec: string, user: string, password: string): Promise<void> {
