@@ -48,8 +48,14 @@ interface AuthInfo {
   status: string;
 }
 
+async function consoleContext(toitExec: string): Promise<string> {
+  const { stdout } = await execFile(toitExec, [ "context", "default" ]);
+  return stdout.trim();
+}
 
 export async function ensureAuth(toitExec: string): Promise<void> {
+  if (await consoleContext(toitExec) === "local") return;
+
   const info = await authInfo(toitExec);
   if (info.status === "authenticated") return;
 
