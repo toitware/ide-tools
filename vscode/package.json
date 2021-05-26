@@ -13,7 +13,8 @@
     "activationEvents": [
         "onLanguage:toit",
         "onCommand:toit.devRun",
-        "onCommand:toit.devDeploy"
+        "onCommand:toit.devDeploy",
+        "onCommand:toit.serialMonitor"
     ],
     "icon": "images/toitware_logo.png",
     "main": "./dist/extension.js",
@@ -26,6 +27,10 @@
             {
                 "command": "toit.devDeploy",
                 "title": "Toit: Deploy a Toit app on a device."
+            },
+            {
+                "command": "toit.serialMonitor",
+                "title": "Toit: Monitor serial output from a device."
             }
         ],
         "languages": [
