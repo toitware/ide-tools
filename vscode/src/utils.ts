@@ -151,6 +151,27 @@ export async function ensureAuth(ctx: CommandContext): Promise<void> {
   return await login(ctx, user, password);
 }
 
+export interface WiFiInfo {
+  ssid: string;
+  password: string;
+}
+
+export async function promptForWiFiInfo(): Promise<WiFiInfo> {
+  const ssidPromptOptions: InputBoxOptions = {
+    "prompt": "Enter Wi-Fi SSID"
+  };
+  const ssid = await Window.showInputBox(ssidPromptOptions);
+  if (!ssid) throw new Error("No Wi-Fi ssid provided");
+
+  const passwordPromptOptions: InputBoxOptions = {
+    "prompt": "Enter Wi-Fi password"
+  };
+  const password = await Window.showInputBox(passwordPromptOptions);
+  if (!password) throw new Error("No Wi-Fi password provided");
+
+  return { "ssid": ssid, "password": password};
+}
+
 export function currentFilePath(suffix: string): string {
   const editor = Window.activeTextEditor;
   if (!editor) throw new Error("No active file.");

@@ -1,8 +1,7 @@
 "use strict";
 
-import cp = require("child_process");
 import { window as Window } from "vscode";
-import { CommandContext, ensureAuth, selectPort } from "./utils";
+import { CommandContext, ensureAuth, promptForWiFiInfo, selectPort, WiFiInfo } from "./utils";
 
 async function serialMonitor(ctx: CommandContext) {
   try {
@@ -13,14 +12,17 @@ async function serialMonitor(ctx: CommandContext) {
 
   try {
     const port = await selectPort(ctx);
+    const wifiInfo: WiFiInfo = await promptForWiFiInfo();
     const terminal = ctx.serialTerminal(port);
     terminal.show();
-    terminal.sendText(`${ctx.toitExec} serial monitor --port ${port} --model esp32-4mb`);
+    const provisionCmd = `${ctx.toitExec} serial provision --port ${port} --model esp32-4mb -p wifi.ssid="${wifiInfo.ssid}" -p wifi.password="${wifiInfo.password}"`;
+    Window.showInformationMessage(provisionCmd);
+    terminal.sendText(provisionCmd);
   } catch (e) {
     return Window.showErrorMessage(`Unable to monitor: ${e.message}`);
   }
 }
 
-export function createSerialMonitor(ctx: CommandContext) {
+export function createSerialProvision(ctx: CommandContext) {
   return () => serialMonitor(ctx);
 }

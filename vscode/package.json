@@ -14,6 +14,7 @@
         "onLanguage:toit",
         "onCommand:toit.devRun",
         "onCommand:toit.devDeploy",
+        "onCommand:toit.serialProvision",
         "onCommand:toit.serialMonitor"
     ],
     "icon": "images/toitware_logo.png",
@@ -27,6 +28,10 @@
             {
                 "command": "toit.devDeploy",
                 "title": "Toit: Deploy a Toit app on a device."
+            },
+            {
+                "command": "toit.serialProvision",
+                "title": "Toit: Provision a device connected via serial."
             },
             {
                 "command": "toit.serialMonitor",
