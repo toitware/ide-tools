@@ -18,7 +18,7 @@ async function serialMonitor(ctx: CommandContext) {
     const provisionCmd = `${ctx.toitExec} serial provision --port ${port} --model esp32-4mb -p wifi.ssid="${wifiInfo.ssid}" -p wifi.password="${wifiInfo.password}"`;
     terminal.sendText(provisionCmd);
   } catch (e) {
-    return Window.showErrorMessage(`Unable to monitor: ${e.message}`);
+    return Window.showErrorMessage(`Unable to provision: ${e.message}`);
   }
 }
 
