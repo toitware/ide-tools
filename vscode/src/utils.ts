@@ -7,6 +7,7 @@ const execFile = promisify(cp.execFile);
 
 export class CommandContext {
   lastSelectedDevice?: DeviceItem;
+  lastSelectedPort?: string;
   toitExec : string = Workspace.getConfiguration("toit").get("Path", "toit");
 
   lastDevice(): DeviceItem | undefined {
@@ -15,6 +16,14 @@ export class CommandContext {
 
   setLastDevice(device: DeviceItem): void {
     this.lastSelectedDevice = device;
+  }
+
+  lastPort(): string | undefined {
+    return this.lastSelectedPort;
+  }
+
+  setLastPort(port: string): void {
+    this.lastSelectedPort = port;
   }
 
   outputs: Map<string, OutputChannel> = new Map();
@@ -189,13 +198,22 @@ async function listPorts(ctx: CommandContext): Promise<string[]> {
 
 export async function selectPort(ctx: CommandContext): Promise<string> {
   const ports = await listPorts(ctx);
-  const port = await Window.showQuickPick(ports.reverse(), { "placeHolder": "Pick a port" });
+  ports.reverse()
+
+  const lastPort = ctx.lastPort();
+  if (lastPort) {
+    const i = ports.findIndex(port => port === lastPort);
+    if (i > 0) preferElement(i, ports);
+  }
+
+  const port = await Window.showQuickPick(ports, { "placeHolder": "Pick a port" });
   if (!port) throw new Error("No port selected.");
 
+  ctx.setLastPort(port);
   return port;
 }
 
-function preferElement(index: number, list: object[]): void {
+function preferElement<T>(index: number, list: T[]): void {
   if (index === 0) return;
   const preferred = list[index];
   list.splice(index, 1);
