@@ -1,12 +1,13 @@
 "use strict";
 
 import { promisify } from "util";
-import { InputBoxOptions, OutputChannel, QuickPickItem, Terminal, window as Window } from "vscode";
+import { InputBoxOptions, OutputChannel, QuickPickItem, Terminal, window as Window, workspace as Workspace } from "vscode";
 import cp = require("child_process");
 const execFile = promisify(cp.execFile);
 
 export class CommandContext {
   lastSelectedDevice?: DeviceItem;
+  toitExec : string = Workspace.getConfiguration("toit").get("Path", "toit");
 
   lastDevice(): DeviceItem | undefined {
     return this.lastSelectedDevice;
@@ -74,8 +75,8 @@ class DeviceItem implements Device, QuickPickItem {
   }
 }
 
-async function listDevices(toitExec: string): Promise<DeviceItem[]> {
-  const { stdout } = await execFile(toitExec, [ "devices", "--active", "--names", "-o", "json" ]);
+async function listDevices(ctx: CommandContext): Promise<DeviceItem[]> {
+  const { stdout } = await execFile(ctx.toitExec, [ "devices", "--active", "--names", "-o", "json" ]);
   const devices = stdout.split("\n").
     filter(str => str !== "").
     map(json => JSON.parse(json) as Device).
@@ -91,8 +92,8 @@ function preferLastPicked(ctx: CommandContext, devices: DeviceItem[]) {
   preferElement(i, devices);
 }
 
-export async function selectDevice(ctx: CommandContext, toitExec: string): Promise<Device> {
-  const deviceItems = await listDevices(toitExec);
+export async function selectDevice(ctx: CommandContext): Promise<Device> {
+  const deviceItems = await listDevices(ctx);
   preferLastPicked(ctx, deviceItems);
   const device = await Window.showQuickPick(deviceItems, { "placeHolder": "Pick a device" });
   if (!device) throw new Error("No device selected.");
@@ -101,12 +102,12 @@ export async function selectDevice(ctx: CommandContext, toitExec: string): Promi
   return device;
 }
 
-async function login(toitExec: string, user: string, password: string): Promise<void> {
-  await execFile(toitExec, [ "auth", "login", "-u", user, "-p", password ]);
+async function login(ctx: CommandContext, user: string, password: string): Promise<void> {
+  await execFile(ctx.toitExec, [ "auth", "login", "-u", user, "-p", password ]);
 }
 
-async function authInfo(toitExec: string): Promise<AuthInfo> {
-  const { stdout } = await execFile(toitExec, [ "auth", "info", "-s", "-o", "json" ]);
+async function authInfo(ctx: CommandContext): Promise<AuthInfo> {
+  const { stdout } = await execFile(ctx.toitExec, [ "auth", "info", "-s", "-o", "json" ]);
   return JSON.parse(stdout);
 }
 
@@ -123,15 +124,15 @@ interface AuthInfo {
   /* eslint-enable @typescript-eslint/naming-convention */
 }
 
-async function consoleContext(toitExec: string): Promise<string> {
-  const { stdout } = await execFile(toitExec, [ "context", "default" ]);
+async function consoleContext(ctx: CommandContext): Promise<string> {
+  const { stdout } = await execFile(ctx.toitExec, [ "context", "default" ]);
   return stdout.trim();
 }
 
-export async function ensureAuth(toitExec: string): Promise<void> {
-  if (await consoleContext(toitExec) === "local") return;
+export async function ensureAuth(ctx: CommandContext): Promise<void> {
+  if (await consoleContext(ctx) === "local") return;
 
-  const info = await authInfo(toitExec);
+  const info = await authInfo(ctx);
   if (info.status === "authenticated") return;
 
   const userPromptOptions: InputBoxOptions = {
@@ -147,7 +148,7 @@ export async function ensureAuth(toitExec: string): Promise<void> {
   const password = await Window.showInputBox(passwordPromptOptions);
   if (!password) throw new Error("No password provided");
 
-  return await login(toitExec, user, password);
+  return await login(ctx, user, password);
 }
 
 export function currentFilePath(suffix: string): string {
@@ -160,13 +161,13 @@ export function currentFilePath(suffix: string): string {
   return filePath;
 }
 
-async function listPorts(toitExec: string): Promise<string[]> {
-  const { stdout } = await execFile(toitExec, ["serial", "ports"]);
+async function listPorts(ctx: CommandContext): Promise<string[]> {
+  const { stdout } = await execFile(ctx.toitExec, ["serial", "ports"]);
   return stdout.split("\n").filter(str => str !== "");
 }
 
-export async function selectPort(toitExec: string): Promise<string> {
-  const ports = await listPorts(toitExec);
+export async function selectPort(ctx: CommandContext): Promise<string> {
+  const ports = await listPorts(ctx);
   const port = await Window.showQuickPick(ports.reverse(), { "placeHolder": "Pick a port" });
   if (!port) throw new Error("No port selected.");
 
