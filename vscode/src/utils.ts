@@ -88,11 +88,7 @@ function preferLastPicked(ctx: CommandContext, devices: DeviceItem[]) {
   if (!lastDevice) return;
 
   const i = devices.findIndex(device => device.device_id === lastDevice.device_id);
-  if (i < 1) return;
-
-  const temp = devices[0];
-  devices[0] = devices[i];
-  devices[i] = temp;
+  preferElement(i, devices);
 }
 
 export async function selectDevice(ctx: CommandContext, toitExec: string): Promise<Device> {
@@ -171,8 +167,15 @@ async function listPorts(toitExec: string): Promise<string[]> {
 
 export async function selectPort(toitExec: string): Promise<string> {
   const ports = await listPorts(toitExec);
-  const port = await Window.showQuickPick(ports, { "placeHolder": "Pick a port" });
+  const port = await Window.showQuickPick(ports.reverse(), { "placeHolder": "Pick a port" });
   if (!port) throw new Error("No port selected.");
 
   return port;
+}
+
+function preferElement(index: number, list: object[]): void {
+  if (index === 0) return;
+  const preferred = list[index];
+  list.splice(index, 1);
+  list.unshift(preferred);
 }
