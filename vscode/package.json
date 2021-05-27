@@ -16,11 +16,31 @@
         "onCommand:toit.devRun",
         "onCommand:toit.devDeploy",
         "onCommand:toit.serialProvision",
-        "onCommand:toit.serialMonitor"
+        "onCommand:toit.serialMonitor",
+        "onView:toitView"
     ],
     "icon": "images/toitware_logo.png",
     "main": "./dist/extension.js",
     "contributes": {
+        "viewsContainers": {
+            "activitybar": [
+              {
+                "id": "toit-view",
+                "title": "Toit",
+                "icon": "./resources/logo.svg"
+              }
+            ]
+          },
+          "views": {
+			"toit-view": [
+				{
+					"id": "toitDeviceView",
+					"name": "Devices",
+					"contextualTitle": "Device Explorer",
+                    "icon": "./resources/logo.svg"
+				}
+			]
+        },
         "commands": [
             {
                 "command": "toit.ensureAuth",

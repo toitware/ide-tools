@@ -84,7 +84,7 @@ class DeviceItem implements Device, QuickPickItem {
   }
 }
 
-async function listDevices(ctx: CommandContext): Promise<DeviceItem[]> {
+export async function listDevices(ctx: CommandContext): Promise<DeviceItem[]> {
   const { stdout } = await execFile(ctx.toitExec, [ "devices", "--active", "--names", "-o", "json" ]);
   const devices = stdout.split("\n").
     filter(str => str !== "").
