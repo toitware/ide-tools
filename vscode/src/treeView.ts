@@ -1,5 +1,5 @@
 import { TreeDataProvider, TreeItem, TreeItemCollapsibleState } from "vscode";
-import { CommandContext, Device, ensureAuth, listDevices } from "./utils";
+import { CommandContext, Device, listDevices } from "./utils";
 
 export class ToitDataProvider implements TreeDataProvider<DeviceTreeItem> {
 
@@ -11,7 +11,7 @@ export class ToitDataProvider implements TreeDataProvider<DeviceTreeItem> {
 
   getChildren(element?: DeviceTreeItem): Thenable<DeviceTreeItem[]> {
     if (element && element.children) return Promise.resolve(element.children);
-    ensureAuth(this.context);
+
     return listDevices(this.context).then(devices => devices.map(device => new DeviceTreeItem(device)));
   }
 
