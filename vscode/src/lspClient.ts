@@ -71,8 +71,6 @@ function startToitLsp(_: ExtensionContext,
     lspArguments = [lspArguments];
   }
 
-
-
   // If the extension is launched in debug mode then the debug server options are used
   // Otherwise the normal ones are used
   let serverOptions: ServerOptions;

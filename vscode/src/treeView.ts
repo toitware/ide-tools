@@ -1,7 +1,7 @@
 import { TreeDataProvider, TreeItem, TreeItemCollapsibleState } from "vscode";
-import { CommandContext, Device } from "./utils";
+import { CommandContext, Device, ensureAuth, listDevices } from "./utils";
 
-export class ToitDataProvider implements TreeDataProvider<Device> {
+export class ToitDataProvider implements TreeDataProvider<DeviceTreeItem> {
 
   context: CommandContext;
 
@@ -9,24 +9,56 @@ export class ToitDataProvider implements TreeDataProvider<Device> {
     this.context = ctx;
   }
 
-  getChildren(element?: Device): Thenable<Device[]> {
-    if (element) return Promise.resolve([]);
-
-    return Promise.resolve([{"name": "hej"} as Device]); // listDevices(this.context);
+  getChildren(element?: DeviceTreeItem): Thenable<DeviceTreeItem[]> {
+    if (element && element.children) return Promise.resolve(element.children);
+    ensureAuth(this.context);
+    return listDevices(this.context).then(devices => devices.map(device => new DeviceTreeItem(device)));
   }
 
-  getTreeItem(element: Device): TreeItem | Thenable<TreeItem> {
-    return new DeviceItem(element);
+  getTreeItem(element: DeviceTreeItem): TreeItem | Thenable<TreeItem> {
+    return element.item;
   }
-
 }
 
-
-class DeviceItem extends TreeItem {
-  device: Device;
+class DeviceTreeItem {
+  children?: DeviceTreeItem[];
+  item: TreeItem;
 
   constructor(device: Device) {
-    super(device.name, TreeItemCollapsibleState.Collapsed);
-    this.device = device;
+    this.item = {
+      "label": device.name,
+      "collapsibleState": TreeItemCollapsibleState.Collapsed
+    }
+    this.children = [
+      {
+        "item": {
+          "label": device.device_id,
+          "collapsibleState": TreeItemCollapsibleState.None,
+          "description": "device id"
+        }
+      },
+      {
+        "item": {
+          "label": device.last_seen,
+          "collapsibleState": TreeItemCollapsibleState.None,
+          "description": "last seen"
+        }
+      },
+      {
+        "item": {
+          "label": device.running_firmware,
+          "collapsibleState": TreeItemCollapsibleState.None,
+          "description": device.configure_firmware ? `\u279f ${device.configure_firmware}` : "firmware version"
+        }
+      }
+    ];
+    if (device.is_simulator) {
+      this.children.push({
+        "item": {
+          "label": "simulator",
+          "collapsibleState": TreeItemCollapsibleState.None
+        }
+      });
+    }
   }
 }

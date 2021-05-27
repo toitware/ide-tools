@@ -26,7 +26,7 @@
               {
                 "id": "toit-view",
                 "title": "Toit",
-                "icon": "resources/logo.svg"
+                "icon": "./resources/logo.svg"
               }
             ]
           },
@@ -36,7 +36,7 @@
 					"id": "toitDeviceView",
 					"name": "Devices",
 					"contextualTitle": "Device Explorer",
-                    "icon": "resources/logo.svg"
+                    "icon": "./resources/logo.svg"
 				}
 			]
         },
