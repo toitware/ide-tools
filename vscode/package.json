@@ -79,6 +79,13 @@
                     "group": "navigation"
                 }
             ],
+            "view/item/context": [
+                {
+                    "command": "toit.devRun",
+                    "when": "view == toitDeviceView && viewItem == device",
+                    "group": "inline"
+                }
+            ],
             "editor/title": [
                 {
                     "command": "toit.devRun",
