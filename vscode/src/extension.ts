@@ -5,8 +5,8 @@ import { activateLsp, deactivateLsp } from "./lspClient";
 import { createEnsureAuth } from "./toitAuth";
 import { createDeployCommand, createRunCommand } from "./toitExec";
 import { createSerialMonitor } from "./toitMonitor";
-import { ToitDataProvider } from "./treeView";
 import { createSerialProvision } from "./toitProvision";
+import { ToitDataProvider } from "./treeView";
 import { CommandContext } from "./utils";
 
 export function activate(context: ExtensionContext): void {
@@ -20,7 +20,7 @@ export function activate(context: ExtensionContext): void {
   const deviceDataProvider = new ToitDataProvider(cmdContext);
   Window.createTreeView('toitDeviceView', { "treeDataProvider": deviceDataProvider } );
   context.subscriptions.push(Commands.registerCommand("toit.refreshView", () => deviceDataProvider.refresh()));
-
+  cmdContext.setDeviceProvider(deviceDataProvider);
 
   activateLsp(context);
 }
