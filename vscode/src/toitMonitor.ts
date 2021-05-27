@@ -1,7 +1,7 @@
 "use strict";
 
 import cp = require("child_process");
-import { window as Window, workspace as Workspace } from "vscode";
+import { window as Window } from "vscode";
 import { CommandContext, ensureAuth, selectPort } from "./utils";
 
 async function serialMonitor(ctx: CommandContext) {
@@ -15,7 +15,7 @@ async function serialMonitor(ctx: CommandContext) {
     const port = await selectPort(ctx);
     const terminal = ctx.serialTerminal(port);
     terminal.show();
-    terminal.sendText(`${ctx.toitExec} serial monitor --port ${port} --model esp32-4mb`);
+    terminal.sendText(`${ctx.toitExec} serial monitor --port '${port}' --model esp32-4mb`);
   } catch (e) {
     return Window.showErrorMessage(`Unable to monitor: ${e.message}`);
   }
@@ -23,5 +23,4 @@ async function serialMonitor(ctx: CommandContext) {
 
 export function createSerialMonitor(ctx: CommandContext) {
   return () => serialMonitor(ctx);
-
 }

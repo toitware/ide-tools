@@ -63,6 +63,10 @@
                 "title": "Toit: Deploy a Toit app on a device."
             },
             {
+                "command": "toit.serialProvision",
+                "title": "Toit: Provision a device connected via serial."
+            },
+            {
                 "command": "toit.serialMonitor",
                 "title": "Toit: Monitor serial output from a device."
             }
