@@ -2,6 +2,7 @@
 
 import { commands as Commands, ExtensionContext } from "vscode";
 import { activateLsp, deactivateLsp } from "./lspClient";
+import { createEnsureAuth } from "./toitAuth";
 import { createDeployCommand, createRunCommand } from "./toitExec";
 import { createSerialMonitor } from "./toitMonitor";
 import { createSerialProvision } from "./toitProvision";
@@ -13,6 +14,7 @@ export function activate(context: ExtensionContext): void {
   context.subscriptions.push(Commands.registerCommand("toit.devDeploy", createDeployCommand(cmdContext)));
   context.subscriptions.push(Commands.registerCommand("toit.serialProvision", createSerialProvision(cmdContext)));
   context.subscriptions.push(Commands.registerCommand("toit.serialMonitor", createSerialMonitor(cmdContext)));
+  context.subscriptions.push(Commands.registerCommand("toit.ensureAuth", createEnsureAuth(cmdContext)));
 
   activateLsp(context);
 }

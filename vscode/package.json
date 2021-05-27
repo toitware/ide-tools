@@ -12,6 +12,7 @@
     ],
     "activationEvents": [
         "onLanguage:toit",
+        "onCommand:toit.ensureAuth",
         "onCommand:toit.devRun",
         "onCommand:toit.devDeploy",
         "onCommand:toit.serialProvision",
@@ -21,6 +22,10 @@
     "main": "./dist/extension.js",
     "contributes": {
         "commands": [
+            {
+                "command": "toit.ensureAuth",
+                "title": "Toit: Authenticate with toit.io."
+            },
             {
                 "command": "toit.devRun",
                 "title": "Toit: Run a Toit app on a device."

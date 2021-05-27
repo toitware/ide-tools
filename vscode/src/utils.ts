@@ -133,6 +133,11 @@ interface AuthInfo {
   /* eslint-enable @typescript-eslint/naming-convention */
 }
 
+export async function isAuthenticated(ctx: CommandContext): Promise<boolean> {
+  const info = await authInfo(ctx);
+  return info.status === "authenticated";
+}
+
 async function consoleContext(ctx: CommandContext): Promise<string> {
   const { stdout } = await execFile(ctx.toitExec, [ "context", "default" ]);
   return stdout.trim();
@@ -141,8 +146,7 @@ async function consoleContext(ctx: CommandContext): Promise<string> {
 export async function ensureAuth(ctx: CommandContext): Promise<void> {
   if (await consoleContext(ctx) === "local") return;
 
-  const info = await authInfo(ctx);
-  if (info.status === "authenticated") return;
+  if (await isAuthenticated(ctx)) return;
 
   const userPromptOptions: InputBoxOptions = {
     "prompt": "Enter your e-mail for toit.io"
