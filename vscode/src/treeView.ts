@@ -36,7 +36,8 @@ class DeviceTreeItem {
   constructor(device: Device) {
     this.item = {
       "label": device.name,
-      "collapsibleState": TreeItemCollapsibleState.Collapsed
+      "collapsibleState": TreeItemCollapsibleState.Collapsed,
+      "contextValue": "device"
     }
     this.children = [
       {
