@@ -15,6 +15,7 @@
         "onCommand:toit.ensureAuth",
         "onCommand:toit.devRun",
         "onCommand:toit.devDeploy",
+        "onCommand:toit.serialProvision",
         "onCommand:toit.serialMonitor",
         "onView:toitView"
     ],
@@ -58,6 +59,10 @@
             {
                 "command": "toit.devDeploy",
                 "title": "Toit: Deploy a Toit app on a device."
+            },
+            {
+                "command": "toit.serialProvision",
+                "title": "Toit: Provision a device connected via serial."
             },
             {
                 "command": "toit.serialMonitor",
