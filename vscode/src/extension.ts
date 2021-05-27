@@ -17,7 +17,10 @@ export function activate(context: ExtensionContext): void {
   context.subscriptions.push(Commands.registerCommand("toit.serialMonitor", createSerialMonitor(cmdContext)));
   context.subscriptions.push(Commands.registerCommand("toit.ensureAuth", createEnsureAuth(cmdContext)));
 
-  Window.createTreeView('toitDeviceView', { "treeDataProvider": new ToitDataProvider(cmdContext) } );
+  const deviceDataProvider = new ToitDataProvider(cmdContext);
+  Window.createTreeView('toitDeviceView', { "treeDataProvider": deviceDataProvider } );
+  context.subscriptions.push(Commands.registerCommand("toit.refreshView", () => deviceDataProvider.refresh()));
+
 
   activateLsp(context);
 }
