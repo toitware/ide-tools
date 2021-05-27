@@ -2,13 +2,23 @@
 
 import { promisify } from "util";
 import { InputBoxOptions, OutputChannel, QuickPickItem, Terminal, window as Window, workspace as Workspace } from "vscode";
+import { ToitDataProvider } from "./treeView";
 import cp = require("child_process");
 const execFile = promisify(cp.execFile);
 
 export class CommandContext {
+  deviceViewProvider?: ToitDataProvider
   lastSelectedDevice?: DeviceItem;
   lastSelectedPort?: string;
   toitExec : string = Workspace.getConfiguration("toit").get("Path", "toit");
+
+  setDeviceProvider(provider: ToitDataProvider) {
+    this.deviceViewProvider = provider;
+  }
+
+  refreshDeviceView() {
+    if (this.deviceViewProvider) this.deviceViewProvider.refresh();
+  }
 
   lastDevice(): DeviceItem | undefined {
     return this.lastSelectedDevice;
@@ -161,7 +171,8 @@ export async function ensureAuth(ctx: CommandContext): Promise<void> {
   const password = await Window.showInputBox(passwordPromptOptions);
   if (!password) throw new Error("No password provided");
 
-  return await login(ctx, user, password);
+  await login(ctx, user, password);
+  ctx.refreshDeviceView();
 }
 
 export interface WiFiInfo {
