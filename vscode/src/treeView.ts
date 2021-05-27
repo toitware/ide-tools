@@ -1,7 +1,14 @@
-import { TreeDataProvider, TreeItem, TreeItemCollapsibleState } from "vscode";
+import { Event, EventEmitter, TreeDataProvider, TreeItem, TreeItemCollapsibleState } from "vscode";
 import { CommandContext, Device, isAuthenticated, listDevices } from "./utils";
 
 export class ToitDataProvider implements TreeDataProvider<DeviceTreeItem> {
+
+  private _onDidChangeTreeData: EventEmitter<DeviceTreeItem | undefined | null> = new EventEmitter<DeviceTreeItem | undefined | null>();
+  readonly onDidChangeTreeData: Event<DeviceTreeItem | undefined | null> = this._onDidChangeTreeData.event;
+
+  refresh(): void {
+    this._onDidChangeTreeData.fire();
+  }
 
   context: CommandContext;
 

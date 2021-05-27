@@ -12,10 +12,6 @@
     ],
     "activationEvents": [
         "onLanguage:toit",
-        "onCommand:toit.ensureAuth",
-        "onCommand:toit.devRun",
-        "onCommand:toit.devDeploy",
-        "onCommand:toit.serialMonitor",
         "onView:toitView"
     ],
     "icon": "images/toitware_logo.png",
@@ -43,17 +39,24 @@
         "viewsWelcome": [
             {
               "view": "toitDeviceView",
-              "contents": "No devices found.\n\nTry to login\n[Login](command:toit.ensureAuth)\nRefresh after login."
+              "contents": "No devices found.\n\nTry to login\n[Login](command:toit.ensureAuth)"
             }
         ],
         "commands": [
+            {
+                "command": "toit.refreshView",
+                "enablement": "view == toitDeviceView",
+                "title": "Toit: Refresh the list of devices.",
+                "icon": "$(refresh)"
+            },
             {
                 "command": "toit.ensureAuth",
                 "title": "Toit: Authenticate with toit.io."
             },
             {
                 "command": "toit.devRun",
-                "title": "Toit: Run a Toit app on a device."
+                "title": "Toit: Run a Toit app on a device.",
+                "icon": "$(run)"
             },
             {
                 "command": "toit.devDeploy",
@@ -64,6 +67,22 @@
                 "title": "Toit: Monitor serial output from a device."
             }
         ],
+        "menus": {
+            "view/title": [
+                {
+                    "command": "toit.refreshView",
+                    "when": "view == toitDeviceView",
+                    "group": "navigation"
+                }
+            ],
+            "editor/title": [
+                {
+                    "command": "toit.devRun",
+                    "when": "resourceExtname == .toit",
+                    "group": "navigation"
+                }
+            ]
+        },
         "languages": [
             {
                 "id": "toit",
