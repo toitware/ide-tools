@@ -41,6 +41,12 @@
 				}
 			]
         },
+        "viewsWelcome": [
+            {
+              "view": "toitDeviceView",
+              "contents": "No devices found.\n\nTry to login\n[Login](command:toit.ensureAuth)\nRefresh after login."
+            }
+        ],
         "commands": [
             {
                 "command": "toit.ensureAuth",
