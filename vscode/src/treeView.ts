@@ -38,7 +38,7 @@ class DeviceTreeItem {
       "label": device.name,
       "collapsibleState": TreeItemCollapsibleState.Collapsed,
       "contextValue": "device"
-    }
+    };
     this.children = [
       {
         "item": {

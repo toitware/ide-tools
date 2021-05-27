@@ -7,16 +7,16 @@ import cp = require("child_process");
 const execFile = promisify(cp.execFile);
 
 export class CommandContext {
-  deviceViewProvider?: ToitDataProvider
+  deviceViewProvider?: ToitDataProvider;
   lastSelectedDevice?: DeviceItem;
   lastSelectedPort?: string;
   toitExec : string = Workspace.getConfiguration("toit").get("Path", "toit");
 
-  setDeviceProvider(provider: ToitDataProvider) {
+  setDeviceProvider(provider: ToitDataProvider) : void {
     this.deviceViewProvider = provider;
   }
 
-  refreshDeviceView() {
+  refreshDeviceView() : void {
     if (this.deviceViewProvider) this.deviceViewProvider.refresh();
   }
 
@@ -207,13 +207,13 @@ export function currentFilePath(suffix: string): string {
 }
 
 async function listPorts(ctx: CommandContext): Promise<string[]> {
-  const { stdout } = await execFile(ctx.toitExec, ["serial", "ports"]);
+  const { stdout } = await execFile(ctx.toitExec, [ "serial", "ports" ]);
   return stdout.split("\n").filter(str => str !== "");
 }
 
 export async function selectPort(ctx: CommandContext): Promise<string> {
   const ports = await listPorts(ctx);
-  ports.reverse()
+  ports.reverse();
 
   const lastPort = ctx.lastPort();
   if (lastPort) {
