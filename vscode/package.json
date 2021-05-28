@@ -92,13 +92,6 @@
                     "when": "view == toitDeviceView && viewItem == device",
                     "group": "inline"
                 }
-            ],
-            "editor/title": [
-                {
-                    "command": "toit.devRun",
-                    "when": "resourceExtname == .toit",
-                    "group": "navigation"
-                }
             ]
         },
         "languages": [
