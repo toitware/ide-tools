@@ -1,5 +1,6 @@
 import { Event, EventEmitter, TreeDataProvider, TreeItem, TreeItemCollapsibleState } from "vscode";
-import { CommandContext, Device, isAuthenticated, listDevices } from "./utils";
+import { Device, RelatedDevice } from "./device";
+import { CommandContext, isAuthenticated, listDevices } from "./utils";
 
 export class ToitDataProvider implements TreeDataProvider<DeviceTreeItem> {
 
@@ -19,56 +20,96 @@ export class ToitDataProvider implements TreeDataProvider<DeviceTreeItem> {
   async getChildren(element?: DeviceTreeItem): Promise<DeviceTreeItem[]> {
     if(!await isAuthenticated(this.context)) return [];
 
-    if (element && element.children) return element.children;
+    if (element) return element.children();
 
-    return listDevices(this.context).then(devices => devices.map(device => new DeviceTreeItem(device)));
+    return listDevices(this.context).then(devices => devices.map(device => new DeviceTreeRoot(device)));
   }
 
   getTreeItem(element: DeviceTreeItem): TreeItem | Thenable<TreeItem> {
-    return element.item;
+    return element.treeItem();
   }
 }
 
-class DeviceTreeItem {
-  children?: DeviceTreeItem[];
-  item: TreeItem;
+export abstract class DeviceTreeItem implements RelatedDevice {
+  dev: Device;
 
-  constructor(device: Device) {
-    this.item = {
-      "label": device.name,
+  constructor(dev: Device) {
+    this.dev = dev;
+  }
+
+  device(): Device {
+    return this.dev;
+  }
+
+  children(): DeviceTreeItem[] {
+    return [];
+  }
+
+  abstract treeItem(): TreeItem;
+}
+
+class DeviceTreeRoot extends DeviceTreeItem {
+  constructor(dev: Device) {
+    super(dev);
+  }
+
+  children(): DeviceTreeItem[] {
+    const children = [
+      new DeviceTreeDevID(this.device()),
+      new DeviceTreeLastSeen(this.device()),
+      new DeviceTreeFirmware(this.device())
+    ];
+    if (this.device().isSimulator) {
+      children.push(new DeviceTreeSimulator(this.device()));
+    }
+
+    return children;
+  }
+
+  treeItem(): TreeItem {
+    return {
+      "label": this.device().name,
       "collapsibleState": TreeItemCollapsibleState.Collapsed,
       "contextValue": "device"
     };
-    this.children = [
-      {
-        "item": {
-          "label": device.device_id,
-          "collapsibleState": TreeItemCollapsibleState.None,
-          "description": "device id"
-        }
-      },
-      {
-        "item": {
-          "label": device.last_seen,
-          "collapsibleState": TreeItemCollapsibleState.None,
-          "description": "last seen"
-        }
-      },
-      {
-        "item": {
-          "label": device.running_firmware,
-          "collapsibleState": TreeItemCollapsibleState.None,
-          "description": device.configure_firmware ? `\u279f ${device.configure_firmware}` : "firmware version"
-        }
-      }
-    ];
-    if (device.is_simulator) {
-      this.children.push({
-        "item": {
-          "label": "simulator",
-          "collapsibleState": TreeItemCollapsibleState.None
-        }
-      });
-    }
+  }
+}
+
+class DeviceTreeDevID extends DeviceTreeItem {
+  treeItem(): TreeItem {
+    return {
+      "label": this.device().deviceID,
+      "collapsibleState": TreeItemCollapsibleState.None,
+      "description": "device id"
+    };
+  }
+}
+
+class DeviceTreeLastSeen extends DeviceTreeItem {
+  treeItem(): TreeItem {
+    return {
+      "label": this.device().lastSeen,
+      "collapsibleState": TreeItemCollapsibleState.None,
+      "description": "last seen"
+    };
+  }
+}
+
+class DeviceTreeFirmware extends DeviceTreeItem {
+  treeItem(): TreeItem {
+    return {
+      "label": this.device().runningFirmware,
+      "collapsibleState": TreeItemCollapsibleState.None,
+      "description": this.device().configureFirmware ? `\u279f ${this.device().configureFirmware}` : "firmware version"
+    };
+  }
+}
+
+class DeviceTreeSimulator extends DeviceTreeItem {
+  treeItem(): TreeItem {
+    return {
+      "label": "simulator",
+      "collapsibleState": TreeItemCollapsibleState.None
+    };
   }
 }
