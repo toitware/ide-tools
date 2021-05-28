@@ -15,7 +15,7 @@ function currentFilePath(ctx: CommandContext, suffix: string): string {
 
   const filePath = editor.document.fileName;
   if (!filePath.endsWith(suffix)) {
-    const lastFile = ctx.getLastFile();
+    const lastFile = ctx.getLastFile(suffix);
     if (lastFile) return lastFile;
     throw new Error(`Non-'${suffix}'-file: ${filePath}.`);
   }
@@ -44,7 +44,7 @@ async function executeCommand(ctx: CommandContext, cmd: string, extension: strin
     toitOutput.show();
     commandProcess.stdout.on("data", data => toitOutput.append(`${data}`));
     commandProcess.stderr.on("data", data => toitOutput.append(`${data}`));
-    ctx.setLastFile(filePath);
+    ctx.setLastFile(extension, filePath);
   } catch (e) {
     Window.showErrorMessage(`${capitalize(cmd)} app failed: ${e.message}`);
   }
