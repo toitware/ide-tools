@@ -11,7 +11,16 @@ export class CommandContext {
   deviceViewProvider?: ToitDataProvider;
   lastSelectedDevice?: RelatedDevice;
   lastSelectedPort?: string;
+  lastFiles: Map<string, string> = new Map();
   toitExec : string = Workspace.getConfiguration("toit").get("Path", "toit");
+
+  setLastFile(extension: string, path: string) {
+    this.lastFiles.set(extension, path);
+  }
+
+  getLastFile(extension: string): string | undefined {
+    return this.lastFiles.get(extension);
+  }
 
   setDeviceProvider(provider: ToitDataProvider) : void {
     this.deviceViewProvider = provider;

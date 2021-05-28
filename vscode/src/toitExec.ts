@@ -9,20 +9,23 @@ function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-function currentFilePath(suffix: string): string {
+function currentFilePath(ctx: CommandContext, suffix: string): string {
   const editor = Window.activeTextEditor;
   if (!editor) throw new Error("No active file.");
 
   const filePath = editor.document.fileName;
-  if (!filePath.endsWith(suffix)) throw new Error(`Non-'${suffix}'-file: ${filePath}.`);
-
+  if (!filePath.endsWith(suffix)) {
+    const lastFile = ctx.getLastFile(suffix);
+    if (lastFile) return lastFile;
+    throw new Error(`Non-'${suffix}'-file: ${filePath}.`);
+  }
   return filePath;
 }
 
 async function executeCommand(ctx: CommandContext, cmd: string, extension: string, device?: Device) {
   let filePath: string;
   try {
-    filePath = currentFilePath(extension);
+    filePath = currentFilePath(ctx, extension);
   } catch (e) {
     return Window.showErrorMessage(`Unable to ${cmd} file: ${e.message}`);
   }
@@ -41,6 +44,7 @@ async function executeCommand(ctx: CommandContext, cmd: string, extension: strin
     toitOutput.show();
     commandProcess.stdout.on("data", data => toitOutput.append(`${data}`));
     commandProcess.stderr.on("data", data => toitOutput.append(`${data}`));
+    ctx.setLastFile(extension, filePath);
   } catch (e) {
     Window.showErrorMessage(`${capitalize(cmd)} app failed: ${e.message}`);
   }
