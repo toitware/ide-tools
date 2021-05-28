@@ -2,13 +2,14 @@
 
 import { promisify } from "util";
 import { InputBoxOptions, OutputChannel, QuickPickItem, Terminal, window as Window, workspace as Workspace } from "vscode";
+import { ConsoleDevice, Device, RelatedDevice } from "./device";
 import { ToitDataProvider } from "./treeView";
 import cp = require("child_process");
 const execFile = promisify(cp.execFile);
 
 export class CommandContext {
   deviceViewProvider?: ToitDataProvider;
-  lastSelectedDevice?: DeviceItem;
+  lastSelectedDevice?: RelatedDevice;
   lastSelectedPort?: string;
   toitExec : string = Workspace.getConfiguration("toit").get("Path", "toit");
 
@@ -20,11 +21,11 @@ export class CommandContext {
     if (this.deviceViewProvider) this.deviceViewProvider.refresh();
   }
 
-  lastDevice(): DeviceItem | undefined {
-    return this.lastSelectedDevice;
+  lastDevice(): Device | undefined {
+    return this.lastSelectedDevice?.device();
   }
 
-  setLastDevice(device: DeviceItem): void {
+  setLastDevice(device: RelatedDevice): void {
     this.lastSelectedDevice = device;
   }
 
@@ -59,38 +60,12 @@ export class CommandContext {
   }
 }
 
-export interface Device {
-  // The JSON from console does not follow the naming-convention.
-  /* eslint-disable @typescript-eslint/naming-convention */
-  device_id: string;
-  is_simulator: boolean;
-  name: string;
-  configure_firmware: string;
-  last_seen: string;
-  running_firmware: string;
-  /* eslint-enable @typescript-eslint/naming-convention */
-}
-
-class DeviceItem implements Device, QuickPickItem {
-  // The JSON from console does not follow the naming-convention.
-  /* eslint-disable @typescript-eslint/naming-convention */
-  device_id: string;
-  is_simulator: boolean;
-  name: string;
-  configure_firmware: string;
-  last_seen: string;
-  running_firmware: string;
-  /* eslint-enable @typescript-eslint/naming-convention */
+class DeviceItem extends Device implements QuickPickItem {
   label: string;
 
-  constructor(device: Device) {
-    this.device_id = device.device_id;
-    this.is_simulator = device.is_simulator;
-    this.name = device.name;
-    this.configure_firmware = device.configure_firmware;
-    this.last_seen = device.last_seen;
-    this.running_firmware = device.running_firmware;
-    this.label = this.name;
+  constructor(device: ConsoleDevice) {
+    super(device);
+    this.label = device.name;
   }
 }
 
@@ -98,7 +73,7 @@ export async function listDevices(ctx: CommandContext): Promise<DeviceItem[]> {
   const { stdout } = await execFile(ctx.toitExec, [ "devices", "--active", "--names", "-o", "json" ]);
   const devices = stdout.split("\n").
     filter(str => str !== "").
-    map(json => JSON.parse(json) as Device).
+    map(json => JSON.parse(json) as ConsoleDevice).
     map(device => new DeviceItem(device));
   return devices;
 }
@@ -107,7 +82,7 @@ function preferLastPicked(ctx: CommandContext, devices: DeviceItem[]) {
   const lastDevice = ctx.lastDevice();
   if (!lastDevice) return;
 
-  const i = devices.findIndex(device => device.device_id === lastDevice.device_id);
+  const i = devices.findIndex(device => device.deviceID === lastDevice.deviceID);
   preferElement(i, devices);
 }
 

@@ -2,7 +2,8 @@
 
 import cp = require("child_process");
 import { OutputChannel, window as Window } from "vscode";
-import { CommandContext, Device, ensureAuth, selectDevice } from "./utils";
+import { Device } from "./device";
+import { CommandContext, ensureAuth, selectDevice } from "./utils";
 
 function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -36,7 +37,7 @@ async function executeCommand(ctx: CommandContext, cmd: string, extension: strin
     const device: Device = await selectDevice(ctx);
 
     const commandProcess = cp.spawn("toit", [ "dev", "-d", device.name, cmd, filePath ]);
-    const toitOutput: OutputChannel = ctx.outputChannel(device.device_id, device.name);
+    const toitOutput: OutputChannel = ctx.outputChannel(device.deviceID, device.name);
     toitOutput.show();
     commandProcess.stdout.on("data", data => toitOutput.append(`${data}`));
     commandProcess.stderr.on("data", data => toitOutput.append(`${data}`));
