@@ -1,6 +1,5 @@
 "use strict";
 
-import cp = require("child_process");
 import { window as Window } from "vscode";
 import { CommandContext, ensureAuth, selectPort } from "./utils";
 
@@ -21,6 +20,6 @@ async function serialMonitor(ctx: CommandContext) {
   }
 }
 
-export function createSerialMonitor(ctx: CommandContext) {
+export function createSerialMonitor(ctx: CommandContext): () => void {
   return () => serialMonitor(ctx);
 }

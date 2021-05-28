@@ -18,7 +18,7 @@ export function activate(context: ExtensionContext): void {
   context.subscriptions.push(Commands.registerCommand("toit.ensureAuth", createEnsureAuth(cmdContext)));
 
   const deviceDataProvider = new ToitDataProvider(cmdContext);
-  Window.createTreeView('toitDeviceView', { "treeDataProvider": deviceDataProvider } );
+  Window.createTreeView("toitDeviceView", { "treeDataProvider": deviceDataProvider } );
   context.subscriptions.push(Commands.registerCommand("toit.refreshView", () => deviceDataProvider.refresh()));
   cmdContext.setDeviceProvider(deviceDataProvider);
 

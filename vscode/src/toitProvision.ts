@@ -22,6 +22,6 @@ async function serialMonitor(ctx: CommandContext) {
   }
 }
 
-export function createSerialProvision(ctx: CommandContext) {
+export function createSerialProvision(ctx: CommandContext): () => void {
   return () => serialMonitor(ctx);
 }
