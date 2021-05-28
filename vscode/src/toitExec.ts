@@ -2,7 +2,7 @@
 
 import cp = require("child_process");
 import { OutputChannel, window as Window } from "vscode";
-import { Device } from "./device";
+import { Device, RelatedDevice } from "./device";
 import { CommandContext, ensureAuth, selectDevice } from "./utils";
 
 function capitalize(str: string): string {
@@ -19,7 +19,7 @@ function currentFilePath(suffix: string): string {
   return filePath;
 }
 
-async function executeCommand(ctx: CommandContext, cmd: string, extension: string) {
+async function executeCommand(ctx: CommandContext, cmd: string, extension: string, device?: Device) {
   let filePath: string;
   try {
     filePath = currentFilePath(extension);
@@ -34,7 +34,7 @@ async function executeCommand(ctx: CommandContext, cmd: string, extension: strin
   }
 
   try {
-    const device: Device = await selectDevice(ctx);
+    if (!device) device = await selectDevice(ctx);
 
     const commandProcess = cp.spawn("toit", [ "dev", "-d", device.name, cmd, filePath ]);
     const toitOutput: OutputChannel = ctx.outputChannel(device.deviceID, device.name);
@@ -47,13 +47,13 @@ async function executeCommand(ctx: CommandContext, cmd: string, extension: strin
 }
 
 export function createRunCommand(cmdContext: CommandContext): () => void {
-  return () => {
-    executeCommand(cmdContext, "run", ".toit");
+  return (dev?: RelatedDevice) => {
+    executeCommand(cmdContext, "run", ".toit", dev?.device());
   };
 }
 
 export function createDeployCommand(cmdContext: CommandContext): () => void {
-  return () => {
-    executeCommand(cmdContext, "deploy", ".yaml");
+  return (dev?: RelatedDevice) => {
+    executeCommand(cmdContext, "deploy", ".yaml", dev?.device());
   };
 }
