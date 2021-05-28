@@ -65,7 +65,7 @@ class DeviceItem extends Device implements QuickPickItem {
 
   constructor(device: ConsoleDevice) {
     super(device);
-    this.label = super.name;
+    this.label = device.name;
   }
 }
 
