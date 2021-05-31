@@ -55,9 +55,9 @@ class DeviceTreeRoot extends DeviceTreeItem {
 
   children(): DeviceTreeItem[] {
     const children = [
-      new DeviceTreeDevID(this.device()),
       new DeviceTreeLastSeen(this.device()),
-      new DeviceTreeFirmware(this.device())
+      new DeviceTreeFirmware(this.device()),
+      new DeviceTreeDevID(this.device())
     ];
     if (this.device().isSimulator) {
       children.push(new DeviceTreeSimulator(this.device()));
