@@ -60,7 +60,9 @@
             },
             {
                 "command": "toit.devDeploy",
-                "title": "Toit: Deploy a Toit app on a device."
+                "title": "Toit: Deploy a Toit app on a device.",
+                "icon": "$(run-all)"
+
             },
             {
                 "command": "toit.serialProvision",
@@ -82,6 +84,11 @@
             "view/item/context": [
                 {
                     "command": "toit.devRun",
+                    "when": "view == toitDeviceView && viewItem == device",
+                    "group": "inline"
+                },
+                {
+                    "command": "toit.devDeploy",
                     "when": "view == toitDeviceView && viewItem == device",
                     "group": "inline"
                 }
