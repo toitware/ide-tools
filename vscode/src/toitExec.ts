@@ -22,7 +22,7 @@ function currentFilePath(ctx: CommandContext, suffix: string): string {
   return filePath;
 }
 
-async function executeCommand(ctx: CommandContext, cmd: string, extension: string, device?: Device) {
+async function executeCommand(ctx: CommandContext, cmd: string, extension: string, activeOnly: boolean, device?: Device) {
   let filePath: string;
   try {
     filePath = currentFilePath(ctx, extension);
@@ -37,7 +37,7 @@ async function executeCommand(ctx: CommandContext, cmd: string, extension: strin
   }
 
   try {
-    if (!device) device = await selectDevice(ctx);
+    if (!device) device = await selectDevice(ctx, activeOnly);
 
     const commandProcess = cp.spawn("toit", [ "dev", "-d", device.name, cmd, filePath ]);
     const toitOutput: OutputChannel = ctx.outputChannel(device.deviceID, device.name);
@@ -52,12 +52,12 @@ async function executeCommand(ctx: CommandContext, cmd: string, extension: strin
 
 export function createRunCommand(cmdContext: CommandContext): () => void {
   return (dev?: RelatedDevice) => {
-    executeCommand(cmdContext, "run", ".toit", dev?.device());
+    executeCommand(cmdContext, "run", ".toit", true, dev?.device());
   };
 }
 
 export function createDeployCommand(cmdContext: CommandContext): () => void {
   return (dev?: RelatedDevice) => {
-    executeCommand(cmdContext, "deploy", ".yaml", dev?.device());
+    executeCommand(cmdContext, "deploy", ".yaml", false, dev?.device());
   };
 }

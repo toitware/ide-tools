@@ -1,4 +1,5 @@
-import { Event, EventEmitter, TreeDataProvider, TreeItem, TreeItemCollapsibleState } from "vscode";
+import * as path from 'path';
+import { Event, EventEmitter, TreeDataProvider, TreeItem, TreeItemCollapsibleState, window } from "vscode";
 import { Device, RelatedDevice } from "./device";
 import { CommandContext, isAuthenticated, listDevices } from "./utils";
 
@@ -49,11 +50,21 @@ export abstract class DeviceTreeItem implements RelatedDevice {
 }
 
 class DeviceTreeRoot extends DeviceTreeItem {
+  static activeIcons = {
+    light: path.join(__filename, '..', '..', 'resources', 'light', 'active.svg'),
+    dark: path.join(__filename, '..', '..', 'resources', 'dark', 'active.svg')
+  };
+  static inactiveIcons = {
+    light: path.join(__filename, '..', '..', 'resources', 'light', 'inactive.svg'),
+    dark: path.join(__filename, '..', '..', 'resources', 'dark', 'inactive.svg')
+  };
+
   constructor(dev: Device) {
     super(dev);
   }
 
   children(): DeviceTreeItem[] {
+    window.showWarningMessage(__filename);
     const children = [
       new DeviceTreeDevID(this.device()),
       new DeviceTreeLastSeen(this.device()),
@@ -67,11 +78,15 @@ class DeviceTreeRoot extends DeviceTreeItem {
   }
 
   treeItem(): TreeItem {
-    return {
-      "label": this.device().name,
-      "collapsibleState": TreeItemCollapsibleState.Collapsed,
-      "contextValue": "device"
-    };
+    const label = `${this.device().name}`;
+    const p = this.device().isActive ? DeviceTreeRoot.activeIcons : DeviceTreeRoot.inactiveIcons;
+    return new class extends TreeItem {
+      constructor() {
+        super(label, TreeItemCollapsibleState.Collapsed);
+      }
+      contextValue = "device";
+      iconPath = p;
+    }();
   }
 }
 
