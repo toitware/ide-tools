@@ -12,7 +12,9 @@
     ],
     "activationEvents": [
         "onLanguage:toit",
+        "workspaceContains:**/*.toit",
         "onView:toitView",
+        "onCommand:toit.ensureAuth",
         "onCommand:toit.refreshView"
     ],
     "icon": "images/toitware_logo.png",
@@ -21,63 +23,71 @@
         "viewsContainers": {
             "activitybar": [
               {
-                "id": "toit-view",
+                "id": "toitView",
                 "title": "Toit",
-                "icon": "./resources/logo.svg"
+                "icon": "./resources/logo.svg",
+                "when": "toit.extensionActive"
               }
             ]
           },
           "views": {
-			"toit-view": [
+			"toitView": [
 				{
 					"id": "toitDeviceView",
 					"name": "Devices",
 					"contextualTitle": "Device Explorer",
-                    "icon": "./resources/logo.svg"
+                    "icon": "./resources/logo.svg",
+                    "when": "toit.extensionActive"
 				}
 			]
         },
         "viewsWelcome": [
             {
-              "view": "toitDeviceView",
-              "contents": "No devices found.\n\nTry to login\n[Login](command:toit.ensureAuth)"
+                "view": "toitDeviceView",
+                "contents": "No devices found.\n\nTry to login\n[Login](command:toit.ensureAuth)",
+                "when": "toit.extensionActive"
             }
         ],
         "commands": [
             {
                 "command": "toit.refreshView",
-                "enablement": "view == toitDeviceView",
                 "title": "Refresh the list of devices.",
                 "category": "Toit",
-                "icon": "$(refresh)"
+                "icon": "$(refresh)",
+                "enablement": "toit.extensionActive"
             },
             {
                 "command": "toit.ensureAuth",
                 "title": "Authenticate with toit.io.",
-                "category": "Toit"
+                "category": "Toit",
+                "enablement": "toit.extensionActive"
             },
             {
                 "command": "toit.devRun",
                 "title": "Run a Toit app on a device.",
                 "category": "Toit",
-                "icon": "$(run)"
+                "icon": "$(run)",
+                "enablement": "toit.extensionActive"
             },
             {
                 "command": "toit.devDeploy",
                 "title": "Deploy a Toit app on a device.",
                 "category": "Toit",
-                "icon": "$(run-all)"
+                "icon": "$(run-all)",
+                "enablement": "toit.extensionActive"
 
             },
             {
                 "command": "toit.serialProvision",
                 "title": "Provision a device connected via serial.",
-                "category": "Toit"
+                "category": "Toit",
+                "enablement": "toit.extensionActive"
             },
             {
                 "command": "toit.serialMonitor",
                 "title": "Monitor serial output from a device.",
-                "category": "Toit"
+                "category": "Toit",
+                "enablement": "toit.extensionActive"
             }
         ],
         "menus": {

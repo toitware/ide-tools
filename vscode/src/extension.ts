@@ -10,6 +10,7 @@ import { ToitDataProvider } from "./treeView";
 import { CommandContext } from "./utils";
 
 export function activate(context: ExtensionContext): void {
+  Commands.executeCommand('setContext', 'toit.extensionActive', true);
   const cmdContext = new CommandContext();
   context.subscriptions.push(Commands.registerCommand("toit.devRun", createRunCommand(cmdContext)));
   context.subscriptions.push(Commands.registerCommand("toit.devDeploy", createDeployCommand(cmdContext)));
@@ -26,5 +27,6 @@ export function activate(context: ExtensionContext): void {
 }
 
 export function deactivate(): Thenable<void> {
+  Commands.executeCommand('setContext', 'toit.extensionActive', false);
   return deactivateLsp();
 }
