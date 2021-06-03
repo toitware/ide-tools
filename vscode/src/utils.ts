@@ -2,6 +2,7 @@
 
 import { promisify } from "util";
 import { InputBoxOptions, OutputChannel, QuickPickItem, Terminal, window as Window, workspace as Workspace } from "vscode";
+import { App, ConsoleApp } from "./app";
 import { ConsoleDevice, Device, RelatedDevice } from "./device";
 import { ToitDataProvider } from "./treeView";
 import cp = require("child_process");
@@ -94,6 +95,16 @@ export async function listDevices(ctx: CommandContext): Promise<DeviceItem[]> {
     map(json => JSON.parse(json) as ConsoleDevice).
     map(device => new DeviceItem(device, activeDevices.find(o => o.device_id == device.device_id) ? true : false));
   return allDevices;
+}
+
+export async function listApps(ctx: CommandContext, device: Device): Promise<App[]> {
+  // TODO(Lau): change this when is_active is part of json.
+  const cmdArgs =  [ "dev", "-d", device.deviceID, "ps", "-o", "json"];
+  const { stdout } = await execFile(ctx.toitExec, cmdArgs);
+  return stdout.split("\n").
+    filter(str => str !== "").
+    map(json => JSON.parse(json) as ConsoleApp).
+    map(app => new App(app));
 }
 
 function preferLastPicked(ctx: CommandContext, devices: DeviceItem[]) {
