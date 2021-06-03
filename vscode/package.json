@@ -12,7 +12,8 @@
     ],
     "activationEvents": [
         "onLanguage:toit",
-        "onView:toitView"
+        "onView:toitView",
+        "onCommand:toit.refreshView"
     ],
     "icon": "images/toitware_logo.png",
     "main": "./dist/extension.js",
@@ -46,31 +47,37 @@
             {
                 "command": "toit.refreshView",
                 "enablement": "view == toitDeviceView",
-                "title": "Toit: Refresh the list of devices.",
+                "title": "Refresh the list of devices.",
+                "category": "Toit",
                 "icon": "$(refresh)"
             },
             {
                 "command": "toit.ensureAuth",
-                "title": "Toit: Authenticate with toit.io."
+                "title": "Authenticate with toit.io.",
+                "category": "Toit"
             },
             {
                 "command": "toit.devRun",
-                "title": "Toit: Run a Toit app on a device.",
+                "title": "Run a Toit app on a device.",
+                "category": "Toit",
                 "icon": "$(run)"
             },
             {
                 "command": "toit.devDeploy",
-                "title": "Toit: Deploy a Toit app on a device.",
+                "title": "Deploy a Toit app on a device.",
+                "category": "Toit",
                 "icon": "$(run-all)"
 
             },
             {
                 "command": "toit.serialProvision",
-                "title": "Toit: Provision a device connected via serial."
+                "title": "Provision a device connected via serial.",
+                "category": "Toit"
             },
             {
                 "command": "toit.serialMonitor",
-                "title": "Toit: Monitor serial output from a device."
+                "title": "Monitor serial output from a device.",
+                "category": "Toit"
             }
         ],
         "menus": {
