@@ -85,15 +85,14 @@ class DeviceTreeRoot extends DeviceTreeItem {
     const tooltipMarkdown =
 `
 ### ${this.device().name}
--------------------------
+-------------
 #### Device ID
--------------
 ${this.device().deviceID}
-#### Firmware
 -------------
+#### Firmware
 ${this.device().runningFirmware}
+-------------
 #### Last seen
---------------
 ${this.device().lastSeen}
 `
     return new class extends TreeItem {
