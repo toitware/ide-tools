@@ -34,8 +34,11 @@ const config = {
             loader: 'ts-loader'
           }
         ]
-      }
+      },
     ]
+  },
+  node: {
+    __filename: false
   }
 };
 module.exports = config;

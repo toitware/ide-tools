@@ -27,8 +27,10 @@ export class Device implements RelatedDevice {
   configureFirmware: string;
   lastSeen: string;
   runningFirmware: string;
+  isActive: boolean;
 
-  constructor(consoleDev: ConsoleDevice) {
+  constructor(consoleDev: ConsoleDevice, active: boolean) {
+    this.isActive = active;
     this.deviceID = consoleDev.device_id;
     this.isSimulator = consoleDev.is_simulator;
     this.name = consoleDev.name;
