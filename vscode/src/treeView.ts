@@ -112,10 +112,16 @@ class DeviceApp extends DeviceTreeItem {
   }
 
   treeItem(): TreeItem {
-    return {
-      "label": this.app.jobName,
-      "collapsibleState": TreeItemCollapsibleState.None,
-      "description": this.app.updated
-    };
+    const app = this.app;
+
+    return new class extends TreeItem {
+      constructor() {
+        super(app.jobName, TreeItemCollapsibleState.None);
+      }
+      iconPath = {
+        light: path.join(__filename, '..', '..', 'resources', 'light', 'app.svg'),
+        dark: path.join(__filename, '..', '..', 'resources', 'dark', 'app.svg')
+      };
+    }();
   }
 }
