@@ -22,7 +22,7 @@ export function activate(context: ExtensionContext): void {
   const deviceDataProvider = new ToitDataProvider(cmdContext);
   Window.createTreeView("toitDeviceView", { "treeDataProvider": deviceDataProvider } );
   context.subscriptions.push(Commands.registerCommand("toit.refreshView", () => deviceDataProvider.refresh()));
-  context.subscriptions.push(Commands.registerCommand("toit.uninstallApp", createUninstallCommand(cmdContext, deviceDataProvider)));
+  context.subscriptions.push(Commands.registerCommand("toit.uninstallApp", createUninstallCommand(cmdContext)));
   cmdContext.setDeviceProvider(deviceDataProvider);
 
   activateLsp(context);
