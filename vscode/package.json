@@ -51,10 +51,9 @@
         "commands": [
             {
                 "command": "toit.uninstallApp",
-                "title": "Uninstall application",
+                "title": "Uninstall app",
                 "category": "Toit",
-                "icon": "$(trash)",
-                "enablement": "toit.extensionActive"
+                "icon": "$(trash)"
             },
             {
                 "command": "toit.refreshView",
@@ -119,6 +118,12 @@
                     "command": "toit.devDeploy",
                     "when": "view == toitDeviceView && viewItem == device",
                     "group": "inline"
+                }
+            ],
+            "commandPalette": [
+                {
+                    "command": "toit.uninstallApp",
+                    "when": "false"
                 }
             ]
         },
