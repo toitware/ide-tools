@@ -84,15 +84,21 @@ class DeviceTreeRoot extends DeviceTreeItem {
     const p = this.device().isActive ? DeviceTreeRoot.activeIcons : DeviceTreeRoot.inactiveIcons;
     const tooltipMarkdown =
 `
-### ${this.device().name}
--------------
+### ${this.device().name} ${this.device().isSimulator ? "(simulator)" : ""}
+
+--------------------------------
 #### Device ID
+
 ${this.device().deviceID}
--------------
+
+--------------------------------
 #### Firmware
-${this.device().runningFirmware}
--------------
+
+${this.device().runningFirmware} ${this.device().configureFirmware ? `\u279f ${this.device().configureFirmware}` : ""}
+
+--------------------------------
 #### Last seen
+
 ${this.device().lastSeen}
 `
     return new class extends TreeItem {
