@@ -13,16 +13,17 @@ import { CommandContext } from "./utils";
 export function activate(context: ExtensionContext): void {
   Commands.executeCommand('setContext', 'toit.extensionActive', true);
   const cmdContext = new CommandContext();
-  context.subscriptions.push(Commands.registerCommand("toit.devRun", createRunCommand(cmdContext)));
-  context.subscriptions.push(Commands.registerCommand("toit.devDeploy", createDeployCommand(cmdContext)));
+  const deviceDataProvider = new ToitDataProvider(cmdContext);
+  Window.createTreeView("toitDeviceView", { "treeDataProvider": deviceDataProvider } );
+
   context.subscriptions.push(Commands.registerCommand("toit.serialProvision", createSerialProvision(cmdContext)));
   context.subscriptions.push(Commands.registerCommand("toit.serialMonitor", createSerialMonitor(cmdContext)));
   context.subscriptions.push(Commands.registerCommand("toit.ensureAuth", createEnsureAuth(cmdContext)));
-
-  const deviceDataProvider = new ToitDataProvider(cmdContext);
-  Window.createTreeView("toitDeviceView", { "treeDataProvider": deviceDataProvider } );
   context.subscriptions.push(Commands.registerCommand("toit.refreshView", () => deviceDataProvider.refresh()));
   context.subscriptions.push(Commands.registerCommand("toit.uninstallApp", createUninstallCommand(cmdContext)));
+  context.subscriptions.push(Commands.registerCommand("toit.devRun", createRunCommand(cmdContext)));
+  context.subscriptions.push(Commands.registerCommand("toit.devDeploy", createDeployCommand(cmdContext)));
+
   cmdContext.setDeviceProvider(deviceDataProvider);
 
   activateLsp(context);

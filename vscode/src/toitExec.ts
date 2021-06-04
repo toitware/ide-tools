@@ -44,6 +44,7 @@ async function executeCommand(ctx: CommandContext, cmd: string, extension: strin
     toitOutput.show();
     commandProcess.stdout.on("data", data => toitOutput.append(`${data}`));
     commandProcess.stderr.on("data", data => toitOutput.append(`${data}`));
+    ctx.refreshDeviceView();
     ctx.setLastFile(extension, filePath);
   } catch (e) {
     Window.showErrorMessage(`${capitalize(cmd)} app failed: ${e.message}`);
