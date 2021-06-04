@@ -1,6 +1,8 @@
-import { Event, EventEmitter, TreeDataProvider, TreeItem, TreeItemCollapsibleState } from "vscode";
+import * as path from 'path';
+import { Event, EventEmitter, MarkdownString, TreeDataProvider, TreeItem, TreeItemCollapsibleState } from "vscode";
+import { App } from './app';
 import { Device, RelatedDevice } from "./device";
-import { CommandContext, isAuthenticated, listDevices } from "./utils";
+import { CommandContext, isAuthenticated, listApps, listDevices } from "./utils";
 
 export class ToitDataProvider implements TreeDataProvider<DeviceTreeItem> {
 
@@ -8,7 +10,7 @@ export class ToitDataProvider implements TreeDataProvider<DeviceTreeItem> {
   readonly onDidChangeTreeData: Event<DeviceTreeItem | undefined | null> = this._onDidChangeTreeData.event;
 
   refresh(): void {
-    this._onDidChangeTreeData.fire();
+    this._onDidChangeTreeData.fire(null);
   }
 
   context: CommandContext;
@@ -22,7 +24,7 @@ export class ToitDataProvider implements TreeDataProvider<DeviceTreeItem> {
 
     if (element) return element.children();
 
-    return listDevices(this.context).then(devices => devices.map(device => new DeviceTreeRoot(device)));
+    return listDevices(this.context).then(devices => devices.map(device => new DeviceTreeRoot(this.context, device)));
   }
 
   getTreeItem(element: DeviceTreeItem): TreeItem | Thenable<TreeItem> {
@@ -41,7 +43,7 @@ export abstract class DeviceTreeItem implements RelatedDevice {
     return this.dev;
   }
 
-  children(): DeviceTreeItem[] {
+  async children(): Promise<DeviceTreeItem[]> {
     return [];
   }
 
@@ -49,12 +51,22 @@ export abstract class DeviceTreeItem implements RelatedDevice {
 }
 
 class DeviceTreeRoot extends DeviceTreeItem {
-  constructor(dev: Device) {
+  static activeIcons = {
+    light: path.join(__filename, '..', '..', 'resources', 'light', 'active.svg'),
+    dark: path.join(__filename, '..', '..', 'resources', 'dark', 'active.svg')
+  };
+  static inactiveIcons = {
+    light: path.join(__filename, '..', '..', 'resources', 'light', 'inactive.svg'),
+    dark: path.join(__filename, '..', '..', 'resources', 'dark', 'inactive.svg')
+  };
+  context: CommandContext;
+  constructor(context: CommandContext, dev: Device) {
     super(dev);
+    this.context = context;
   }
 
-  children(): DeviceTreeItem[] {
-    const children = [
+  async children(): Promise<DeviceTreeItem[]> {
+    const children: Array<DeviceTreeItem> = [
       new DeviceTreeDevID(this.device()),
       new DeviceTreeLastSeen(this.device()),
       new DeviceTreeFirmware(this.device())
@@ -62,15 +74,57 @@ class DeviceTreeRoot extends DeviceTreeItem {
     if (this.device().isSimulator) {
       children.push(new DeviceTreeSimulator(this.device()));
     }
-
+    const apps = await listApps(this.context, this.device());
+    Array.prototype.push.apply(children, apps.map(app => new DeviceApp(app, this.device())));
     return children;
   }
 
   treeItem(): TreeItem {
+    const label = `${this.device().name}`;
+    const p = this.device().isActive ? DeviceTreeRoot.activeIcons : DeviceTreeRoot.inactiveIcons;
+    const tooltipMarkdown =
+`
+### ${this.device().name} ${this.device().isSimulator ? "(simulator)" : ""}
+
+--------------------------------
+#### Device ID
+
+${this.device().deviceID}
+
+--------------------------------
+#### Firmware
+
+${this.device().runningFirmware} ${this.device().configureFirmware ? `\u279f ${this.device().configureFirmware}` : ""}
+
+--------------------------------
+#### Last seen
+
+${this.device().lastSeen}
+`
+    return new class extends TreeItem {
+      constructor() {
+        super(label, TreeItemCollapsibleState.Collapsed);
+      }
+      contextValue = "device";
+      iconPath = p;
+      tooltip = new MarkdownString(tooltipMarkdown);
+    }();
+  }
+}
+
+class DeviceApp extends DeviceTreeItem {
+  app: App;
+
+  constructor(app: App, dev: Device) {
+    super(dev);
+    this.app = app;
+  }
+
+  treeItem(): TreeItem {
     return {
-      "label": this.device().name,
-      "collapsibleState": TreeItemCollapsibleState.Collapsed,
-      "contextValue": "device"
+      "label": this.app.jobName,
+      "collapsibleState": TreeItemCollapsibleState.None,
+      "description": this.app.updated
     };
   }
 }

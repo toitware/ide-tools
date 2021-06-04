@@ -2,6 +2,7 @@
 
 import { promisify } from "util";
 import { InputBoxOptions, OutputChannel, QuickPickItem, Terminal, window as Window, workspace as Workspace } from "vscode";
+import { App, ConsoleApp } from "./app";
 import { ConsoleDevice, Device, RelatedDevice } from "./device";
 import { ToitDataProvider } from "./treeView";
 import cp = require("child_process");
@@ -72,19 +73,38 @@ export class CommandContext {
 class DeviceItem extends Device implements QuickPickItem {
   label: string;
 
-  constructor(device: ConsoleDevice) {
-    super(device);
+  constructor(device: ConsoleDevice, active: boolean) {
+    super(device, active);
     this.label = device.name;
   }
 }
 
 export async function listDevices(ctx: CommandContext): Promise<DeviceItem[]> {
-  const { stdout } = await execFile(ctx.toitExec, [ "devices", "--active", "--names", "-o", "json" ]);
-  const devices = stdout.split("\n").
+  // TODO(Lau): change this when is_active is part of json.
+  const cmdArgs =  [ "devices", "--names", "-o", "json" ];
+  const jsonAll = await execFile(ctx.toitExec, cmdArgs);
+  cmdArgs.push("--active");
+  const jsonActive = await execFile(ctx.toitExec, cmdArgs);
+
+  const activeDevices = jsonActive.stdout.split("\n").
+    filter(str => str !== "").
+    map(json => JSON.parse(json) as ConsoleDevice);
+
+  const allDevices = jsonAll.stdout.split("\n").
     filter(str => str !== "").
     map(json => JSON.parse(json) as ConsoleDevice).
-    map(device => new DeviceItem(device));
-  return devices;
+    map(device => new DeviceItem(device, activeDevices.find(o => o.device_id == device.device_id) ? true : false));
+  return allDevices;
+}
+
+export async function listApps(ctx: CommandContext, device: Device): Promise<App[]> {
+  // TODO(Lau): change this when is_active is part of json.
+  const cmdArgs =  [ "dev", "-d", device.deviceID, "ps", "-o", "json"];
+  const { stdout } = await execFile(ctx.toitExec, cmdArgs);
+  return stdout.split("\n").
+    filter(str => str !== "").
+    map(json => JSON.parse(json) as ConsoleApp).
+    map(app => new App(app));
 }
 
 function preferLastPicked(ctx: CommandContext, devices: DeviceItem[]) {
@@ -95,8 +115,9 @@ function preferLastPicked(ctx: CommandContext, devices: DeviceItem[]) {
   preferElement(i, devices);
 }
 
-export async function selectDevice(ctx: CommandContext): Promise<Device> {
-  const deviceItems = await listDevices(ctx);
+export async function selectDevice(ctx: CommandContext, activeOnly: boolean): Promise<Device> {
+  let deviceItems = await listDevices(ctx);
+  if (activeOnly) deviceItems = deviceItems.filter(device => device.isActive);
   preferLastPicked(ctx, deviceItems);
   const device = await Window.showQuickPick(deviceItems, { "placeHolder": "Pick a device" });
   if (!device) throw new Error("No device selected.");
@@ -213,7 +234,7 @@ export async function selectPort(ctx: CommandContext): Promise<string> {
 }
 
 function preferElement<T>(index: number, list: T[]): void {
-  if (index === 0) return;
+  if (index <= 0) return;
   const preferred = list[index];
   list.splice(index, 1);
   list.unshift(preferred);

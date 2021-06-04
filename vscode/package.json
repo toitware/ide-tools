@@ -5,72 +5,88 @@
     "publisher": "Toit",
     "version": "1.0.0",
     "engines": {
-        "vscode": "^1.34.0"
+        "vscode": "^1.54.0"
     },
     "categories": [
         "Programming Languages"
     ],
     "activationEvents": [
         "onLanguage:toit",
-        "onView:toitView"
+        "workspaceContains:**/*.toit",
+        "onView:toitView",
+        "onCommand:toit.ensureAuth",
+        "onCommand:toit.refreshView"
     ],
     "icon": "images/toitware_logo.png",
     "main": "./dist/extension.js",
     "contributes": {
         "viewsContainers": {
             "activitybar": [
-              {
-                "id": "toit-view",
-                "title": "Toit",
-                "icon": "./resources/logo.svg"
-              }
+                {
+                    "id": "toitView",
+                    "title": "Toit",
+                    "icon": "./resources/logo.svg",
+                    "when": "toit.extensionActive"
+                }
             ]
-          },
-          "views": {
-			"toit-view": [
-				{
-					"id": "toitDeviceView",
-					"name": "Devices",
-					"contextualTitle": "Device Explorer",
-                    "icon": "./resources/logo.svg"
-				}
-			]
+        },
+        "views": {
+            "toitView": [
+                {
+                    "id": "toitDeviceView",
+                    "name": "Devices",
+                    "contextualTitle": "Device Explorer",
+                    "icon": "./resources/logo.svg",
+                    "when": "toit.extensionActive"
+                }
+            ]
         },
         "viewsWelcome": [
             {
-              "view": "toitDeviceView",
-              "contents": "No devices found.\n\nTry to login\n[Login](command:toit.ensureAuth)"
+                "view": "toitDeviceView",
+                "contents": "No devices found.\n\nTry to login\n[Login](command:toit.ensureAuth)",
+                "when": "toit.extensionActive"
             }
         ],
         "commands": [
             {
                 "command": "toit.refreshView",
-                "enablement": "view == toitDeviceView",
-                "title": "Toit: Refresh the list of devices.",
-                "icon": "$(refresh)"
+                "title": "Refresh the list of devices.",
+                "category": "Toit",
+                "icon": "$(refresh)",
+                "enablement": "toit.extensionActive"
             },
             {
                 "command": "toit.ensureAuth",
-                "title": "Toit: Authenticate with toit.io."
+                "title": "Authenticate with toit.io.",
+                "category": "Toit",
+                "enablement": "toit.extensionActive"
             },
             {
                 "command": "toit.devRun",
-                "title": "Toit: Run a Toit app on a device.",
-                "icon": "$(run)"
+                "title": "Run a Toit app on a device.",
+                "category": "Toit",
+                "icon": "$(run)",
+                "enablement": "toit.extensionActive"
             },
             {
                 "command": "toit.devDeploy",
-                "title": "Toit: Deploy a Toit app on a device.",
-                "icon": "$(run-all)"
-
+                "title": "Deploy a Toit app on a device.",
+                "category": "Toit",
+                "icon": "$(run-all)",
+                "enablement": "toit.extensionActive"
             },
             {
                 "command": "toit.serialProvision",
-                "title": "Toit: Provision a device connected via serial."
+                "title": "Provision a device connected via serial.",
+                "category": "Toit",
+                "enablement": "toit.extensionActive"
             },
             {
                 "command": "toit.serialMonitor",
-                "title": "Toit: Monitor serial output from a device."
+                "title": "Monitor serial output from a device.",
+                "category": "Toit",
+                "enablement": "toit.extensionActive"
             }
         ],
         "menus": {
@@ -178,8 +194,8 @@
         "lint-fix": "eslint src --ext ts --fix"
     },
     "devDependencies": {
-        "@types/node": "^8.10.61",
-        "@types/vscode": "^1.34.0",
+        "@types/node": "^12.20.7",
+        "@types/vscode": "^1.55.0",
         "@typescript-eslint/eslint-plugin": "^4.24.0",
         "@typescript-eslint/parser": "^4.24.0",
         "eslint": "^7.26.0",
@@ -187,7 +203,6 @@
         "ts-loader": "^6.2.2",
         "tslint": "^5.20.1",
         "typescript": "^3.9.5",
-        "vscode": "^1.1.37",
         "webpack": "^4.46.0",
         "webpack-cli": "^3.3.12"
     },
