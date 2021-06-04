@@ -50,6 +50,13 @@
         ],
         "commands": [
             {
+                "command": "toit.uninstallApp",
+                "title": "Uninstall application",
+                "category": "Toit",
+                "icon": "$(trash)",
+                "enablement": "toit.extensionActive"
+            },
+            {
                 "command": "toit.refreshView",
                 "title": "Refresh the list of devices.",
                 "category": "Toit",
@@ -98,6 +105,11 @@
                 }
             ],
             "view/item/context": [
+                {
+                    "command": "toit.uninstallApp",
+                    "when": "view == toitDeviceView && viewItem == application",
+                    "group": "inline"
+                },
                 {
                     "command": "toit.devRun",
                     "when": "view == toitDeviceView && viewItem == device",

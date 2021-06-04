@@ -1,5 +1,9 @@
 "use strict";
 
+export interface RelatedApp {
+  app(): App;
+}
+
 export interface ConsoleApp {
   compilation_id: string;
   created: string;
@@ -14,7 +18,7 @@ export interface ConsoleApp {
   updated: string;
 }
 
-export class App {
+export class App implements RelatedApp {
   compilationId: string;
   created: string;
   deviceID: string;
@@ -40,4 +44,9 @@ export class App {
     this.state = app.state;
     this.updated = app.updated;
   }
+
+  app(): App {
+    return this;
+  }
+
 }

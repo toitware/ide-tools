@@ -239,3 +239,8 @@ function preferElement<T>(index: number, list: T[]): void {
   list.splice(index, 1);
   list.unshift(preferred);
 }
+
+export async function uninstallApp(ctx: CommandContext, app: App) {
+  await execFile(ctx.toitExec, [ "dev", "-d", app.deviceID, "uninstall", app.jobID ]);
+  // TODO Refresh view.
+}

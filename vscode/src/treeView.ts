@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Event, EventEmitter, MarkdownString, TreeDataProvider, TreeItem, TreeItemCollapsibleState } from "vscode";
-import { App } from './app';
+import { App, RelatedApp } from './app';
 import { Device, RelatedDevice } from "./device";
 import { CommandContext, isAuthenticated, listApps, listDevices } from "./utils";
 
@@ -103,25 +103,29 @@ ${this.device().lastSeen}
   }
 }
 
-class DeviceApp extends DeviceTreeItem {
-  app: App;
+class DeviceApp extends DeviceTreeItem implements RelatedApp {
+  application: App;
 
   constructor(app: App, dev: Device) {
     super(dev);
-    this.app = app;
+    this.application = app;
   }
 
   treeItem(): TreeItem {
-    const app = this.app;
-
+    const app = this.app()
     return new class extends TreeItem {
       constructor() {
         super(app.jobName, TreeItemCollapsibleState.None);
       }
+      contextValue = "application"
       iconPath = {
         light: path.join(__filename, '..', '..', 'resources', 'light', 'app.svg'),
         dark: path.join(__filename, '..', '..', 'resources', 'dark', 'app.svg')
       };
     }();
+  }
+
+  app(): App {
+    return this.application
   }
 }

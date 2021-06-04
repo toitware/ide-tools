@@ -6,6 +6,7 @@ import { createEnsureAuth } from "./toitAuth";
 import { createDeployCommand, createRunCommand } from "./toitExec";
 import { createSerialMonitor } from "./toitMonitor";
 import { createSerialProvision } from "./toitProvision";
+import { createUninstallCommand } from "./toitUninstall";
 import { ToitDataProvider } from "./treeView";
 import { CommandContext } from "./utils";
 
@@ -21,6 +22,7 @@ export function activate(context: ExtensionContext): void {
   const deviceDataProvider = new ToitDataProvider(cmdContext);
   Window.createTreeView("toitDeviceView", { "treeDataProvider": deviceDataProvider } );
   context.subscriptions.push(Commands.registerCommand("toit.refreshView", () => deviceDataProvider.refresh()));
+  context.subscriptions.push(Commands.registerCommand("toit.uninstallApp", createUninstallCommand(cmdContext, deviceDataProvider)));
   cmdContext.setDeviceProvider(deviceDataProvider);
 
   activateLsp(context);
