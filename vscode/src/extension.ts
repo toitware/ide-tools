@@ -2,6 +2,7 @@
 
 import { commands as Commands, ExtensionContext, window as Window } from "vscode";
 import { activateLsp, deactivateLsp } from "./lspClient";
+import { activateToitStatusBar } from "./organization";
 import { createEnsureAuth } from "./toitAuth";
 import { createDeployCommand, createRunCommand } from "./toitExec";
 import { createSerialMonitor } from "./toitMonitor";
@@ -26,6 +27,7 @@ export function activate(context: ExtensionContext): void {
 
   cmdContext.setDeviceProvider(deviceDataProvider);
 
+  activateToitStatusBar(cmdContext, context);
   activateLsp(context);
 }
 
