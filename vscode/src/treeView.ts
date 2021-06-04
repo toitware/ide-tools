@@ -66,17 +66,8 @@ class DeviceTreeRoot extends DeviceTreeItem {
   }
 
   async children(): Promise<DeviceTreeItem[]> {
-    const children: Array<DeviceTreeItem> = [
-      new DeviceTreeDevID(this.device()),
-      new DeviceTreeLastSeen(this.device()),
-      new DeviceTreeFirmware(this.device())
-    ];
-    if (this.device().isSimulator) {
-      children.push(new DeviceTreeSimulator(this.device()));
-    }
     const apps = await listApps(this.context, this.device());
-    Array.prototype.push.apply(children, apps.map(app => new DeviceApp(app, this.device())));
-    return children;
+    return apps.map(app => new DeviceApp(app, this.device()));
   }
 
   treeItem(): TreeItem {
@@ -125,45 +116,6 @@ class DeviceApp extends DeviceTreeItem {
       "label": this.app.jobName,
       "collapsibleState": TreeItemCollapsibleState.None,
       "description": this.app.updated
-    };
-  }
-}
-
-class DeviceTreeDevID extends DeviceTreeItem {
-  treeItem(): TreeItem {
-    return {
-      "label": this.device().deviceID,
-      "collapsibleState": TreeItemCollapsibleState.None,
-      "description": "device id"
-    };
-  }
-}
-
-class DeviceTreeLastSeen extends DeviceTreeItem {
-  treeItem(): TreeItem {
-    return {
-      "label": this.device().lastSeen,
-      "collapsibleState": TreeItemCollapsibleState.None,
-      "description": "last seen"
-    };
-  }
-}
-
-class DeviceTreeFirmware extends DeviceTreeItem {
-  treeItem(): TreeItem {
-    return {
-      "label": this.device().runningFirmware,
-      "collapsibleState": TreeItemCollapsibleState.None,
-      "description": this.device().configureFirmware ? `\u279f ${this.device().configureFirmware}` : "firmware version"
-    };
-  }
-}
-
-class DeviceTreeSimulator extends DeviceTreeItem {
-  treeItem(): TreeItem {
-    return {
-      "label": "simulator",
-      "collapsibleState": TreeItemCollapsibleState.None
     };
   }
 }
