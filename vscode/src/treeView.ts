@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Event, EventEmitter, TreeDataProvider, TreeItem, TreeItemCollapsibleState, window } from "vscode";
+import { Event, EventEmitter, TreeDataProvider, TreeItem, TreeItemCollapsibleState } from "vscode";
 import { Device, RelatedDevice } from "./device";
 import { CommandContext, isAuthenticated, listDevices } from "./utils";
 
@@ -64,7 +64,6 @@ class DeviceTreeRoot extends DeviceTreeItem {
   }
 
   children(): DeviceTreeItem[] {
-    window.showWarningMessage(__filename);
     const children = [
       new DeviceTreeDevID(this.device()),
       new DeviceTreeLastSeen(this.device()),
