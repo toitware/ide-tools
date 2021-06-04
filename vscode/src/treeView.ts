@@ -1,7 +1,8 @@
 import * as path from 'path';
 import { Event, EventEmitter, TreeDataProvider, TreeItem, TreeItemCollapsibleState } from "vscode";
+import { App } from './app';
 import { Device, RelatedDevice } from "./device";
-import { CommandContext, isAuthenticated, listDevices } from "./utils";
+import { CommandContext, isAuthenticated, listApps, listDevices } from "./utils";
 
 export class ToitDataProvider implements TreeDataProvider<DeviceTreeItem> {
 
@@ -23,7 +24,7 @@ export class ToitDataProvider implements TreeDataProvider<DeviceTreeItem> {
 
     if (element) return element.children();
 
-    return listDevices(this.context).then(devices => devices.map(device => new DeviceTreeRoot(device)));
+    return listDevices(this.context).then(devices => devices.map(device => new DeviceTreeRoot(this.context, device)));
   }
 
   getTreeItem(element: DeviceTreeItem): TreeItem | Thenable<TreeItem> {
@@ -42,7 +43,7 @@ export abstract class DeviceTreeItem implements RelatedDevice {
     return this.dev;
   }
 
-  children(): DeviceTreeItem[] {
+  async children(): Promise<DeviceTreeItem[]> {
     return [];
   }
 
@@ -58,13 +59,14 @@ class DeviceTreeRoot extends DeviceTreeItem {
     light: path.join(__filename, '..', '..', 'resources', 'light', 'inactive.svg'),
     dark: path.join(__filename, '..', '..', 'resources', 'dark', 'inactive.svg')
   };
-
-  constructor(dev: Device) {
+  context: CommandContext;
+  constructor(context: CommandContext, dev: Device) {
     super(dev);
+    this.context = context;
   }
 
-  children(): DeviceTreeItem[] {
-    const children = [
+  async children(): Promise<DeviceTreeItem[]> {
+    const children: Array<DeviceTreeItem> = [
       new DeviceTreeDevID(this.device()),
       new DeviceTreeLastSeen(this.device()),
       new DeviceTreeFirmware(this.device())
@@ -72,7 +74,8 @@ class DeviceTreeRoot extends DeviceTreeItem {
     if (this.device().isSimulator) {
       children.push(new DeviceTreeSimulator(this.device()));
     }
-
+    const apps = await listApps(this.context, this.device());
+    Array.prototype.push.apply(children, apps.map(app => new DeviceApp(app, this.device())));
     return children;
   }
 
@@ -86,6 +89,23 @@ class DeviceTreeRoot extends DeviceTreeItem {
       contextValue = "device";
       iconPath = p;
     }();
+  }
+}
+
+class DeviceApp extends DeviceTreeItem {
+  app: App;
+
+  constructor(app: App, dev: Device) {
+    super(dev);
+    this.app = app;
+  }
+
+  treeItem(): TreeItem {
+    return {
+      "label": this.app.jobName,
+      "collapsibleState": TreeItemCollapsibleState.None,
+      "description": this.app.updated
+    };
   }
 }
 
