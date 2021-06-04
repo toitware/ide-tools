@@ -1,19 +1,29 @@
 "use strict";
 
 import { promisify } from "util";
-import { InputBoxOptions, OutputChannel, QuickPickItem, Terminal, window as Window, workspace as Workspace } from "vscode";
+import { InputBoxOptions, OutputChannel, QuickPickItem, StatusBarItem, Terminal, window as Window, workspace as Workspace } from "vscode";
 import { App, ConsoleApp } from "./app";
 import { ConsoleDevice, Device, RelatedDevice } from "./device";
+import { ConsoleOrganization, Organization } from "./org";
 import { ToitDataProvider } from "./treeView";
 import cp = require("child_process");
 const execFile = promisify(cp.execFile);
 
 export class CommandContext {
+  statusBar?: StatusBarItem;
   deviceViewProvider?: ToitDataProvider;
   lastSelectedDevice?: RelatedDevice;
   lastSelectedPort?: string;
   lastFiles: Map<string, string> = new Map();
   toitExec : string = Workspace.getConfiguration("toit").get("Path", "toit");
+
+  setStatusBar(sb: StatusBarItem) {
+    this.statusBar = sb;
+  }
+
+  getStatusBar(): StatusBarItem | undefined {
+    return this.statusBar;
+  }
 
   setLastFile(extension: string, path: string) {
     this.lastFiles.set(extension, path);
@@ -70,6 +80,47 @@ export class CommandContext {
   }
 }
 
+class OrganizationItem extends Organization implements QuickPickItem {
+  label: string;
+
+  constructor(org: ConsoleOrganization) {
+    super(org);
+    this.label = this.name;
+  }
+}
+
+async function listOrganizations(ctx: CommandContext): Promise<OrganizationItem[]> {
+  // TODO(Lau): change this when is_active is part of json.
+  const cmdArgs =  [ "auth", "organizations", "-o", "json"];
+  const { stdout } = await execFile(ctx.toitExec, cmdArgs);
+  return stdout.split("\n").
+    filter(str => str !== "").
+    map(json => JSON.parse(json) as ConsoleOrganization).
+    map(org => new OrganizationItem(org));
+}
+
+export async function selectOrganization(ctx: CommandContext): Promise<Organization> {
+  let organizations = await listOrganizations(ctx);
+  const org = await Window.showQuickPick(organizations, { "placeHolder": "Pick an organization" });
+  if (!org) throw new Error("No organization selected.");
+  return org;
+}
+
+export async function setOrganization(ctx: CommandContext, org: Organization) {
+  const cmdArgs =  [ "auth", "set-organization", org.organizationID];
+  await execFile(ctx.toitExec, cmdArgs);
+}
+
+export async function listApps(ctx: CommandContext, device: Device): Promise<App[]> {
+  // TODO(Lau): change this when is_active is part of json.
+  const cmdArgs =  [ "dev", "-d", device.deviceID, "ps", "-o", "json"];
+  const { stdout } = await execFile(ctx.toitExec, cmdArgs);
+  return stdout.split("\n").
+    filter(str => str !== "").
+    map(json => JSON.parse(json) as ConsoleApp).
+    map(app => new App(app));
+}
+
 class DeviceItem extends Device implements QuickPickItem {
   label: string;
 
@@ -95,16 +146,6 @@ export async function listDevices(ctx: CommandContext): Promise<DeviceItem[]> {
     map(json => JSON.parse(json) as ConsoleDevice).
     map(device => new DeviceItem(device, activeDevices.find(o => o.device_id == device.device_id) ? true : false));
   return allDevices;
-}
-
-export async function listApps(ctx: CommandContext, device: Device): Promise<App[]> {
-  // TODO(Lau): change this when is_active is part of json.
-  const cmdArgs =  [ "dev", "-d", device.deviceID, "ps", "-o", "json"];
-  const { stdout } = await execFile(ctx.toitExec, cmdArgs);
-  return stdout.split("\n").
-    filter(str => str !== "").
-    map(json => JSON.parse(json) as ConsoleApp).
-    map(app => new App(app));
 }
 
 function preferLastPicked(ctx: CommandContext, devices: DeviceItem[]) {
