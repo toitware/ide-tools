@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Event, EventEmitter, TreeDataProvider, TreeItem, TreeItemCollapsibleState } from "vscode";
+import { Event, EventEmitter, MarkdownString, TreeDataProvider, TreeItem, TreeItemCollapsibleState } from "vscode";
 import { App } from './app';
 import { Device, RelatedDevice } from "./device";
 import { CommandContext, isAuthenticated, listApps, listDevices } from "./utils";
@@ -10,7 +10,7 @@ export class ToitDataProvider implements TreeDataProvider<DeviceTreeItem> {
   readonly onDidChangeTreeData: Event<DeviceTreeItem | undefined | null> = this._onDidChangeTreeData.event;
 
   refresh(): void {
-    this._onDidChangeTreeData.fire();
+    this._onDidChangeTreeData.fire(null);
   }
 
   context: CommandContext;
@@ -82,12 +82,32 @@ class DeviceTreeRoot extends DeviceTreeItem {
   treeItem(): TreeItem {
     const label = `${this.device().name}`;
     const p = this.device().isActive ? DeviceTreeRoot.activeIcons : DeviceTreeRoot.inactiveIcons;
+    const tooltipMarkdown =
+`
+### ${this.device().name} ${this.device().isSimulator ? "(simulator)" : ""}
+
+--------------------------------
+#### Device ID
+
+${this.device().deviceID}
+
+--------------------------------
+#### Firmware
+
+${this.device().runningFirmware} ${this.device().configureFirmware ? `\u279f ${this.device().configureFirmware}` : ""}
+
+--------------------------------
+#### Last seen
+
+${this.device().lastSeen}
+`
     return new class extends TreeItem {
       constructor() {
         super(label, TreeItemCollapsibleState.Collapsed);
       }
       contextValue = "device";
       iconPath = p;
+      tooltip = new MarkdownString(tooltipMarkdown);
     }();
   }
 }
