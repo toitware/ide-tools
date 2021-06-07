@@ -50,6 +50,12 @@
         ],
         "commands": [
             {
+                "command": "toit.stopSimulator",
+                "title": "Stop simulator",
+                "category": "Toit",
+                "icon": "$(circle-slash)"
+            },
+            {
                 "command": "toit.uninstallApp",
                 "title": "Uninstall",
                 "category": "Toit",
@@ -111,13 +117,18 @@
                 },
                 {
                     "command": "toit.devRun",
-                    "when": "view == toitDeviceView && viewItem == device",
-                    "group": "inline"
+                    "when": "view == toitDeviceView && viewItem =~ /device.*/",
+                    "group": "inline@2"
                 },
                 {
                     "command": "toit.devDeploy",
-                    "when": "view == toitDeviceView && viewItem == device",
-                    "group": "inline"
+                    "when": "view == toitDeviceView && viewItem =~ /device.*/",
+                    "group": "inline@1"
+                },
+                {
+                    "command": "toit.stopSimulator",
+                    "when": "view == toitDeviceView && viewItem == device-simulator",
+                    "group": "inline@0"
                 }
             ],
             "commandPalette": [

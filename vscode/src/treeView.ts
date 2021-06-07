@@ -71,6 +71,7 @@ class DeviceTreeRoot extends DeviceTreeItem {
   }
 
   treeItem(): TreeItem {
+    const contextValue = this.device().isSimulator ? "device-simulator" : "device";
     const label = `${this.device().name}`;
     const p = this.device().isActive ? DeviceTreeRoot.activeIcons : DeviceTreeRoot.inactiveIcons;
     const tooltipMarkdown =
@@ -98,7 +99,7 @@ ${new Date(this.device().lastSeen).toLocaleDateString(undefined, {weekday: "long
       constructor() {
         super(label, TreeItemCollapsibleState.Collapsed);
       }
-      contextValue = "device";
+      contextValue = contextValue;
       iconPath = p;
       tooltip = new MarkdownString(tooltipMarkdown);
     }();

@@ -125,9 +125,15 @@ function preferLastPicked(ctx: CommandContext, devices: DeviceItem[]) {
   preferElement(i, devices);
 }
 
-export async function selectDevice(ctx: CommandContext, activeOnly: boolean): Promise<Device> {
+export interface SelectOptions {
+  activeOnly: boolean;
+  simulatorOnly: boolean;
+}
+
+export async function selectDevice(ctx: CommandContext, config: SelectOptions): Promise<Device> {
   let deviceItems = await listDevices(ctx);
-  if (activeOnly) deviceItems = deviceItems.filter(device => device.isActive);
+  if (config.activeOnly) deviceItems = deviceItems.filter(device => device.isActive);
+  if (config.simulatorOnly) deviceItems = deviceItems.filter(device => device.isSimulator);
   preferLastPicked(ctx, deviceItems);
   const device = await Window.showQuickPick(deviceItems, { "placeHolder": "Pick a device" });
   if (!device) throw new Error("No device selected.");
@@ -293,5 +299,4 @@ export async function setOrganization(ctx: CommandContext, org: Organization) {
 
 export function getToitPath(): string {
   return Workspace.getConfiguration("toit").get("Path", "toit");
-
 }
