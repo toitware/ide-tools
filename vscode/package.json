@@ -51,13 +51,13 @@
         "commands": [
             {
                 "command": "toit.uninstallApp",
-                "title": "Uninstall app",
+                "title": "Uninstall",
                 "category": "Toit",
                 "icon": "$(trash)"
             },
             {
                 "command": "toit.refreshView",
-                "title": "Refresh the list of devices",
+                "title": "Refresh",
                 "category": "Toit",
                 "icon": "$(refresh)",
                 "enablement": "toit.extensionActive"
