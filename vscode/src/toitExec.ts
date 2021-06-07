@@ -9,6 +9,7 @@ interface ExecConfig {
   cmd: string;
   extension: string;
   onlyActive: boolean;
+  refreshView: boolean;
 }
 
 class RunConfig implements ExecConfig {
@@ -16,6 +17,7 @@ class RunConfig implements ExecConfig {
   cmd: string = "run";
   extension: string = ".toit";
   onlyActive: boolean = true;
+  refreshView: boolean = false;
 }
 
 class DeployConfig implements ExecConfig {
@@ -23,6 +25,7 @@ class DeployConfig implements ExecConfig {
   cmd: string = "deploy";
   extension: string = ".yaml";
   onlyActive: boolean = false;
+  refreshView: boolean = true;
 }
 
 
@@ -65,7 +68,7 @@ async function executeCommand(ctx: CommandContext, config: ExecConfig, device?: 
     toitOutput.show();
     commandProcess.stdout.on("data", data => toitOutput.append(`${data}`));
     commandProcess.stderr.on("data", data => toitOutput.append(`${data}`));
-    ctx.refreshDeviceView();
+    if (config.refreshView) ctx.refreshDeviceView();
     ctx.setLastFile(config.extension, filePath);
   } catch (e) {
     Window.showErrorMessage(`${capitalize(config.cmd)} app failed: ${e.message}`);
