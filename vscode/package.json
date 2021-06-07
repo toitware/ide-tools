@@ -156,14 +156,6 @@
                     "default": "toit",
                     "description": "The path to the 'toit' command line tool."
                 },
-                "toitLanguageServer.toitPath": {
-                    "type": [
-                        "string",
-                        "null"
-                    ],
-                    "default": "toit",
-                    "description": "The path to the 'toit' command line tool."
-                },
                 "toitLanguageServer.arguments": {
                     "type": [
                         "string",
