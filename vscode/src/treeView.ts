@@ -90,7 +90,9 @@ ${this.device().runningFirmware} ${this.device().configureFirmware ? `\u279f ${t
 --------------------------------
 #### Last seen
 
-${this.device().lastSeen}
+${new Date(this.device().lastSeen).toLocaleTimeString(undefined)}
+
+${new Date(this.device().lastSeen).toLocaleDateString(undefined, {weekday: "long", year: "numeric", month: "long", day: "numeric"})}
 `
     return new class extends TreeItem {
       constructor() {

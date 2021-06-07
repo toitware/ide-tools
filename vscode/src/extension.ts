@@ -2,7 +2,6 @@
 
 import { commands as Commands, ExtensionContext, window as Window } from "vscode";
 import { activateLsp, deactivateLsp } from "./lspClient";
-import { activateToitStatusBar, createSetOrgCommand } from "./organization";
 import { createEnsureAuth } from "./toitAuth";
 import { createDeployCommand, createRunCommand } from "./toitExec";
 import { createSerialMonitor } from "./toitMonitor";
@@ -24,11 +23,9 @@ export function activate(context: ExtensionContext): void {
   context.subscriptions.push(Commands.registerCommand("toit.uninstallApp", createUninstallCommand(cmdContext)));
   context.subscriptions.push(Commands.registerCommand("toit.devRun", createRunCommand(cmdContext)));
   context.subscriptions.push(Commands.registerCommand("toit.devDeploy", createDeployCommand(cmdContext)));
-  context.subscriptions.push(Commands.registerCommand("toit.setOrganization", createSetOrgCommand(cmdContext)));
 
   cmdContext.setDeviceProvider(deviceDataProvider);
 
-  activateToitStatusBar(cmdContext, context);
   activateLsp(context);
 }
 
