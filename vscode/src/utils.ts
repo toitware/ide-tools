@@ -15,7 +15,6 @@ export class CommandContext {
   lastSelectedDevice?: RelatedDevice;
   lastSelectedPort?: string;
   lastFiles: Map<string, string> = new Map();
-  toitExec : string = getToitPath();
 
   setStatusBar(sb: StatusBarItem) {
     this.statusBar = sb;
@@ -92,7 +91,7 @@ class OrganizationItem extends Organization implements QuickPickItem {
 async function listOrganizations(ctx: CommandContext): Promise<OrganizationItem[]> {
   // TODO(Lau): change this when is_active is part of json.
   const cmdArgs =  [ "auth", "organizations", "-o", "json"];
-  const { stdout } = await execFile(ctx.toitExec, cmdArgs);
+  const { stdout } = await execFile(getToitPath(), cmdArgs);
   return stdout.split("\n").
     filter(str => str !== "").
     map(json => JSON.parse(json) as ConsoleOrganization).
@@ -108,13 +107,13 @@ export async function selectOrganization(ctx: CommandContext): Promise<Organizat
 
 export async function setOrganization(ctx: CommandContext, org: Organization) {
   const cmdArgs =  [ "auth", "set-organization", org.organizationID];
-  await execFile(ctx.toitExec, cmdArgs);
+  await execFile(getToitPath(), cmdArgs);
 }
 
 export async function listApps(ctx: CommandContext, device: Device): Promise<App[]> {
   // TODO(Lau): change this when is_active is part of json.
   const cmdArgs =  [ "dev", "-d", device.deviceID, "ps", "-o", "json"];
-  const { stdout } = await execFile(ctx.toitExec, cmdArgs);
+  const { stdout } = await execFile(getToitPath(), cmdArgs);
   return stdout.split("\n").
     filter(str => str !== "").
     map(json => JSON.parse(json) as ConsoleApp).
@@ -133,9 +132,9 @@ class DeviceItem extends Device implements QuickPickItem {
 export async function listDevices(ctx: CommandContext): Promise<DeviceItem[]> {
   // TODO(Lau): change this when is_active is part of json.
   const cmdArgs =  [ "devices", "--names", "-o", "json" ];
-  const jsonAll = await execFile(ctx.toitExec, cmdArgs);
+  const jsonAll = await execFile(getToitPath(), cmdArgs);
   cmdArgs.push("--active");
-  const jsonActive = await execFile(ctx.toitExec, cmdArgs);
+  const jsonActive = await execFile(getToitPath(), cmdArgs);
 
   const activeDevices = jsonActive.stdout.split("\n").
     filter(str => str !== "").
@@ -168,11 +167,11 @@ export async function selectDevice(ctx: CommandContext, activeOnly: boolean): Pr
 }
 
 async function login(ctx: CommandContext, user: string, password: string): Promise<void> {
-  await execFile(ctx.toitExec, [ "auth", "login", "-u", user, "-p", password ]);
+  await execFile(getToitPath(), [ "auth", "login", "-u", user, "-p", password ]);
 }
 
 async function authInfo(ctx: CommandContext): Promise<AuthInfo> {
-  const { stdout } = await execFile(ctx.toitExec, [ "auth", "info", "-s", "-o", "json" ]);
+  const { stdout } = await execFile(getToitPath(), [ "auth", "info", "-s", "-o", "json" ]);
   return JSON.parse(stdout);
 }
 
@@ -195,7 +194,7 @@ export async function isAuthenticated(ctx: CommandContext): Promise<boolean> {
 }
 
 async function consoleContext(ctx: CommandContext): Promise<string> {
-  const { stdout } = await execFile(ctx.toitExec, [ "context", "default" ]);
+  const { stdout } = await execFile(getToitPath(), [ "context", "default" ]);
   return stdout.trim();
 }
 
@@ -253,7 +252,7 @@ export function currentFilePath(suffix: string): string {
 }
 
 async function listPorts(ctx: CommandContext): Promise<string[]> {
-  const { stdout } = await execFile(ctx.toitExec, [ "serial", "ports" ]);
+  const { stdout } = await execFile(getToitPath(), [ "serial", "ports" ]);
   return stdout.split("\n").filter(str => str !== "");
 }
 
@@ -282,12 +281,12 @@ function preferElement<T>(index: number, list: T[]): void {
 }
 
 export async function uninstallApp(ctx: CommandContext, app: App) {
-  await execFile(ctx.toitExec, [ "dev", "-d", app.deviceID, "uninstall", app.jobID ]);
+  await execFile(getToitPath(), [ "dev", "-d", app.deviceID, "uninstall", app.jobID ]);
 }
 
 export async function getOrganization(ctx: CommandContext) {
   await ensureAuth(ctx);
-  const { stdout } = await execFile(ctx.toitExec, [ "auth", "get-organization" ]);
+  const { stdout } = await execFile(getToitPath(), [ "auth", "get-organization" ]);
   return stdout.slice(13);
 }
 
