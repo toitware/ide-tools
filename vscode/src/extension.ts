@@ -6,6 +6,7 @@ import { createEnsureAuth } from "./toitAuth";
 import { createDeployCommand, createRunCommand } from "./toitExec";
 import { createSerialMonitor } from "./toitMonitor";
 import { createSerialProvision } from "./toitProvision";
+import { createStopSimCommand } from "./toitSimulator";
 import { createUninstallCommand } from "./toitUninstall";
 import { ToitDataProvider } from "./treeView";
 import { CommandContext } from "./utils";
@@ -23,6 +24,7 @@ export function activate(context: ExtensionContext): void {
   context.subscriptions.push(Commands.registerCommand("toit.uninstallApp", createUninstallCommand(cmdContext)));
   context.subscriptions.push(Commands.registerCommand("toit.devRun", createRunCommand(cmdContext)));
   context.subscriptions.push(Commands.registerCommand("toit.devDeploy", createDeployCommand(cmdContext)));
+  context.subscriptions.push(Commands.registerCommand("toit.stopSimulator", createStopSimCommand(cmdContext)));
 
   cmdContext.setDeviceProvider(deviceDataProvider);
 

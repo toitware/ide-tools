@@ -3,12 +3,12 @@
 import cp = require("child_process");
 import { OutputChannel, window as Window } from "vscode";
 import { Device, RelatedDevice } from "./device";
-import { CommandContext, ensureAuth, selectDevice } from "./utils";
+import { CommandContext, ensureAuth, selectDevice, SelectOptions as DeviceSelectOptions } from "./utils";
 
 interface ExecConfig {
   cmd: string;
   extension: string;
-  onlyActive: boolean;
+  deviceSelection: DeviceSelectOptions;
   refreshView: boolean;
 }
 
@@ -16,7 +16,7 @@ class RunConfig implements ExecConfig {
   static instance = new RunConfig();
   cmd: string = "run";
   extension: string = ".toit";
-  onlyActive: boolean = true;
+  deviceSelection: DeviceSelectOptions = { activeOnly: true, simulatorOnly: false };
   refreshView: boolean = false;
 }
 
@@ -24,7 +24,7 @@ class DeployConfig implements ExecConfig {
   static instance = new DeployConfig();
   cmd: string = "deploy";
   extension: string = ".yaml";
-  onlyActive: boolean = false;
+  deviceSelection: DeviceSelectOptions = { activeOnly: false, simulatorOnly: false };
   refreshView: boolean = true;
 }
 
@@ -61,7 +61,7 @@ async function executeCommand(ctx: CommandContext, config: ExecConfig, device?: 
   }
 
   try {
-    if (!device) device = await selectDevice(ctx, config.onlyActive);
+    if (!device) device = await selectDevice(ctx, config.deviceSelection);
 
     const commandProcess = cp.spawn("toit", [ "dev", "-d", device.name, config.cmd, filePath ]);
     const toitOutput: OutputChannel = ctx.outputChannel(device.deviceID, device.name);

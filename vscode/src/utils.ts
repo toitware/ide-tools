@@ -156,9 +156,15 @@ function preferLastPicked(ctx: CommandContext, devices: DeviceItem[]) {
   preferElement(i, devices);
 }
 
-export async function selectDevice(ctx: CommandContext, activeOnly: boolean): Promise<Device> {
+export interface SelectOptions {
+  activeOnly: boolean;
+  simulatorOnly: boolean;
+}
+
+export async function selectDevice(ctx: CommandContext, config: SelectOptions): Promise<Device> {
   let deviceItems = await listDevices(ctx);
-  if (activeOnly) deviceItems = deviceItems.filter(device => device.isActive);
+  if (config.activeOnly) deviceItems = deviceItems.filter(device => device.isActive);
+  if (config.simulatorOnly) deviceItems = deviceItems.filter(device => device.isSimulator);
   preferLastPicked(ctx, deviceItems);
   const device = await Window.showQuickPick(deviceItems, { "placeHolder": "Pick a device" });
   if (!device) throw new Error("No device selected.");
@@ -285,7 +291,7 @@ export async function uninstallApp(ctx: CommandContext, app: App) {
   await execFile(ctx.toitExec, [ "dev", "-d", app.deviceID, "uninstall", app.jobID ]);
 }
 
-export async function getOrganization(ctx: CommandContext) {
+export async function getOrganization(ctx: CommandContext) {``
   await ensureAuth(ctx);
   const { stdout } = await execFile(ctx.toitExec, [ "auth", "get-organization" ]);
   return stdout.slice(13);
