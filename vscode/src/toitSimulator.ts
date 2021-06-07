@@ -6,8 +6,6 @@ import { Device, RelatedDevice } from "./device";
 import { CommandContext, ensureAuth, selectDevice } from "./utils";
 
 
-
-
 async function executeStopCommand(ctx: CommandContext, device?: Device) {
   try {
     await ensureAuth(ctx);
