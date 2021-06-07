@@ -136,8 +136,8 @@ export async function selectDevice(ctx: CommandContext, activeOnly: boolean): Pr
   return device;
 }
 
-async function login(ctx: CommandContext, user: string, password: string): Promise<void> {
-  await execFile(ctx.toitExec, [ "auth", "login", "-u", user, "-p", password ]);
+async function login(ctx: CommandContext): Promise<void> {
+  await execFile(ctx.toitExec, [ "auth", "login" ]);
 }
 
 async function authInfo(ctx: CommandContext): Promise<AuthInfo> {
@@ -186,7 +186,7 @@ export async function ensureAuth(ctx: CommandContext): Promise<void> {
   const password = await Window.showInputBox(passwordPromptOptions);
   if (!password) throw new Error("No password provided");
 
-  await login(ctx, user, password);
+  await login(ctx);
   ctx.refreshDeviceView();
 }
 
