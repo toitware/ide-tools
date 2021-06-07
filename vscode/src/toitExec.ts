@@ -5,6 +5,30 @@ import { OutputChannel, window as Window } from "vscode";
 import { Device, RelatedDevice } from "./device";
 import { CommandContext, ensureAuth, selectDevice } from "./utils";
 
+interface ExecConfig {
+  cmd: string;
+  extension: string;
+  onlyActive: boolean;
+  refreshView: boolean;
+}
+
+class RunConfig implements ExecConfig {
+  static instance = new RunConfig();
+  cmd: string = "run";
+  extension: string = ".toit";
+  onlyActive: boolean = true;
+  refreshView: boolean = false;
+}
+
+class DeployConfig implements ExecConfig {
+  static instance = new DeployConfig();
+  cmd: string = "deploy";
+  extension: string = ".yaml";
+  onlyActive: boolean = false;
+  refreshView: boolean = true;
+}
+
+
 function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
@@ -22,12 +46,12 @@ function currentFilePath(ctx: CommandContext, suffix: string): string {
   return filePath;
 }
 
-async function executeCommand(ctx: CommandContext, cmd: string, extension: string, activeOnly: boolean, device?: Device) {
+async function executeCommand(ctx: CommandContext, config: ExecConfig, device?: Device) {
   let filePath: string;
   try {
-    filePath = currentFilePath(ctx, extension);
+    filePath = currentFilePath(ctx, config.extension);
   } catch (e) {
-    return Window.showErrorMessage(`Unable to ${cmd} file: ${e.message}`);
+    return Window.showErrorMessage(`Unable to ${config.cmd} file: ${e.message}`);
   }
 
   try {
@@ -37,28 +61,28 @@ async function executeCommand(ctx: CommandContext, cmd: string, extension: strin
   }
 
   try {
-    if (!device) device = await selectDevice(ctx, activeOnly);
+    if (!device) device = await selectDevice(ctx, config.onlyActive);
 
-    const commandProcess = cp.spawn("toit", [ "dev", "-d", device.name, cmd, filePath ]);
+    const commandProcess = cp.spawn("toit", [ "dev", "-d", device.name, config.cmd, filePath ]);
     const toitOutput: OutputChannel = ctx.outputChannel(device.deviceID, device.name);
     toitOutput.show();
     commandProcess.stdout.on("data", data => toitOutput.append(`${data}`));
     commandProcess.stderr.on("data", data => toitOutput.append(`${data}`));
-    ctx.refreshDeviceView();
-    ctx.setLastFile(extension, filePath);
+    if (config.refreshView) ctx.refreshDeviceView();
+    ctx.setLastFile(config.extension, filePath);
   } catch (e) {
-    Window.showErrorMessage(`${capitalize(cmd)} app failed: ${e.message}`);
+    Window.showErrorMessage(`${capitalize(config.cmd)} app failed: ${e.message}`);
   }
 }
 
 export function createRunCommand(cmdContext: CommandContext): () => void {
   return (dev?: RelatedDevice) => {
-    executeCommand(cmdContext, "run", ".toit", true, dev?.device());
+    executeCommand(cmdContext, RunConfig.instance, dev?.device());
   };
 }
 
 export function createDeployCommand(cmdContext: CommandContext): () => void {
   return (dev?: RelatedDevice) => {
-    executeCommand(cmdContext, "deploy", ".yaml", false, dev?.device());
+    executeCommand(cmdContext, DeployConfig.instance, dev?.device());
   };
 }
