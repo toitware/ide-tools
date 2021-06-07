@@ -15,7 +15,7 @@ export class CommandContext {
   lastSelectedDevice?: RelatedDevice;
   lastSelectedPort?: string;
   lastFiles: Map<string, string> = new Map();
-  toitExec : string = Workspace.getConfiguration("toit").get("Path", "toit");
+  toitExec : string = getToitPath();
 
   setStatusBar(sb: StatusBarItem) {
     this.statusBar = sb;
@@ -289,4 +289,8 @@ export async function getOrganization(ctx: CommandContext) {
   await ensureAuth(ctx);
   const { stdout } = await execFile(ctx.toitExec, [ "auth", "get-organization" ]);
   return stdout.slice(13);
+}
+
+export function getToitPath(): string {
+  return Workspace.getConfiguration("toit").get("Path", "toit");
 }
