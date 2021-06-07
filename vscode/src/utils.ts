@@ -15,7 +15,7 @@ export class CommandContext {
   lastSelectedDevice?: RelatedDevice;
   lastSelectedPort?: string;
   lastFiles: Map<string, string> = new Map();
-  toitExec : string = Workspace.getConfiguration("toit").get("Path", "toit");
+  toitExec : string = getToitPath();
 
   setStatusBar(sb: StatusBarItem) {
     this.statusBar = sb;
@@ -269,6 +269,7 @@ export async function getOrganization(ctx: CommandContext) {
   return stdout.slice(13);
 }
 
+
 async function listOrganizations(ctx: CommandContext): Promise<OrganizationItem[]> {
   // TODO(Lau): change this when is_active is part of json.
   const cmdArgs =  [ "org", "list", "-o", "json"];
@@ -289,4 +290,8 @@ export async function selectOrganization(ctx: CommandContext): Promise<Organizat
 export async function setOrganization(ctx: CommandContext, org: Organization) {
   const cmdArgs =  [ "org", "use", org.organizationID];
   await execFile(ctx.toitExec, cmdArgs);
+
+export function getToitPath(): string {
+  return Workspace.getConfiguration("toit").get("Path", "toit");
+
 }
