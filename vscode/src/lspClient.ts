@@ -5,7 +5,6 @@ import { platform } from "os";
 import * as p from "path";
 import { ExtensionContext, OutputChannel, RelativePattern, TextDocument, Uri, window as Window, workspace as Workspace, WorkspaceFolder } from "vscode";
 import { DocumentSelector, LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-languageclient";
-import { getToitPath } from "./utils";
 
 // Untitled documents, or documents outside all workspaces go to a default client.
 let nonFileClient: LanguageClient;
@@ -57,10 +56,13 @@ function startToitLsp(_: ExtensionContext,
   const scheme = config.scheme;
   const pattern = config.pattern;
   const lspSettings = Workspace.getConfiguration("toitLanguageServer", workspaceFolder);
-  let toitPath = getToitPath();
+  let toitPath = lspSettings.get("toitPath");
   let lspArguments: Array<string> | string | null | undefined = lspSettings.get("arguments");
   let debugClientToServer = !!lspSettings.get("debug.clientToServer");
 
+  if (toitPath === null || toitPath === undefined) {
+    toitPath = "toit"; // Assume `toit` is visible in the global environment.
+  }
   if (lspArguments === null || lspArguments === undefined) {
     lspArguments = [ "tool", "lsp" ];
   }
