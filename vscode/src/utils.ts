@@ -243,3 +243,9 @@ function preferElement<T>(index: number, list: T[]): void {
 export async function uninstallApp(ctx: CommandContext, app: App) {
   await execFile(ctx.toitExec, [ "dev", "-d", app.deviceID, "uninstall", app.jobID ]);
 }
+
+export async function getOrganization(ctx: CommandContext) {
+  await ensureAuth(ctx);
+  const { stdout } = await execFile(ctx.toitExec, [ "auth", "get-organization" ]);
+  return stdout.slice(13);
+}
