@@ -57,40 +57,40 @@
             },
             {
                 "command": "toit.refreshView",
-                "title": "Refresh the list of devices.",
+                "title": "Refresh the list of devices",
                 "category": "Toit",
                 "icon": "$(refresh)",
                 "enablement": "toit.extensionActive"
             },
             {
                 "command": "toit.ensureAuth",
-                "title": "Authenticate with toit.io.",
+                "title": "Log in to toit.io",
                 "category": "Toit",
                 "enablement": "toit.extensionActive"
             },
             {
                 "command": "toit.devRun",
-                "title": "Run a Toit app on a device.",
+                "title": "Run",
                 "category": "Toit",
                 "icon": "$(run)",
                 "enablement": "toit.extensionActive"
             },
             {
                 "command": "toit.devDeploy",
-                "title": "Deploy a Toit app on a device.",
+                "title": "Deploy",
                 "category": "Toit",
                 "icon": "$(run-all)",
                 "enablement": "toit.extensionActive"
             },
             {
                 "command": "toit.serialProvision",
-                "title": "Provision a device connected via serial.",
+                "title": "Provision a device connected via serial",
                 "category": "Toit",
                 "enablement": "toit.extensionActive"
             },
             {
                 "command": "toit.serialMonitor",
-                "title": "Monitor serial output from a device.",
+                "title": "Monitor serial output from a device",
                 "category": "Toit",
                 "enablement": "toit.extensionActive"
             }
