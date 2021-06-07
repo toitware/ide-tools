@@ -1,5 +1,6 @@
 "use strict";
 
+import { existsSync } from "fs";
 import { promisify } from "util";
 import { InputBoxOptions, OutputChannel, QuickPickItem, StatusBarItem, Terminal, window as Window, workspace as Workspace } from "vscode";
 import { App, ConsoleApp } from "./app";
@@ -91,7 +92,7 @@ class OrganizationItem extends Organization implements QuickPickItem {
 async function listOrganizations(): Promise<OrganizationItem[]> {
   // TODO(Lau): change this when is_active is part of json.
   const cmdArgs =  [ "auth", "organizations", "-o", "json"];
-  const { stdout } = await execFile(getToitPath(), cmdArgs);
+  const { stdout } = await execFile(await ensurePath(), cmdArgs);
   return stdout.split("\n").
     filter(str => str !== "").
     map(json => JSON.parse(json) as ConsoleOrganization).
@@ -107,13 +108,13 @@ export async function selectOrganization(): Promise<Organization> {
 
 export async function setOrganization(org: Organization) {
   const cmdArgs =  [ "auth", "set-organization", org.organizationID];
-  await execFile(getToitPath(), cmdArgs);
+  await execFile(await ensurePath(), cmdArgs);
 }
 
 export async function listApps(device: Device): Promise<App[]> {
   // TODO(Lau): change this when is_active is part of json.
   const cmdArgs =  [ "dev", "-d", device.deviceID, "ps", "-o", "json"];
-  const { stdout } = await execFile(getToitPath(), cmdArgs);
+  const { stdout } = await execFile(await ensurePath(), cmdArgs);
   return stdout.split("\n").
     filter(str => str !== "").
     map(json => JSON.parse(json) as ConsoleApp).
@@ -132,9 +133,9 @@ class DeviceItem extends Device implements QuickPickItem {
 export async function listDevices(): Promise<DeviceItem[]> {
   // TODO(Lau): change this when is_active is part of json.
   const cmdArgs =  [ "devices", "--names", "-o", "json" ];
-  const jsonAll = await execFile(getToitPath(), cmdArgs);
+  const jsonAll = await execFile(await ensurePath(), cmdArgs);
   cmdArgs.push("--active");
-  const jsonActive = await execFile(getToitPath(), cmdArgs);
+  const jsonActive = await execFile(await ensurePath(), cmdArgs);
 
   const activeDevices = jsonActive.stdout.split("\n").
     filter(str => str !== "").
@@ -167,11 +168,11 @@ export async function selectDevice(ctx: CommandContext, activeOnly: boolean): Pr
 }
 
 async function login(user: string, password: string): Promise<void> {
-  await execFile(getToitPath(), [ "auth", "login", "-u", user, "-p", password ]);
+  await execFile(await ensurePath(), [ "auth", "login", "-u", user, "-p", password ]);
 }
 
 async function authInfo(): Promise<AuthInfo> {
-  const { stdout } = await execFile(getToitPath(), [ "auth", "info", "-s", "-o", "json" ]);
+  const { stdout } = await execFile(await ensurePath(), [ "auth", "info", "-s", "-o", "json" ]);
   return JSON.parse(stdout);
 }
 
@@ -194,7 +195,7 @@ export async function isAuthenticated(): Promise<boolean> {
 }
 
 async function consoleContext(): Promise<string> {
-  const { stdout } = await execFile(getToitPath(), [ "context", "default" ]);
+  const { stdout } = await execFile(await ensurePath(), [ "context", "default" ]);
   return stdout.trim();
 }
 
@@ -252,7 +253,7 @@ export function currentFilePath(suffix: string): string {
 }
 
 async function listPorts(): Promise<string[]> {
-  const { stdout } = await execFile(getToitPath(), [ "serial", "ports" ]);
+  const { stdout } = await execFile(await ensurePath(), [ "serial", "ports" ]);
   return stdout.split("\n").filter(str => str !== "");
 }
 
@@ -281,15 +282,25 @@ function preferElement<T>(index: number, list: T[]): void {
 }
 
 export async function uninstallApp(app: App) {
-  await execFile(getToitPath(), [ "dev", "-d", app.deviceID, "uninstall", app.jobID ]);
+  await execFile(await ensurePath(), [ "dev", "-d", app.deviceID, "uninstall", app.jobID ]);
 }
 
 export async function getOrganization(ctx: CommandContext) {
   await ensureAuth(ctx);
-  const { stdout } = await execFile(getToitPath(), [ "auth", "get-organization" ]);
+  const { stdout } = await execFile(await ensurePath(), [ "auth", "get-organization" ]);
   return stdout.slice(13);
 }
 
 export function getToitPath(): string {
   return Workspace.getConfiguration("toit").get("Path", "toit");
+}
+
+export async function ensurePath(): Promise<string> {
+  const path = getToitPath();
+  if (!existsSync(path)) throw new Error(`Invalid toit path, no such file: ${path}`);
+
+  const { stdout } = await execFile(path, ["version"]);
+  if (!stdout.includes("Toit CLI")) throw new Error(`Invalid toit path, non-toit CLI: ${path}`)
+
+  return path;
 }

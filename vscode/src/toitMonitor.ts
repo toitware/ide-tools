@@ -1,7 +1,7 @@
 "use strict";
 
 import { window as Window } from "vscode";
-import { CommandContext, ensureAuth, getToitPath, selectPort } from "./utils";
+import { CommandContext, ensureAuth, ensurePath, selectPort } from "./utils";
 
 async function serialMonitor(ctx: CommandContext) {
   try {
@@ -14,7 +14,7 @@ async function serialMonitor(ctx: CommandContext) {
     const port = await selectPort(ctx);
     const terminal = ctx.serialTerminal(port);
     terminal.show();
-    terminal.sendText(`${getToitPath()} serial monitor --port '${port}' --model esp32-4mb`);
+    terminal.sendText(`${ensurePath()} serial monitor --port '${port}' --model esp32-4mb`);
   } catch (e) {
     return Window.showErrorMessage(`Unable to monitor: ${e.message}`);
   }
