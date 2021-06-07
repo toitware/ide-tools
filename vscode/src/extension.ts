@@ -10,6 +10,8 @@ import { createUninstallCommand } from "./toitUninstall";
 import { ToitDataProvider } from "./treeView";
 import { CommandContext } from "./utils";
 
+
+
 export function activate(context: ExtensionContext): void {
   Commands.executeCommand('setContext', 'toit.extensionActive', true);
   const cmdContext = new CommandContext();
