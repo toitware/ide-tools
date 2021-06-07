@@ -167,8 +167,8 @@ export async function selectDevice(ctx: CommandContext, activeOnly: boolean): Pr
   return device;
 }
 
-async function login(ctx: CommandContext, user: string, password: string): Promise<void> {
-  await execFile(ctx.toitExec, [ "auth", "login", "-u", user, "-p", password ]);
+async function login(ctx: CommandContext, _user: string, _password: string): Promise<void> {
+  await execFile(ctx.toitExec, [ "auth", "login" ]);
 }
 
 async function authInfo(ctx: CommandContext): Promise<AuthInfo> {
