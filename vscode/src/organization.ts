@@ -19,8 +19,8 @@ async function updateStatus(ctx: CommandContext) {
 
 async function executeCommand(ctx: CommandContext) {
   await ensureAuth(ctx);
-  const org = await selectOrganization(ctx);
-  await setOrganization(ctx, org);
+  const org = await selectOrganization();
+  await setOrganization(org);
   await updateStatus(ctx);
 }
 

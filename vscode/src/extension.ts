@@ -13,7 +13,7 @@ import { CommandContext } from "./utils";
 export function activate(context: ExtensionContext): void {
   Commands.executeCommand('setContext', 'toit.extensionActive', true);
   const cmdContext = new CommandContext();
-  const deviceDataProvider = new ToitDataProvider(cmdContext);
+  const deviceDataProvider = new ToitDataProvider();
   Window.createTreeView("toitDeviceView", { "treeDataProvider": deviceDataProvider } );
 
   context.subscriptions.push(Commands.registerCommand("toit.serialProvision", createSerialProvision(cmdContext)));

@@ -6,7 +6,7 @@ import { CommandContext, uninstallApp } from "./utils";
 
 export function createUninstallCommand(cmdContext: CommandContext): (app: App) => void {
   return async (app: RelatedApp) => {
-    await uninstallApp(cmdContext, app.app());
+    await uninstallApp(app.app());
     cmdContext.refreshDeviceView();
   };
 }

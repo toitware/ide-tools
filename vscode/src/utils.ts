@@ -88,7 +88,7 @@ class OrganizationItem extends Organization implements QuickPickItem {
   }
 }
 
-async function listOrganizations(ctx: CommandContext): Promise<OrganizationItem[]> {
+async function listOrganizations(): Promise<OrganizationItem[]> {
   // TODO(Lau): change this when is_active is part of json.
   const cmdArgs =  [ "auth", "organizations", "-o", "json"];
   const { stdout } = await execFile(getToitPath(), cmdArgs);
@@ -98,19 +98,19 @@ async function listOrganizations(ctx: CommandContext): Promise<OrganizationItem[
     map(org => new OrganizationItem(org));
 }
 
-export async function selectOrganization(ctx: CommandContext): Promise<Organization> {
-  let organizations = await listOrganizations(ctx);
+export async function selectOrganization(): Promise<Organization> {
+  let organizations = await listOrganizations();
   const org = await Window.showQuickPick(organizations, { "placeHolder": "Pick an organization" });
   if (!org) throw new Error("No organization selected.");
   return org;
 }
 
-export async function setOrganization(ctx: CommandContext, org: Organization) {
+export async function setOrganization(org: Organization) {
   const cmdArgs =  [ "auth", "set-organization", org.organizationID];
   await execFile(getToitPath(), cmdArgs);
 }
 
-export async function listApps(ctx: CommandContext, device: Device): Promise<App[]> {
+export async function listApps(device: Device): Promise<App[]> {
   // TODO(Lau): change this when is_active is part of json.
   const cmdArgs =  [ "dev", "-d", device.deviceID, "ps", "-o", "json"];
   const { stdout } = await execFile(getToitPath(), cmdArgs);
@@ -129,7 +129,7 @@ class DeviceItem extends Device implements QuickPickItem {
   }
 }
 
-export async function listDevices(ctx: CommandContext): Promise<DeviceItem[]> {
+export async function listDevices(): Promise<DeviceItem[]> {
   // TODO(Lau): change this when is_active is part of json.
   const cmdArgs =  [ "devices", "--names", "-o", "json" ];
   const jsonAll = await execFile(getToitPath(), cmdArgs);
@@ -156,7 +156,7 @@ function preferLastPicked(ctx: CommandContext, devices: DeviceItem[]) {
 }
 
 export async function selectDevice(ctx: CommandContext, activeOnly: boolean): Promise<Device> {
-  let deviceItems = await listDevices(ctx);
+  let deviceItems = await listDevices();
   if (activeOnly) deviceItems = deviceItems.filter(device => device.isActive);
   preferLastPicked(ctx, deviceItems);
   const device = await Window.showQuickPick(deviceItems, { "placeHolder": "Pick a device" });
@@ -166,11 +166,11 @@ export async function selectDevice(ctx: CommandContext, activeOnly: boolean): Pr
   return device;
 }
 
-async function login(ctx: CommandContext, user: string, password: string): Promise<void> {
+async function login(user: string, password: string): Promise<void> {
   await execFile(getToitPath(), [ "auth", "login", "-u", user, "-p", password ]);
 }
 
-async function authInfo(ctx: CommandContext): Promise<AuthInfo> {
+async function authInfo(): Promise<AuthInfo> {
   const { stdout } = await execFile(getToitPath(), [ "auth", "info", "-s", "-o", "json" ]);
   return JSON.parse(stdout);
 }
@@ -188,20 +188,20 @@ interface AuthInfo {
   /* eslint-enable @typescript-eslint/naming-convention */
 }
 
-export async function isAuthenticated(ctx: CommandContext): Promise<boolean> {
-  const info = await authInfo(ctx);
+export async function isAuthenticated(): Promise<boolean> {
+  const info = await authInfo();
   return info.status === "authenticated";
 }
 
-async function consoleContext(ctx: CommandContext): Promise<string> {
+async function consoleContext(): Promise<string> {
   const { stdout } = await execFile(getToitPath(), [ "context", "default" ]);
   return stdout.trim();
 }
 
 export async function ensureAuth(ctx: CommandContext): Promise<void> {
-  if (await consoleContext(ctx) === "local") return;
+  if (await consoleContext() === "local") return;
 
-  if (await isAuthenticated(ctx)) return;
+  if (await isAuthenticated()) return;
 
   const userPromptOptions: InputBoxOptions = {
     "prompt": "Enter your e-mail for toit.io"
@@ -216,7 +216,7 @@ export async function ensureAuth(ctx: CommandContext): Promise<void> {
   const password = await Window.showInputBox(passwordPromptOptions);
   if (!password) throw new Error("No password provided");
 
-  await login(ctx, user, password);
+  await login(user, password);
   ctx.refreshDeviceView();
 }
 
@@ -251,13 +251,13 @@ export function currentFilePath(suffix: string): string {
   return filePath;
 }
 
-async function listPorts(ctx: CommandContext): Promise<string[]> {
+async function listPorts(): Promise<string[]> {
   const { stdout } = await execFile(getToitPath(), [ "serial", "ports" ]);
   return stdout.split("\n").filter(str => str !== "");
 }
 
 export async function selectPort(ctx: CommandContext): Promise<string> {
-  const ports = await listPorts(ctx);
+  const ports = await listPorts();
   ports.reverse();
 
   const lastPort = ctx.lastPort();
@@ -280,7 +280,7 @@ function preferElement<T>(index: number, list: T[]): void {
   list.unshift(preferred);
 }
 
-export async function uninstallApp(ctx: CommandContext, app: App) {
+export async function uninstallApp(app: App) {
   await execFile(getToitPath(), [ "dev", "-d", app.deviceID, "uninstall", app.jobID ]);
 }
 

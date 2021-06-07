@@ -2,7 +2,7 @@ import * as path from 'path';
 import { Event, EventEmitter, MarkdownString, TreeDataProvider, TreeItem, TreeItemCollapsibleState } from "vscode";
 import { App, RelatedApp } from './app';
 import { Device, RelatedDevice } from "./device";
-import { CommandContext, isAuthenticated, listApps, listDevices } from "./utils";
+import { isAuthenticated, listApps, listDevices } from "./utils";
 
 export class ToitDataProvider implements TreeDataProvider<DeviceTreeItem> {
 
@@ -13,18 +13,12 @@ export class ToitDataProvider implements TreeDataProvider<DeviceTreeItem> {
     this._onDidChangeTreeData.fire(null);
   }
 
-  context: CommandContext;
-
-  constructor(ctx: CommandContext) {
-    this.context = ctx;
-  }
-
   async getChildren(element?: DeviceTreeItem): Promise<DeviceTreeItem[]> {
-    if(!await isAuthenticated(this.context)) return [];
+    if(!await isAuthenticated()) return [];
 
     if (element) return element.children();
 
-    return listDevices(this.context).then(devices => devices.map(device => new DeviceTreeRoot(this.context, device)));
+    return listDevices().then(devices => devices.map(device => new DeviceTreeRoot(device)));
   }
 
   getTreeItem(element: DeviceTreeItem): TreeItem | Thenable<TreeItem> {
@@ -59,14 +53,12 @@ class DeviceTreeRoot extends DeviceTreeItem {
     light: path.join(__filename, '..', '..', 'resources', 'light', 'inactive.svg'),
     dark: path.join(__filename, '..', '..', 'resources', 'dark', 'inactive.svg')
   };
-  context: CommandContext;
-  constructor(context: CommandContext, dev: Device) {
+  constructor(dev: Device) {
     super(dev);
-    this.context = context;
   }
 
   async children(): Promise<DeviceTreeItem[]> {
-    const apps = await listApps(this.context, this.device());
+    const apps = await listApps(this.device());
     return apps.map(app => new DeviceApp(app, this.device()));
   }
 
