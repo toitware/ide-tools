@@ -29,6 +29,30 @@ class DeployConfig implements ExecConfig {
 }
 
 
+interface ExecConfig {
+  cmd: string;
+  extension: string;
+  onlyActive: boolean;
+  refreshView: boolean;
+}
+
+class RunConfig implements ExecConfig {
+  static instance = new RunConfig();
+  cmd: string = "run";
+  extension: string = ".toit";
+  onlyActive: boolean = true;
+  refreshView: boolean = false;
+}
+
+class DeployConfig implements ExecConfig {
+  static instance = new DeployConfig();
+  cmd: string = "deploy";
+  extension: string = ".yaml";
+  onlyActive: boolean = false;
+  refreshView: boolean = true;
+}
+
+
 function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }

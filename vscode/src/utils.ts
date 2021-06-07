@@ -80,37 +80,6 @@ export class CommandContext {
   }
 }
 
-class OrganizationItem extends Organization implements QuickPickItem {
-  label: string;
-
-  constructor(org: ConsoleOrganization) {
-    super(org);
-    this.label = this.name;
-  }
-}
-
-async function listOrganizations(ctx: CommandContext): Promise<OrganizationItem[]> {
-  // TODO(Lau): change this when is_active is part of json.
-  const cmdArgs =  [ "auth", "organizations", "-o", "json"];
-  const { stdout } = await execFile(ctx.toitExec, cmdArgs);
-  return stdout.split("\n").
-    filter(str => str !== "").
-    map(json => JSON.parse(json) as ConsoleOrganization).
-    map(org => new OrganizationItem(org));
-}
-
-export async function selectOrganization(ctx: CommandContext): Promise<Organization> {
-  let organizations = await listOrganizations(ctx);
-  const org = await Window.showQuickPick(organizations, { "placeHolder": "Pick an organization" });
-  if (!org) throw new Error("No organization selected.");
-  return org;
-}
-
-export async function setOrganization(ctx: CommandContext, org: Organization) {
-  const cmdArgs =  [ "auth", "set-organization", org.organizationID];
-  await execFile(ctx.toitExec, cmdArgs);
-}
-
 export async function listApps(ctx: CommandContext, device: Device): Promise<App[]> {
   // TODO(Lau): change this when is_active is part of json.
   const cmdArgs =  [ "dev", "-d", device.deviceID, "ps", "-o", "json"];
@@ -173,8 +142,8 @@ export async function selectDevice(ctx: CommandContext, config: SelectOptions): 
   return device;
 }
 
-async function login(ctx: CommandContext, user: string, password: string): Promise<void> {
-  await execFile(ctx.toitExec, [ "auth", "login", "-u", user, "-p", password ]);
+async function login(ctx: CommandContext): Promise<void> {
+  await execFile(ctx.toitExec, [ "auth", "login" ]);
 }
 
 async function authInfo(ctx: CommandContext): Promise<AuthInfo> {
@@ -223,7 +192,7 @@ export async function ensureAuth(ctx: CommandContext): Promise<void> {
   const password = await Window.showInputBox(passwordPromptOptions);
   if (!password) throw new Error("No password provided");
 
-  await login(ctx, user, password);
+  await login(ctx);
   ctx.refreshDeviceView();
 }
 
@@ -291,11 +260,42 @@ export async function uninstallApp(ctx: CommandContext, app: App) {
   await execFile(ctx.toitExec, [ "dev", "-d", app.deviceID, "uninstall", app.jobID ]);
 }
 
-export async function getOrganization(ctx: CommandContext) {``
+class OrganizationItem extends Organization implements QuickPickItem {
+  label: string;
+
+  constructor(org: ConsoleOrganization) {
+    super(org);
+    this.label = this.name;
+  }
+}
+
+export async function getOrganization(ctx: CommandContext) {
   await ensureAuth(ctx);
-  const { stdout } = await execFile(ctx.toitExec, [ "auth", "get-organization" ]);
+  const { stdout } = await execFile(ctx.toitExec, [ "org", "get" ]);
   return stdout.slice(13);
 }
+
+
+async function listOrganizations(ctx: CommandContext): Promise<OrganizationItem[]> {
+  // TODO(Lau): change this when is_active is part of json.
+  const cmdArgs =  [ "org", "list", "-o", "json"];
+  const { stdout } = await execFile(ctx.toitExec, cmdArgs);
+  return stdout.split("\n").
+    filter(str => str !== "").
+    map(json => JSON.parse(json) as ConsoleOrganization).
+    map(org => new OrganizationItem(org));
+}
+
+export async function selectOrganization(ctx: CommandContext): Promise<Organization> {
+  let organizations = await listOrganizations(ctx);
+  const org = await Window.showQuickPick(organizations, { "placeHolder": "Pick an organization" });
+  if (!org) throw new Error("No organization selected.");
+  return org;
+}
+
+export async function setOrganization(ctx: CommandContext, org: Organization) {
+  const cmdArgs =  [ "org", "use", org.organizationID];
+  await execFile(ctx.toitExec, cmdArgs);
 
 export function getToitPath(): string {
   return Workspace.getConfiguration("toit").get("Path", "toit");
