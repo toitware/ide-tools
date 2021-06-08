@@ -71,37 +71,34 @@ class DeviceTreeRoot extends DeviceTreeItem {
   }
 
   treeItem(): TreeItem {
-    const contextValue = this.device().isSimulator ? "device-simulator" : "device";
-    const label = `${this.device().name}`;
-    const p = this.device().isActive ? DeviceTreeRoot.activeIcons : DeviceTreeRoot.inactiveIcons;
-    const tooltipMarkdown =
-`
-### ${this.device().name} ${this.device().isSimulator ? "(simulator)" : ""}
+    const device = this.device();
+    return new class extends TreeItem {
+      constructor() {
+        super(device.name, TreeItemCollapsibleState.Collapsed);
+      }
+      contextValue = device.isSimulator ? "device-simulator" : "device";
+      iconPath = device.isActive ? DeviceTreeRoot.activeIcons : DeviceTreeRoot.inactiveIcons;
+      tooltip = new MarkdownString(`
+### ${device.name} ${device.isSimulator ? "(simulator)" : ""}
 
 --------------------------------
 #### Device ID
 
-${this.device().deviceID}
+${device.deviceID}
 
 --------------------------------
 #### Firmware
 
-${this.device().runningFirmware} ${this.device().configureFirmware ? `\u279f ${this.device().configureFirmware}` : ""}
+${device.runningFirmware} ${device.configureFirmware ? `\u279f ${device.configureFirmware}` : ""}
 
 --------------------------------
 #### Last seen
 
-${new Date(this.device().lastSeen).toLocaleTimeString(undefined)}
+${new Date(device.lastSeen).toLocaleTimeString(undefined)}
 
-${new Date(this.device().lastSeen).toLocaleDateString(undefined, {weekday: "long", year: "numeric", month: "long", day: "numeric"})}
-`
-    return new class extends TreeItem {
-      constructor() {
-        super(label, TreeItemCollapsibleState.Collapsed);
-      }
-      contextValue = contextValue;
-      iconPath = p;
-      tooltip = new MarkdownString(tooltipMarkdown);
+${new Date(device.lastSeen).toLocaleDateString(undefined, {weekday: "long", year: "numeric", month: "long", day: "numeric"})}
+      `
+      );
     }();
   }
 }
