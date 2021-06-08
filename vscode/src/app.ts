@@ -4,6 +4,7 @@ export interface RelatedApp {
   app(): App;
 }
 
+/* eslint-disable @typescript-eslint/naming-convention */
 export interface ConsoleApp {
   compilation_id: string;
   created: string;
@@ -17,6 +18,7 @@ export interface ConsoleApp {
   state: number;
   updated: string;
 }
+/* eslint-enable @typescript-eslint/naming-convention */
 
 export class App implements RelatedApp {
   compilationId: string;

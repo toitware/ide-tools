@@ -14,18 +14,18 @@ interface ExecConfig {
 
 class RunConfig implements ExecConfig {
   static instance = new RunConfig();
-  cmd: string = "run";
-  extension: string = ".toit";
-  deviceSelection: DeviceSelectOptions = { activeOnly: true, simulatorOnly: false };
-  refreshView: boolean = false;
+  cmd = "run";
+  extension = ".toit";
+  deviceSelection: DeviceSelectOptions = { "activeOnly": true, "simulatorOnly": false };
+  refreshView = false;
 }
 
 class DeployConfig implements ExecConfig {
   static instance = new DeployConfig();
-  cmd: string = "deploy";
-  extension: string = ".yaml";
-  deviceSelection: DeviceSelectOptions = { activeOnly: false, simulatorOnly: false };
-  refreshView: boolean = true;
+  cmd = "deploy";
+  extension = ".yaml";
+  deviceSelection: DeviceSelectOptions = { "activeOnly": false, "simulatorOnly": false };
+  refreshView = true;
 }
 
 

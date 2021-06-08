@@ -14,11 +14,11 @@ async function executeStopCommand(ctx: CommandContext, device?: Device) {
   }
 
   try {
-    if (!device) device = await selectDevice(ctx, {activeOnly: false, simulatorOnly: true});
+    if (!device) device = await selectDevice(ctx, {"activeOnly": false, "simulatorOnly": true});
 
     if (!device.isSimulator) return Window.showErrorMessage(`Non-simulator selected.`);
 
-    const commandProcess = cp.spawn("toit", [ "simulator", "stop", device.deviceID ]);
+    cp.spawn("toit", [ "simulator", "stop", device.deviceID ]);
     ctx.refreshDeviceView();
   } catch (e) {
     Window.showErrorMessage(`Stop simulator failed: ${e.message}`);

@@ -49,9 +49,11 @@ function getOuterMostWorkspaceFolder(folder: WorkspaceFolder): WorkspaceFolder {
   return folder;
 }
 
+
+
 function startToitLsp(_: ExtensionContext,
     outputChannel: OutputChannel,
-    config: any) : LanguageClient {
+    config: ClientConfiguration) : LanguageClient {
   const workingDir = config.workingDir;
   const workspaceFolder = config.workspaceFolder;
   const scheme = config.scheme;
@@ -108,7 +110,7 @@ function startToitLsp(_: ExtensionContext,
   const documentSelector: DocumentSelector = [{
     "language": "toit",
     "scheme": scheme,
-    "pattern": pattern
+    "pattern": ""+pattern
   }];
 
   const clientOptions: LanguageClientOptions = {
@@ -135,16 +137,23 @@ function startToitLsp(_: ExtensionContext,
     // At this point the language server responded to requests (`initialize`), and
     //   is thus running.
     isReady = true;
-  }, (_) => {
+  }, () => {
     startFail = true;
   });
   return result;
 }
 
+export interface ClientConfiguration {
+  workingDir?: string
+  workspaceFolder?: WorkspaceFolder
+  scheme: string
+  pattern?: RelativePattern
+}
+
 export function activateLsp(context: ExtensionContext): void {
   const outputChannel: OutputChannel = Window.createOutputChannel("Toit LSP Server");
 
-  function computeClientConfiguration(document: TextDocument) {
+  function computeClientConfiguration(document: TextDocument): ClientConfiguration {
     const uri = document.uri;
     if (uri.scheme !== "file") {
       return {
