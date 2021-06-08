@@ -8,8 +8,7 @@ pipeline {
 
   environment {
       BUILD_VERSION = sh(returnStdout: true, script: 'gitversion').trim()
-      GITHUB_TOKEN = credentials('leon-github-npm')
-      AZURE_TOKEN = credentials('leon-azure-access-token')
+      // AZURE_TOKEN = credentials('leon-azure-access-token')
   }
 
   options {
