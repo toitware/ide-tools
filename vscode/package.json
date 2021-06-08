@@ -56,6 +56,12 @@
                 "icon": "$(circle-slash)"
             },
             {
+                "command": "toit.startSimulator",
+                "title": "Start simulator",
+                "category": "Toit",
+                "icon": "$(rocket)"
+            },
+            {
                 "command": "toit.uninstallApp",
                 "title": "Uninstall",
                 "category": "Toit",
@@ -106,7 +112,12 @@
                 {
                     "command": "toit.refreshView",
                     "when": "view == toitDeviceView",
-                    "group": "navigation"
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "toit.startSimulator",
+                    "when": "view == toitDeviceView",
+                    "group": "navigation@0"
                 }
             ],
             "view/item/context": [
