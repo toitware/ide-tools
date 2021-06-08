@@ -57,10 +57,13 @@ function startToitLsp(_: ExtensionContext,
   const scheme = config.scheme;
   const pattern = config.pattern;
   const lspSettings = Workspace.getConfiguration("toitLanguageServer", workspaceFolder);
-  let toitPath = getToitPath();
+  let toitPath = lspSettings.get("toitPath");
   let lspArguments: Array<string> | string | null | undefined = lspSettings.get("arguments");
   let debugClientToServer = !!lspSettings.get("debug.clientToServer");
 
+  if (toitPath === null || toitPath === undefined) {
+    toitPath = getToitPath();
+  }
   if (lspArguments === null || lspArguments === undefined) {
     lspArguments = [ "tool", "lsp" ];
   }
