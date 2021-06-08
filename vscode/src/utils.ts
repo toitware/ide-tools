@@ -296,6 +296,7 @@ export async function selectOrganization(ctx: CommandContext): Promise<Organizat
 export async function setOrganization(ctx: CommandContext, org: Organization) {
   const cmdArgs =  [ "org", "use", org.organizationID];
   await execFile(ctx.toitExec, cmdArgs);
+}
 
 export function getToitPath(): string {
   return Workspace.getConfiguration("toit").get("Path", "toit");
