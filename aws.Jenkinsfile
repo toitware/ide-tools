@@ -1,7 +1,7 @@
 pipeline {
   agent {
     kubernetes {
-      defaultContainer 'webtemplate'
+      defaultContainer 'idetools'
       yamlFile 'Jenkins.pod.yaml'
     }
   }
