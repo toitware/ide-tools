@@ -5,11 +5,15 @@
     "publisher": "Toit",
     "version": "1.0.0",
     "engines": {
-        "vscode": "^1.54.0"
+        "vscode": "^1.55.0"
     },
     "categories": [
         "Programming Languages"
     ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/toitware/ide-tools.git"
+    },
     "activationEvents": [
         "onLanguage:toit",
         "workspaceContains:**/*.toit",
@@ -216,11 +220,10 @@
         "webpack": "webpack --mode development",
         "webpack-dev": "webpack --mode development --watch",
         "compile": "tsc -p ./",
-        "test-compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "test": "npm run compile && node ./node_modules/vscode/bin/test",
         "lint": "eslint src --ext ts",
-        "lint-fix": "eslint src --ext ts --fix"
+        "lint-fix": "eslint src --ext ts --fix",
+        "package": "vsce package --yarn"
     },
     "devDependencies": {
         "@types/node": "^12.20.7",

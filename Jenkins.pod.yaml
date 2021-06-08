@@ -1,0 +1,10 @@
+kind: Pod
+metadata:
+  name: agent
+spec:
+  containers:
+  - name: webconsole
+    image: 465068080952.dkr.ecr.eu-west-1.amazonaws.com/jenkins-console-toolchain:20210204155459
+    command:
+    - cat
+    tty: true
