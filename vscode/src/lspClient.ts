@@ -62,7 +62,7 @@ function startToitLsp(_: ExtensionContext,
   let debugClientToServer = !!lspSettings.get("debug.clientToServer");
 
   if (toitPath === null || toitPath === undefined) {
-    toitPath = getToitPath(); // Assume `toit` is visible in the global environment.
+    toitPath = getToitPath();
   }
   if (lspArguments === null || lspArguments === undefined) {
     lspArguments = [ "tool", "lsp" ];
