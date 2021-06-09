@@ -8,7 +8,7 @@ pipeline {
 
   environment {
       BUILD_VERSION = sh(returnStdout: true, script: 'gitversion').trim()
-      // AZURE_TOKEN = credentials('leon-azure-access-token')
+      AZURE_TOKEN = credentials('leon-azure-access-token')
   }
 
   options {
@@ -58,12 +58,12 @@ pipeline {
         stage('build package') {
           steps {
             dir('vscode') {
-              sh 'yarn package'
+              sh "yarn package $BUILD_VERSION"
             }
           }
           post {
             success {
-              archiveArtifacts artifacts: 'vscode/toit-*.vsix'
+              archiveArtifacts artifacts: "vscode/toit-${BUILD_VERSION.minus('v')}.vsix"
             }
           }
         }
@@ -79,12 +79,25 @@ pipeline {
 
           steps {
             dir('vscode') {
-              sh "mv toit-*.vsix toit-${BUILD_VERSION}.vsix"
               withCredentials([[$class: 'FileBinding', credentialsId: 'gcloud-service-auth', variable: 'GOOGLE_APPLICATION_CREDENTIALS']]) {
                 sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
                 sh 'gcloud config set project infrastructure-220307'
-                sh "FILEEXT=vsix toitarchive toit-${BUILD_VERSION}.vsix toit-archive toit-vscode ${BUILD_VERSION}"
+                sh "FILEEXT=vsix toitarchive toit-${BUILD_VERSION.minus('v')}.vsix toit-archive toit-vscode $BUILD_VERSION"
               }
+            }
+          }
+        }
+
+        stage("publish") {
+          // when {
+          //   anyOf {
+          //     tag 'v*'
+          //   }
+          // }
+
+          steps {
+            dir('vscode') {
+              sh "yarn run vsce publish ${BUILD_VERSION} -p $AZURE_TOKEN"
             }
           }
         }

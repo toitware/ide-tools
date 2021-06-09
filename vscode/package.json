@@ -2,8 +2,8 @@
     "name": "toit",
     "displayName": "Toit",
     "description": "Toit Programming Language Support",
-    "publisher": "Toit",
-    "version": "1.0.0",
+    "publisher": "toit",
+    "version": "1.2.3-pre.55",
     "engines": {
         "vscode": "^1.55.0"
     },
