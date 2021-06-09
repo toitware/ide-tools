@@ -58,13 +58,13 @@ pipeline {
         stage('build package') {
           steps {
             dir('vscode') {
-              sh "npm version 1.0.0 --allow-same-version"
+              sh "npm version ${NIGHTLY_VERSION} --allow-same-version"
               sh "yarn package"
             }
           }
           post {
             success {
-              archiveArtifacts artifacts: "vscode/toit-1.0.0.vsix"
+              archiveArtifacts artifacts: "vscode/toit-${NIGHTLY_VERSION}.vsix"
             }
           }
         }
@@ -83,7 +83,7 @@ pipeline {
               withCredentials([[$class: 'FileBinding', credentialsId: 'gcloud-service-auth', variable: 'GOOGLE_APPLICATION_CREDENTIALS']]) {
                 sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
                 sh 'gcloud config set project infrastructure-220307'
-                sh "FILEEXT=vsix toitarchive toit-1.0.0.vsix toit-archive toit-vscode $BUILD_VERSION"
+                sh "FILEEXT=vsix toitarchive toit-${NIGHTLY_VERSION}.vsix toit-archive toit-vscode $BUILD_VERSION"
               }
             }
           }
@@ -101,6 +101,10 @@ pipeline {
               withCredentials([string(credentialsId: 'leon-azure-access-token', variable: 'AZURE_TOKEN')]) {
                 sh 'yarn run vsce publish $NIGHTLY_VERSION -p $AZURE_TOKEN --yarn'
               }
+
+              // withCredentials([string(credentialsId: 'leon-azure-access-token', variable: 'AZURE_TOKEN')]) {
+              //   sh 'yarn run vsce publish $NIGHTLY_VERSION -p $AZURE_TOKEN --yarn'
+              // }
             }
           }
         }
