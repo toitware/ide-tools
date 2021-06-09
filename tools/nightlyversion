@@ -4,7 +4,7 @@ set -e
 command -v git >/dev/null                       || { echo "UNKNOWN"; exit 0; }
 git rev-parse --is-inside-work-tree &>/dev/null || { echo "UNKNOWN"; exit 0; }
 
-TODAY=`date +%Y.%m.%d`
+TODAY=`date +%Y.%-m.%-d`
 
 LATEST_VERSION_TAG=$(git describe --tags --match "v[0-9]*" --abbrev=0 `git rev-list --tags --max-count=1` 2>/dev/null || echo "")
 
@@ -15,4 +15,4 @@ else
   CURRENT_COMMIT_NO=$(git rev-list --count HEAD)
 fi
 
-echo "$TODAY.$CURRENT_COMMIT_NO"
+echo "$TODAY-pre.$CURRENT_COMMIT_NO"
