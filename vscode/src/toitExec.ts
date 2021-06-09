@@ -1,9 +1,12 @@
 "use strict";
 
-import cp = require("child_process");
+import { promisify } from "util";
 import { OutputChannel, window as Window } from "vscode";
 import { Device, RelatedDevice } from "./device";
 import { CommandContext, ensureAuth, selectDevice } from "./utils";
+import cp = require("child_process");
+const execFile = promisify(cp.execFile);
+
 
 function currentFilePath(ctx: CommandContext, suffix: string): string {
   const editor = Window.activeTextEditor;
@@ -63,11 +66,11 @@ async function executeDeployCommand(ctx: CommandContext, device?: Device) {
   try {
     if (!device) device = await selectDevice(ctx, { "activeOnly": false, "simulatorOnly": false });
 
-    const commandProcess = cp.spawn("toit", [ "dev", "-d", device.name, "deploy", filePath ]);
+    const { stdout, stderr } = await execFile("toit", [ "dev", "-d", device.name, "deploy", filePath ]);
     const toitOutput: OutputChannel = ctx.outputChannel(device.deviceID, device.name);
     toitOutput.show();
-    commandProcess.stdout.on("data", data => toitOutput.append(`${data}`));
-    commandProcess.stderr.on("data", data => toitOutput.append(`${data}`));
+    toitOutput.append(stdout);
+    toitOutput.append(stderr)
     ctx.refreshDeviceView();
     ctx.setLastFile(".yaml", filePath);
   } catch (e) {
