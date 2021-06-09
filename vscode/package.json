@@ -3,6 +3,7 @@
     "displayName": "Toit",
     "description": "Toit Programming Language Support",
     "publisher": "toit",
+    "license": "MIT",
     "engines": {
         "vscode": "^1.55.0"
     },

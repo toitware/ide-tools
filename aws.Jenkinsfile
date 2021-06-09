@@ -65,7 +65,7 @@ pipeline {
           }
           post {
             success {
-              archiveArtifacts artifacts: 'vscode/toit-$NIGHTLY_VERSION.vsix'
+              archiveArtifacts artifacts: "vscode/toit-${NIGHTLY_VERSION}.vsix"
             }
           }
         }
