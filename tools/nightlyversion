@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -e
+# Make sure git is installed and we are in a git tree.
+command -v git >/dev/null                       || { echo "UNKNOWN"; exit 0; }
+git rev-parse --is-inside-work-tree &>/dev/null || { echo "UNKNOWN"; exit 0; }
+
+MONTH=`date +%Y.%-m`
+CURRENT_COMMIT_NO=$(git rev-list --count HEAD)
+
+echo "$MONTH.$CURRENT_COMMIT_NO"

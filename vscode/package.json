@@ -2,8 +2,8 @@
     "name": "toit",
     "displayName": "Toit",
     "description": "Toit Programming Language Support",
-    "publisher": "Toit",
-    "version": "1.0.0",
+    "publisher": "toit",
+    "license": "MIT",
     "engines": {
         "vscode": "^1.55.0"
     },
@@ -249,7 +249,9 @@
         "webpack-cli": "^3.3.12"
     },
     "dependencies": {
+        "ovsx": "^0.1.0",
         "vsce": "^1.77.0",
         "vscode-languageclient": "^5.2.1"
-    }
+    },
+    "version": "1.0.0"
 }
