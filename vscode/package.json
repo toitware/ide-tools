@@ -252,5 +252,5 @@
         "vsce": "^1.77.0",
         "vscode-languageclient": "^5.2.1"
     },
-    "version": "2021.6.9-pre.58"
+    "version": "1.0.0"
 }

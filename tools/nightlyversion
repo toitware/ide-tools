@@ -15,4 +15,4 @@ else
   CURRENT_COMMIT_NO=$(git rev-list --count HEAD)
 fi
 
-echo "$TODAY-pre.$CURRENT_COMMIT_NO"
+echo "$TODAY.$CURRENT_COMMIT_NO"
