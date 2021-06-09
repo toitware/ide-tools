@@ -56,7 +56,7 @@ async function executeDeployCommand(ctx: CommandContext, treeItem?: DeviceTreeIt
   try {
     filePath = currentFilePath(ctx, ".yaml");
   } catch (e) {
-    return Window.showErrorMessage(`Unable to run file: ${e.message}`);
+    return Window.showErrorMessage(`Unable to deploy file: ${e.message}`);
   }
 
   try {
