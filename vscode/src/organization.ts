@@ -23,6 +23,7 @@ async function executeCommand(ctx: CommandContext) {
   const org = await selectOrganization(ctx);
   await setOrganization(ctx, org);
   await updateStatus(ctx);
+  ctx.refreshDeviceView();
 }
 
 export function createSetOrgCommand(ctx: CommandContext): () => void {
