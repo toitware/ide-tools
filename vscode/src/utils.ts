@@ -5,7 +5,7 @@ import { InputBoxOptions, OutputChannel, QuickPickItem, StatusBarItem, Terminal,
 import { App, ConsoleApp } from "./app";
 import { ConsoleDevice, Device, RelatedDevice } from "./device";
 import { ConsoleOrganization, Organization } from "./org";
-import { ToitDataProvider } from "./treeView";
+import { DeviceTreeItem, ToitDataProvider } from "./treeView";
 import cp = require("child_process");
 const execFile = promisify(cp.execFile);
 
@@ -39,8 +39,8 @@ export class CommandContext {
     this.deviceViewProvider = provider;
   }
 
-  refreshDeviceView() : void {
-    if (this.deviceViewProvider) this.deviceViewProvider.refresh();
+  refreshDeviceView(data?: DeviceTreeItem) : void {
+    if (this.deviceViewProvider) this.deviceViewProvider.refresh(data);
   }
 
   lastDevice(): Device | undefined {
