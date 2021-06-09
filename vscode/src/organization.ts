@@ -1,5 +1,5 @@
 import { ExtensionContext, StatusBarAlignment, window as Window } from "vscode";
-import { CommandContext, ensureAuth, getOrganization, selectOrganization, setOrganization } from "./utils";
+import { CommandContext, ensureAuth, getFirmwareVersion, getOrganization, selectOrganization, setOrganization } from "./utils";
 
 export async function activateToitStatusBar(ctx: CommandContext, extensionContext: ExtensionContext) {
   let toitStatus = Window.createStatusBarItem(StatusBarAlignment.Left, 100);
@@ -14,7 +14,8 @@ async function updateStatus(ctx: CommandContext) {
   const toitStatus = ctx.getStatusBar();
   if (!toitStatus) return;
   const org = await getOrganization(ctx);
-  toitStatus.text = `Toit: ${org}`;
+  const firmwareVersion = await getFirmwareVersion(ctx);
+  toitStatus.text = `Toit: ${org} (${firmwareVersion})`;
 }
 
 async function executeCommand(ctx: CommandContext) {

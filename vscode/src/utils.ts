@@ -278,7 +278,11 @@ class OrganizationItem extends Organization implements QuickPickItem {
 export async function getOrganization(ctx: CommandContext) {
   await ensureAuth(ctx);
   const { stdout } = await execFile(ctx.toitExec, [ "org", "get" ]);
-  return stdout.slice(13);
+  // The output of the command if of the form:
+  // Logged in to Toitware
+  // 01234567890123
+  const orgStrOffset = 13;
+  return stdout.slice(orgStrOffset).trimEnd();
 }
 
 
@@ -306,4 +310,10 @@ export async function setOrganization(ctx: CommandContext, org: Organization) {
 
 export function getToitPath(): string {
   return Workspace.getConfiguration("toit").get("Path", "toit");
+}
+
+export async function getFirmwareVersion(ctx: CommandContext): Promise<string> {
+  await ensureAuth(ctx);
+  const { stdout } = await execFile(ctx.toitExec, [ "firmware", "version", "-o", "short" ]);
+  return stdout.trimEnd();
 }
