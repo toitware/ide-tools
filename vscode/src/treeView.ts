@@ -34,9 +34,11 @@ export class ToitDataProvider implements TreeDataProvider<DeviceTreeItem> {
 
 export abstract class DeviceTreeItem implements RelatedDevice {
   dev: Device;
+  id?: string;
 
-  constructor(dev: Device) {
+  constructor(dev: Device, id: string) {
     this.dev = dev;
+    this.id = id
   }
 
   device(): Device {
@@ -61,7 +63,7 @@ class DeviceTreeRoot extends DeviceTreeItem {
   };
   context: CommandContext;
   constructor(context: CommandContext, dev: Device) {
-    super(dev);
+    super(dev, dev.deviceID);
     this.context = context;
   }
 
@@ -111,7 +113,7 @@ class DeviceApp extends DeviceTreeItem implements RelatedApp {
   application: App;
 
   constructor(app: App, dev: Device) {
-    super(dev);
+    super(dev, app.jobID);
     this.application = app;
   }
 
