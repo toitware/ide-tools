@@ -21,14 +21,19 @@ export class ToitDataProvider implements TreeDataProvider<DeviceTreeItem> {
   private _onDidChangeTreeData: EventEmitter<DeviceTreeItem | undefined | null> = new EventEmitter<DeviceTreeItem | undefined | null>();
   readonly onDidChangeTreeData: Event<DeviceTreeItem | undefined | null> = this._onDidChangeTreeData.event;
 
-  refresh(): void {
-    this._onDidChangeTreeData.fire(null);
+  refresh(item?: DeviceTreeItem): void {
+    this._onDidChangeTreeData.fire(item);
   }
 
   context: CommandContext;
 
   constructor(ctx: CommandContext) {
     this.context = ctx;
+  }
+
+  getParent(element: DeviceTreeItem): DeviceTreeItem | undefined {
+    if(element.kind === "app") return new DeviceTreeRoot(this.context, element.device());
+    return;
   }
 
   async getChildren(element?: DeviceTreeItem): Promise<DeviceTreeItem[]> {
@@ -45,6 +50,7 @@ export class ToitDataProvider implements TreeDataProvider<DeviceTreeItem> {
 }
 
 export abstract class DeviceTreeItem implements RelatedDevice {
+  abstract kind: string;
   dev: Device;
   id?: string;
 
@@ -65,6 +71,7 @@ export abstract class DeviceTreeItem implements RelatedDevice {
 }
 
 class DeviceTreeRoot extends DeviceTreeItem {
+  kind = "root";
   static activeIcons = {
     "light": path.join(__filename, "..", "..", "resources", "light", "active.svg"),
     "dark": path.join(__filename, "..", "..", "resources", "dark", "active.svg")
@@ -122,6 +129,7 @@ ${new Date(device.lastSeen).toLocaleDateString(undefined, {"weekday": "long", "y
 }
 
 class DeviceApp extends DeviceTreeItem implements RelatedApp {
+  kind = "app";
   application: App;
 
   constructor(app: App, dev: Device) {
