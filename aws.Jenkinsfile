@@ -50,7 +50,7 @@ pipeline {
         stage('compile') {
           steps {
             dir('vscode') {
-              sh 'yarn compile'
+              sh 'yarn compile-prod'
             }
           }
         }

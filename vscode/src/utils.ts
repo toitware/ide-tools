@@ -269,7 +269,7 @@ class OrganizationItem extends Organization implements QuickPickItem {
   }
 }
 
-export async function getOrganization(ctx: CommandContext): Promise<void> {
+export async function getOrganization(ctx: CommandContext): Promise<string> {
   await ensureAuth(ctx);
   const { stdout } = await execFile(ctx.toitExec, [ "org", "get" ]);
   return stdout.slice(13);
