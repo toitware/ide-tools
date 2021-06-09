@@ -1,11 +1,9 @@
 "use strict";
 
 import cp = require("child_process");
-import { promisify } from "util";
 import { OutputChannel, window as Window } from "vscode";
 import { Device, RelatedDevice } from "./device";
 import { CommandContext, ensureAuth, selectDevice } from "./utils";
-const execFile = promisify(cp.execFile);
 
 async function executeStopCommand(ctx: CommandContext, device?: Device) {
   try {
@@ -15,7 +13,7 @@ async function executeStopCommand(ctx: CommandContext, device?: Device) {
   }
 
   try {
-    if (!device) device = await selectDevice(ctx, {activeOnly: false, simulatorOnly: true});
+    if (!device) device = await selectDevice(ctx, {"activeOnly": false, "simulatorOnly": true});
 
     if (!device.isSimulator) return Window.showErrorMessage("Non-simulator selected.");
     cp.spawn("toit", [ "simulator", "stop", device.deviceID ]);

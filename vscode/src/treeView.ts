@@ -1,6 +1,6 @@
-import * as path from 'path';
+import * as path from "path";
 import { Event, EventEmitter, MarkdownString, TreeDataProvider, TreeItem, TreeItemCollapsibleState } from "vscode";
-import { App, RelatedApp } from './app';
+import { App, RelatedApp } from "./app";
 import { Device, RelatedDevice } from "./device";
 import { CommandContext, isAuthenticated, listApps, listDevices } from "./utils";
 
@@ -52,12 +52,12 @@ export abstract class DeviceTreeItem implements RelatedDevice {
 
 class DeviceTreeRoot extends DeviceTreeItem {
   static activeIcons = {
-    light: path.join(__filename, '..', '..', 'resources', 'light', 'active.svg'),
-    dark: path.join(__filename, '..', '..', 'resources', 'dark', 'active.svg')
+    "light": path.join(__filename, "..", "..", "resources", "light", "active.svg"),
+    "dark": path.join(__filename, "..", "..", "resources", "dark", "active.svg")
   };
   static inactiveIcons = {
-    light: path.join(__filename, '..', '..', 'resources', 'light', 'inactive.svg'),
-    dark: path.join(__filename, '..', '..', 'resources', 'dark', 'inactive.svg')
+    "light": path.join(__filename, "..", "..", "resources", "light", "inactive.svg"),
+    "dark": path.join(__filename, "..", "..", "resources", "dark", "inactive.svg")
   };
   context: CommandContext;
   constructor(context: CommandContext, dev: Device) {
@@ -94,8 +94,8 @@ ${device.runningFirmware} ${device.configureFirmware ? `\u279f ${device.configur
 
 ${new Date(device.lastSeen).toLocaleTimeString(undefined)}
 
-${new Date(device.lastSeen).toLocaleDateString(undefined, {weekday: "long", year: "numeric", month: "long", day: "numeric"})}
-`
+${new Date(device.lastSeen).toLocaleDateString(undefined, {"weekday": "long", "year": "numeric", "month": "long", "day": "numeric"})}
+`;
     return new class extends TreeItem {
       constructor() {
         super(label, TreeItemCollapsibleState.Collapsed);
@@ -116,20 +116,20 @@ class DeviceApp extends DeviceTreeItem implements RelatedApp {
   }
 
   treeItem(): TreeItem {
-    const app = this.app()
+    const app = this.app();
     return new class extends TreeItem {
       constructor() {
         super(app.jobName, TreeItemCollapsibleState.None);
       }
-      contextValue = "application"
+      contextValue = "application";
       iconPath = {
-        light: path.join(__filename, '..', '..', 'resources', 'light', 'app.svg'),
-        dark: path.join(__filename, '..', '..', 'resources', 'dark', 'app.svg')
+        "light": path.join(__filename, "..", "..", "resources", "light", "app.svg"),
+        "dark": path.join(__filename, "..", "..", "resources", "dark", "app.svg")
       };
     }();
   }
 
   app(): App {
-    return this.application
+    return this.application;
   }
 }

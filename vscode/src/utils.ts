@@ -19,7 +19,7 @@ export class CommandContext {
   outputs: Map<string, OutputChannel> = new Map();
   toitOut?: OutputChannel;
 
-  setStatusBar(sb: StatusBarItem) {
+  setStatusBar(sb: StatusBarItem): void {
     this.statusBar = sb;
   }
 
@@ -27,7 +27,7 @@ export class CommandContext {
     return this.statusBar;
   }
 
-  setLastFile(extension: string, path: string) {
+  setLastFile(extension: string, path: string): void {
     this.lastFiles.set(extension, path);
   }
 
@@ -88,7 +88,7 @@ export class CommandContext {
 
 export async function listApps(ctx: CommandContext, device: Device): Promise<App[]> {
   // TODO(Lau): change this when is_active is part of json.
-  const cmdArgs =  [ "dev", "-d", device.deviceID, "ps", "-o", "json"];
+  const cmdArgs =  [ "dev", "-d", device.deviceID, "ps", "-o", "json" ];
   const { stdout } = await execFile(ctx.toitExec, cmdArgs);
   return stdout.split("\n").
     filter(str => str !== "").
@@ -119,7 +119,7 @@ export async function listDevices(ctx: CommandContext): Promise<DeviceItem[]> {
   const allDevices = jsonAll.stdout.split("\n").
     filter(str => str !== "").
     map(json => JSON.parse(json) as ConsoleDevice).
-    map(device => new DeviceItem(device, activeDevices.find(o => o.device_id == device.device_id) ? true : false));
+    map(device => new DeviceItem(device, !!activeDevices.find(o => o.device_id === device.device_id)));
   return allDevices;
 }
 
@@ -262,7 +262,7 @@ function preferElement<T>(index: number, list: T[]): void {
   list.unshift(preferred);
 }
 
-export async function uninstallApp(ctx: CommandContext, app: App) {
+export async function uninstallApp(ctx: CommandContext, app: App): Promise<void> {
   await execFile(ctx.toitExec, [ "dev", "-d", app.deviceID, "uninstall", app.jobID ]);
 }
 
@@ -275,7 +275,7 @@ class OrganizationItem extends Organization implements QuickPickItem {
   }
 }
 
-export async function getOrganization(ctx: CommandContext) {
+export async function getOrganization(ctx: CommandContext): Promise<string> {
   await ensureAuth(ctx);
   const { stdout } = await execFile(ctx.toitExec, [ "org", "get" ]);
   // The output of the command if of the form:
@@ -288,7 +288,7 @@ export async function getOrganization(ctx: CommandContext) {
 
 async function listOrganizations(ctx: CommandContext): Promise<OrganizationItem[]> {
   // TODO(Lau): change this when is_active is part of json.
-  const cmdArgs =  [ "org", "list", "-o", "json"];
+  const cmdArgs =  [ "org", "list", "-o", "json" ];
   const { stdout } = await execFile(ctx.toitExec, cmdArgs);
   return stdout.split("\n").
     filter(str => str !== "").
@@ -297,14 +297,14 @@ async function listOrganizations(ctx: CommandContext): Promise<OrganizationItem[
 }
 
 export async function selectOrganization(ctx: CommandContext): Promise<Organization> {
-  let organizations = await listOrganizations(ctx);
+  const organizations = await listOrganizations(ctx);
   const org = await Window.showQuickPick(organizations, { "placeHolder": "Pick an organization" });
   if (!org) throw new Error("No organization selected.");
   return org;
 }
 
-export async function setOrganization(ctx: CommandContext, org: Organization) {
-  const cmdArgs =  [ "org", "use", org.organizationID];
+export async function setOrganization(ctx: CommandContext, org: Organization): Promise<void> {
+  const cmdArgs =  [ "org", "use", org.organizationID ];
   await execFile(ctx.toitExec, cmdArgs);
 }
 

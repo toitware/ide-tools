@@ -14,6 +14,7 @@ module.exports = {
     "rules": {
         "@typescript-eslint/naming-convention": "warn",
         "@typescript-eslint/semi": "warn",
+        "@typescript-eslint/no-non-null-assertion": "off",
         "curly": ["warn", "multi-line"],
         "eqeqeq": "warn",
         "no-throw-literal": "warn",

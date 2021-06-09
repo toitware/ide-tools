@@ -15,7 +15,7 @@ import { CommandContext } from "./utils";
 
 
 export function activate(context: ExtensionContext): void {
-  Commands.executeCommand('setContext', 'toit.extensionActive', true);
+  Commands.executeCommand("setContext", "toit.extensionActive", true);
   const cmdContext = new CommandContext();
   const deviceDataProvider = new ToitDataProvider(cmdContext);
   Window.createTreeView("toitDeviceView", { "treeDataProvider": deviceDataProvider } );
@@ -38,6 +38,6 @@ export function activate(context: ExtensionContext): void {
 }
 
 export function deactivate(): Thenable<void> {
-  Commands.executeCommand('setContext', 'toit.extensionActive', false);
+  Commands.executeCommand("setContext", "toit.extensionActive", false);
   return deactivateLsp();
 }
