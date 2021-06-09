@@ -8,6 +8,7 @@ pipeline {
 
   environment {
       BUILD_VERSION = sh(returnStdout: true, script: 'gitversion').trim()
+      NIGHTLY_VERSION = sh(returnStdout: true, srcipt: './tools/nightlyversion').trim();
       AZURE_TOKEN = credentials('leon-azure-access-token')
   }
 
@@ -58,12 +59,12 @@ pipeline {
         stage('build package') {
           steps {
             dir('vscode') {
-              sh "yarn package $BUILD_VERSION"
+              sh "yarn package $NIGHTLY_VERSION"
             }
           }
           post {
             success {
-              archiveArtifacts artifacts: "vscode/toit-${BUILD_VERSION.minus('v')}.vsix"
+              archiveArtifacts artifacts: "vscode/toit-${NIGHTLY_VERSION}.vsix"
             }
           }
         }
@@ -97,7 +98,7 @@ pipeline {
 
           steps {
             dir('vscode') {
-              sh "yarn run vsce publish ${BUILD_VERSION} -p $AZURE_TOKEN"
+              sh "yarn run vsce publish ${NIGHTLY_VERSION} -p $AZURE_TOKEN"
             }
           }
         }
