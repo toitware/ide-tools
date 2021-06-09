@@ -8,7 +8,7 @@ pipeline {
 
   environment {
       BUILD_VERSION = sh(returnStdout: true, script: 'gitversion').trim()
-      NIGHTLY_VERSION = sh(returnStdout: true, srcipt: './tools/nightlyversion').trim();
+      NIGHTLY_VERSION = sh(returnStdout: true, script: './tools/nightlyversion').trim();
       AZURE_TOKEN = credentials('leon-azure-access-token')
   }
 
