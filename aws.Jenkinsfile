@@ -58,7 +58,7 @@ pipeline {
         stage('build package') {
           steps {
             dir('vscode') {
-              sh "npm version 1.0.0"
+              sh "npm version 1.0.0 --allow-same-version"
               sh "yarn package"
             }
           }
