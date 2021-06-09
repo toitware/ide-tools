@@ -90,11 +90,11 @@ pipeline {
         }
 
         stage("publish") {
-          // when {
-          //   anyOf {
-          //     tag 'v*'
-          //   }
-          // }
+          when {
+            anyOf {
+              tag 'v*'
+            }
+          }
 
           steps {
             dir('vscode') {
