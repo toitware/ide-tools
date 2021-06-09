@@ -1,6 +1,6 @@
 "use strict";
 
-import { commands as Commands, ExtensionContext, window as Window } from "vscode";
+import { commands as Commands, ExtensionContext } from "vscode";
 import { activateLsp, deactivateLsp } from "./lspClient";
 import { activateToitStatusBar, createSetOrgCommand } from "./organization";
 import { createEnsureAuth } from "./toitAuth";
@@ -9,21 +9,18 @@ import { createSerialMonitor } from "./toitMonitor";
 import { createSerialProvision } from "./toitProvision";
 import { createStartSimCommand, createStopSimCommand } from "./toitSimulator";
 import { createUninstallCommand } from "./toitUninstall";
-import { ToitDataProvider } from "./treeView";
+import { activateTreeView, deactivateTreeView } from "./treeView";
 import { CommandContext } from "./utils";
-
-
 
 export function activate(context: ExtensionContext): void {
   Commands.executeCommand("setContext", "toit.extensionActive", true);
   const cmdContext = new CommandContext();
-  const deviceDataProvider = new ToitDataProvider(cmdContext);
-  Window.createTreeView("toitDeviceView", { "treeDataProvider": deviceDataProvider } );
+  activateTreeView(cmdContext)
 
   context.subscriptions.push(Commands.registerCommand("toit.serialProvision", createSerialProvision(cmdContext)));
   context.subscriptions.push(Commands.registerCommand("toit.serialMonitor", createSerialMonitor(cmdContext)));
   context.subscriptions.push(Commands.registerCommand("toit.ensureAuth", createEnsureAuth(cmdContext)));
-  context.subscriptions.push(Commands.registerCommand("toit.refreshView", () => deviceDataProvider.refresh()));
+  context.subscriptions.push(Commands.registerCommand("toit.refreshView", () => cmdContext.refreshDeviceView()));
   context.subscriptions.push(Commands.registerCommand("toit.uninstallApp", createUninstallCommand(cmdContext)));
   context.subscriptions.push(Commands.registerCommand("toit.devRun", createRunCommand(cmdContext)));
   context.subscriptions.push(Commands.registerCommand("toit.devDeploy", createDeployCommand(cmdContext)));
@@ -31,13 +28,12 @@ export function activate(context: ExtensionContext): void {
   context.subscriptions.push(Commands.registerCommand("toit.stopSimulator", createStopSimCommand(cmdContext)));
   context.subscriptions.push(Commands.registerCommand("toit.startSimulator", createStartSimCommand(cmdContext)));
 
-  cmdContext.setDeviceProvider(deviceDataProvider);
-
   activateToitStatusBar(cmdContext, context);
   activateLsp(context);
 }
 
 export function deactivate(): Thenable<void> {
   Commands.executeCommand("setContext", "toit.extensionActive", false);
+  deactivateTreeView();
   return deactivateLsp();
 }

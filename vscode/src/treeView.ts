@@ -1,9 +1,21 @@
 import * as path from "path";
-import { Event, EventEmitter, MarkdownString, TreeDataProvider, TreeItem, TreeItemCollapsibleState } from "vscode";
+import { Event, EventEmitter, MarkdownString, TreeDataProvider, TreeItem, TreeItemCollapsibleState, window as Window } from "vscode";
 import { App, RelatedApp } from "./app";
 import { Device, RelatedDevice } from "./device";
 import { CommandContext, isAuthenticated, listApps, listDevices } from "./utils";
 
+let viewRefresher: NodeJS.Timeout;
+
+export function activateTreeView(ctx: CommandContext) {
+  viewRefresher = setInterval(() => ctx.refreshDeviceView(), 60000);
+  const deviceDataProvider = new ToitDataProvider(ctx);
+  Window.createTreeView("toitDeviceView", { "treeDataProvider": deviceDataProvider } );
+  ctx.setDeviceProvider(deviceDataProvider);
+}
+
+export function deactivateTreeView() {
+  clearInterval(viewRefresher);
+}
 export class ToitDataProvider implements TreeDataProvider<DeviceTreeItem> {
 
   private _onDidChangeTreeData: EventEmitter<DeviceTreeItem | undefined | null> = new EventEmitter<DeviceTreeItem | undefined | null>();
