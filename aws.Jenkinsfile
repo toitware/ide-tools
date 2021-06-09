@@ -99,11 +99,11 @@ pipeline {
           steps {
             dir('vscode') {
               withCredentials([string(credentialsId: 'leon-azure-access-token', variable: 'AZURE_TOKEN')]) {
-                sh 'yarn run vsce publish $NIGHTLY_VERSION -p $AZURE_TOKEN --yarn'
+                sh "yarn run vsce publish $BUILD_VERSION -p $AZURE_TOKEN"
               }
 
-              // withCredentials([string(credentialsId: 'leon-azure-access-token', variable: 'AZURE_TOKEN')]) {
-              //   sh 'yarn run vsce publish $NIGHTLY_VERSION -p $AZURE_TOKEN --yarn'
+              // withCredentials([string(credentialsId: 'leon-open-vsx-access-token', variable: 'OPEN_VSX_TOKEN')]) {
+              //   sh "yarn run ovsx publish $BUILD_VERSION -p $OPEN_VSX_TOKEN toit-${NIGHTLY_VERSION}.vsix"
               // }
             }
           }
