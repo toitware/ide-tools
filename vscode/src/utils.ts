@@ -16,6 +16,8 @@ export class CommandContext {
   lastSelectedPort?: string;
   lastFiles: Map<string, string> = new Map();
   toitExec : string = getToitPath();
+  outputs: Map<string, OutputChannel> = new Map();
+  toitOut?: OutputChannel;
 
   setStatusBar(sb: StatusBarItem) {
     this.statusBar = sb;
@@ -57,7 +59,11 @@ export class CommandContext {
     this.lastSelectedPort = port;
   }
 
-  outputs: Map<string, OutputChannel> = new Map();
+  toitOutput(): OutputChannel {
+    if (!this.toitOut) this.toitOut = Window.createOutputChannel("Toit");
+
+    return this.toitOut as OutputChannel;
+  }
 
   outputChannel(id: string, name: string): OutputChannel {
     let output = this.outputs.get(id);
