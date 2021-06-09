@@ -16,6 +16,8 @@ export class CommandContext {
   lastSelectedPort?: string;
   lastFiles: Map<string, string> = new Map();
   toitExec : string = getToitPath();
+  outputs: Map<string, OutputChannel> = new Map();
+  toitOut?: OutputChannel;
 
   setStatusBar(sb: StatusBarItem): void {
     this.statusBar = sb;
@@ -57,7 +59,11 @@ export class CommandContext {
     this.lastSelectedPort = port;
   }
 
-  outputs: Map<string, OutputChannel> = new Map();
+  toitOutput(): OutputChannel {
+    if (!this.toitOut) this.toitOut = Window.createOutputChannel("Toit");
+
+    return this.toitOut as OutputChannel;
+  }
 
   outputChannel(id: string, name: string): OutputChannel {
     let output = this.outputs.get(id);
@@ -272,7 +278,11 @@ class OrganizationItem extends Organization implements QuickPickItem {
 export async function getOrganization(ctx: CommandContext): Promise<string> {
   await ensureAuth(ctx);
   const { stdout } = await execFile(ctx.toitExec, [ "org", "get" ]);
-  return stdout.slice(13);
+  // The output of the command if of the form:
+  // Logged in to Toitware
+  // 01234567890123
+  const orgStrOffset = 13;
+  return stdout.slice(orgStrOffset).trimEnd();
 }
 
 
@@ -300,4 +310,10 @@ export async function setOrganization(ctx: CommandContext, org: Organization): P
 
 export function getToitPath(): string {
   return Workspace.getConfiguration("toit").get("Path", "toit");
+}
+
+export async function getFirmwareVersion(ctx: CommandContext): Promise<string> {
+  await ensureAuth(ctx);
+  const { stdout } = await execFile(ctx.toitExec, [ "firmware", "version", "-o", "short" ]);
+  return stdout.trimEnd();
 }
