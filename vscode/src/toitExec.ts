@@ -80,12 +80,12 @@ async function executeDeployCommand(ctx: CommandContext, device?: Device) {
 
 export function createRunCommand(cmdContext: CommandContext): () => void {
   return (dev?: RelatedDevice) => {
-    executeRunCommand(cmdContext, RunConfig.instance, dev?.device());
+    executeRunCommand(cmdContext, dev?.device());
   };
 }
 
 export function createDeployCommand(cmdContext: CommandContext): () => void {
   return (dev?: RelatedDevice) => {
-    executeDeployCommand(cmdContext, DeployConfig.instance, dev?.device());
+    executeDeployCommand(cmdContext, dev?.device());
   };
 }
