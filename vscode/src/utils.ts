@@ -317,7 +317,3 @@ export async function getFirmwareVersion(ctx: CommandContext): Promise<string> {
   const { stdout } = await execFile(ctx.toitExec, [ "firmware", "version", "-o", "short" ]);
   return stdout.trimEnd();
 }
-
-export function sleep(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms) );
-}
