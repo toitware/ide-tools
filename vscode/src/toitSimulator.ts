@@ -1,5 +1,3 @@
-"use strict";
-
 import cp = require("child_process");
 import { OutputChannel, window as Window } from "vscode";
 import { Device, RelatedDevice } from "./device";

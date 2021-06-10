@@ -1,5 +1,3 @@
-"use strict";
-
 import { commands as Commands, ExtensionContext } from "vscode";
 import { activateLsp, deactivateLsp } from "./lspClient";
 import { activateToitStatusBar, createSetOrgCommand } from "./organization";

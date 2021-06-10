@@ -1,5 +1,3 @@
-"use strict";
-
 import * as path from "path";
 import { TreeItem, TreeItemCollapsibleState } from "vscode";
 import { Device, RelatedDevice } from "./device";
