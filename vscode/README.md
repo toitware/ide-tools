@@ -14,26 +14,47 @@ The extension is now setup and ready to use. Visit the [Toit docs](https://docs.
 
 ### See devices and applications
 Get an overview of your devices and running apps in the Toit sidebar.
-![Device overview](images/readme/demo-device-view.gif "Device overview")
+<p align=center>
+<img src="images/readme/demo-device-view.gif" width=75%>
+</p>
+
 ### Deploy and run apps
 [Run and deploy](https://docs.toit.io/deploy/runordeploy/) the app you are developing from the device view or from the command pallette.
 
-Run apps
-![Run apps from the device view](images/readme/demo-run.gif "Run Toit app")
+<p align=center>
+<img src="images/readme/demo-run.gif" width=75%>
+<br />
+<em>Run apps.</em>
+</p>
 
-Deploy apps
-![Deploy apps from the device view](images/readme/demo-deploy.gif "Deploy Toit app")
+<p align=center>
+<img src="images/readme/demo-deploy.gif" width=75%>
+<br />
+<em>Deploy apps.</em>
+</p>
+
 ### Provision and monitor
-[Provision](https://docs.toit.io/getstarted/details/provision/) new devices from the command pallette.
-![Provision devices from the command pallette](images/readme/demo-provision.gif "Provision devices")
+[Provision](https://docs.toit.io/getstarted/details/provision/) new devices and monitor serial output from the command pallette.
+<p align=center>
+<img src="images/readme/demo-provision.gif" width=75%>
+<br />
+<em>Provision device.</em>
+</p>
 
-Monitor the serial output from your device.
-![Monitor serial output from devices from the command pallette](images/readme/demo-monitor.gif "Monitor serial output from devices devices")
+<p align=center>
+<img src="images/readme/demo-monitor.gif" width=75%>
+<br />
+<em>Monitor device.</em>
+</p>
 
 ### Switch organization
 Switch between organizations from the status bar.
-![Switch between organizations in statusbar](images/readme/demo-org.gif "Organization in statusbar")
+<p align=center>
+<img src="images/readme/demo-org.gif" width=75%>
+</p>
 
 ### Simulators
 Start and stop simulators from the device view or the command pallette.
-![Start and stop simulators](images/readme/demo-simulator.gif "Provision devices")
+<p align=center>
+<img src="images/readme/demo-simulator.gif" width=75%>
+</p>
