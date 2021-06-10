@@ -1,5 +1,3 @@
-"use strict";
-
 import { window as Window } from "vscode";
 import { CommandContext, ensureAuth, selectPort } from "./utils";
 

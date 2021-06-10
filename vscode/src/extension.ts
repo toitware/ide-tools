@@ -1,5 +1,3 @@
-"use strict";
-
 import { commands as Commands, ExtensionContext } from "vscode";
 import { activateLsp, deactivateLsp } from "./lspClient";
 import { activateToitStatusBar, createSetOrgCommand } from "./organization";
@@ -15,7 +13,7 @@ import { CommandContext } from "./utils";
 export function activate(context: ExtensionContext): void {
   Commands.executeCommand("setContext", "toit.extensionActive", true);
   const cmdContext = new CommandContext();
-  activateTreeView(cmdContext)
+  activateTreeView(cmdContext);
 
   context.subscriptions.push(Commands.registerCommand("toit.serialProvision", createSerialProvision(cmdContext)));
   context.subscriptions.push(Commands.registerCommand("toit.serialMonitor", createSerialMonitor(cmdContext)));

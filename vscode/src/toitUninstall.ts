@@ -1,5 +1,3 @@
-"use strict";
-
 import { App, RelatedApp } from "./app";
 import { CommandContext, uninstallApp } from "./utils";
 

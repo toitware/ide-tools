@@ -1,8 +1,7 @@
-"use strict";
-
 import { promisify } from "util";
 import { OutputChannel, window as Window } from "vscode";
-import { DeviceTreeItem } from "./treeView";
+import { Device } from "./device";
+import { } from "./treeView";
 import { CommandContext, ensureAuth, selectDevice } from "./utils";
 import cp = require("child_process");
 const execFile = promisify(cp.execFile);
@@ -21,8 +20,7 @@ function currentFilePath(ctx: CommandContext, suffix: string): string {
   return filePath;
 }
 
-async function executeRunCommand(ctx: CommandContext, treeItem?: DeviceTreeItem) {
-  let device = treeItem?.device();
+async function executeRunCommand(ctx: CommandContext, device?: Device) {
   let filePath: string;
   try {
     filePath = currentFilePath(ctx, ".toit");
@@ -50,8 +48,7 @@ async function executeRunCommand(ctx: CommandContext, treeItem?: DeviceTreeItem)
   }
 }
 
-async function executeDeployCommand(ctx: CommandContext, treeItem?: DeviceTreeItem) {
-  let device = treeItem?.device();
+async function executeDeployCommand(ctx: CommandContext, device?: Device) {
   let filePath: string;
   try {
     filePath = currentFilePath(ctx, ".yaml");
@@ -72,8 +69,8 @@ async function executeDeployCommand(ctx: CommandContext, treeItem?: DeviceTreeIt
     const toitOutput: OutputChannel = ctx.outputChannel(device.deviceID, device.name);
     toitOutput.show();
     toitOutput.append(stdout);
-    toitOutput.append(stderr)
-    ctx.refreshDeviceView(treeItem);
+    toitOutput.append(stderr);
+    ctx.refreshDeviceView(device);
     ctx.setLastFile(".yaml", filePath);
   } catch (e) {
     Window.showErrorMessage(`Deploy app failed: ${e.message}`);
@@ -81,13 +78,13 @@ async function executeDeployCommand(ctx: CommandContext, treeItem?: DeviceTreeIt
 }
 
 export function createRunCommand(cmdContext: CommandContext): () => void {
-  return (treeItem?: DeviceTreeItem) => {
-    executeRunCommand(cmdContext, treeItem);
+  return (device?: Device) => {
+    executeRunCommand(cmdContext, device);
   };
 }
 
 export function createDeployCommand(cmdContext: CommandContext): () => void {
-  return (treeItem?: DeviceTreeItem) => {
-    executeDeployCommand(cmdContext, treeItem);
+  return (device?: Device) => {
+    executeDeployCommand(cmdContext, device);
   };
 }

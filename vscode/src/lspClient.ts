@@ -1,5 +1,3 @@
-"use strict";
-
 import * as fs from "fs";
 import { platform } from "os";
 import * as p from "path";

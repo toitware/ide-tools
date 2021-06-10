@@ -1,4 +1,6 @@
-"use strict";
+import * as path from "path";
+import { TreeItem, TreeItemCollapsibleState } from "vscode";
+import { Device, RelatedDevice } from "./device";
 
 export interface RelatedApp {
   app(): App;
@@ -20,7 +22,7 @@ export interface ConsoleApp {
 }
 /* eslint-enable @typescript-eslint/naming-convention */
 
-export class App implements RelatedApp {
+export class App extends TreeItem implements RelatedApp, RelatedDevice {
   compilationId: string;
   created: string;
   deviceID: string;
@@ -33,7 +35,10 @@ export class App implements RelatedApp {
   state: number;
   updated: string;
 
-  constructor(app: ConsoleApp) {
+  dev: Device;
+
+  constructor(app: ConsoleApp, dev: Device) {
+    super(app.job_name, TreeItemCollapsibleState.None);
     this.compilationId = app.compilation_id;
     this.created = app.created;
     this.deviceID = app.device_id;
@@ -45,10 +50,23 @@ export class App implements RelatedApp {
     this.sdk = app.sdk;
     this.state = app.state;
     this.updated = app.updated;
+
+    this.dev = dev;
+
+    // TreeItem fields
+    this.contextValue = "application";
+    this.iconPath = {
+      "light": path.join(__filename, "..", "..", "resources", "light", "app.svg"),
+      "dark": path.join(__filename, "..", "..", "resources", "dark", "app.svg")
+    };
   }
 
   app(): App {
     return this;
+  }
+
+  device(): Device {
+    return this.dev;
   }
 
 }

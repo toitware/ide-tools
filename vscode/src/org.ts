@@ -1,5 +1,3 @@
-"use strict";
-
 /* eslint-disable @typescript-eslint/naming-convention */
 export interface ConsoleOrganization {
   name: string;
