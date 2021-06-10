@@ -180,7 +180,7 @@
                 "toit.Path": {
                     "type": "string",
                     "default": "toit",
-                    "description": "The path to the 'toit' command line tool."
+                    "description": "The path to 'toit' executable, e.g. `/usr/bin/toit`."
                 },
                 "toitLanguageServer.toitPath": {
                     "type": [
