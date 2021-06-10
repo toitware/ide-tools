@@ -18,7 +18,6 @@ export class CommandContext {
   toitOut?: OutputChannel;
   lastFiles: Map<string, string> = new Map();
   outputs: Map<string, OutputChannel> = new Map();
-  devices: Map<string, Device> = new Map();
 
   setStatusBar(sb: StatusBarItem): void {
     this.statusBar = sb;

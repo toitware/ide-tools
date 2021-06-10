@@ -56,7 +56,7 @@ export class Device extends TreeItem implements RelatedDevice {
   }
 
   static generateMarkdownString(device: Device): string {
-    return`
+    return `
 ### ${device.name} ${device.isSimulator ? "(simulator)" : ""}
 
 --------------------------------
