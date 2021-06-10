@@ -5,14 +5,14 @@ import { CommandContext, isAuthenticated, listApps, listDevices } from "./utils"
 
 let viewRefresher: NodeJS.Timeout;
 
-export function activateTreeView(ctx: CommandContext) {
+export function activateTreeView(ctx: CommandContext): void {
   viewRefresher = setInterval(() => ctx.refreshDeviceView(), 60000);
   const deviceDataProvider = new ToitDataProvider(ctx);
   Window.createTreeView("toitDeviceView", { "treeDataProvider": deviceDataProvider } );
   ctx.setDeviceProvider(deviceDataProvider);
 }
 
-export function deactivateTreeView() {
+export function deactivateTreeView(): void {
   clearInterval(viewRefresher);
 }
 export class ToitDataProvider implements TreeDataProvider<TreeItem> {
@@ -33,7 +33,7 @@ export class ToitDataProvider implements TreeDataProvider<TreeItem> {
   getParent(element: TreeItem): TreeItem | undefined {
     if (element instanceof App) return element.device();
 
-    return;
+    return undefined;
   }
 
   async getChildren(element?: TreeItem): Promise<TreeItem[]> {

@@ -49,7 +49,7 @@ export class Device extends TreeItem implements RelatedDevice {
     this.runningFirmware = consoleDev.running_firmware;
 
     // TreeItem fields
-    this.id = this.deviceID
+    this.id = this.deviceID;
     this.contextValue = this.isSimulator ? "device-simulator" : "device";
     this.iconPath = this.isActive ? Device.activeIcons : Device.inactiveIcons;
     this.tooltip = new MarkdownString(Device.generateMarkdownString(this));
@@ -75,7 +75,7 @@ ${device.runningFirmware} ${device.configureFirmware ? `\u279f ${device.configur
 ${new Date(device.lastSeen).toLocaleTimeString(undefined)}
 
 ${new Date(device.lastSeen).toLocaleDateString(undefined, {"weekday": "long", "year": "numeric", "month": "long", "day": "numeric"})}
-`
+`;
   }
 
   device(): Device {

@@ -1,5 +1,3 @@
-"use strict";
-
 import { promisify } from "util";
 import { OutputChannel, window as Window } from "vscode";
 import { Device } from "./device";
@@ -71,7 +69,7 @@ async function executeDeployCommand(ctx: CommandContext, device?: Device) {
     const toitOutput: OutputChannel = ctx.outputChannel(device.deviceID, device.name);
     toitOutput.show();
     toitOutput.append(stdout);
-    toitOutput.append(stderr)
+    toitOutput.append(stderr);
     ctx.refreshDeviceView(device);
     ctx.setLastFile(".yaml", filePath);
   } catch (e) {

@@ -1,5 +1,3 @@
-"use strict";
-
 import { promisify } from "util";
 import { InputBoxOptions, OutputChannel, QuickPickItem, StatusBarItem, Terminal, TreeItem, window as Window, workspace as Workspace } from "vscode";
 import { App, ConsoleApp } from "./app";
@@ -101,7 +99,7 @@ class DeviceItem implements QuickPickItem, RelatedDevice {
   label: string;
 
   constructor(device: ConsoleDevice, active: boolean) {
-    this.dev = new Device(device, active)
+    this.dev = new Device(device, active);
     this.label = this.dev.name;
   }
 
