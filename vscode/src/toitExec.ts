@@ -68,6 +68,7 @@ async function executeDeployCommand(ctx: Context, device?: Device) {
 
   try {
     if (!device) device = await selectDevice(ctx, { "activeOnly": false, "simulatorOnly": false });
+
     const { stdout, stderr } = await execFile("toit", [ "dev", "-d", device.name, "deploy", filePath ]);
     ctx.output(device.deviceID, device.name, stdout, stderr);
     ctx.refreshDeviceView(device);
