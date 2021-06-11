@@ -5,11 +5,11 @@
 import { Event, EventEmitter, TreeDataProvider, TreeItem, window as Window } from "vscode";
 import { App } from "./app";
 import { Device } from "./device";
-import { CommandContext, isAuthenticated, listApps, listDevices } from "./utils";
+import { Context, isAuthenticated, listApps, listDevices } from "./utils";
 
 let viewRefresher: NodeJS.Timeout;
 
-export function activateTreeView(ctx: CommandContext): void {
+export function activateTreeView(ctx: Context): void {
   viewRefresher = setInterval(() => ctx.refreshDeviceView(), 60000);
   const deviceDataProvider = new ToitDataProvider(ctx);
   Window.createTreeView("toitDeviceView", { "treeDataProvider": deviceDataProvider } );
@@ -28,9 +28,9 @@ export class ToitDataProvider implements TreeDataProvider<TreeItem> {
     this._onDidChangeTreeData.fire(item);
   }
 
-  context: CommandContext;
+  context: Context;
 
-  constructor(ctx: CommandContext) {
+  constructor(ctx: Context) {
     this.context = ctx;
   }
 

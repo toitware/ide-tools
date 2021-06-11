@@ -6,12 +6,12 @@ import { promisify } from "util";
 import { OutputChannel, window as Window } from "vscode";
 import { Device } from "./device";
 import { } from "./treeView";
-import { CommandContext, ensureAuth, selectDevice } from "./utils";
+import { Context, ensureAuth, selectDevice } from "./utils";
 import cp = require("child_process");
 const execFile = promisify(cp.execFile);
 
 
-function currentFilePath(ctx: CommandContext, suffix: string): string {
+function currentFilePath(ctx: Context, suffix: string): string {
   const editor = Window.activeTextEditor;
   if (!editor) throw new Error("No active file.");
 
@@ -24,7 +24,7 @@ function currentFilePath(ctx: CommandContext, suffix: string): string {
   return filePath;
 }
 
-async function executeRunCommand(ctx: CommandContext, device?: Device) {
+async function executeRunCommand(ctx: Context, device?: Device) {
   let filePath: string;
   try {
     filePath = currentFilePath(ctx, ".toit");
@@ -52,7 +52,7 @@ async function executeRunCommand(ctx: CommandContext, device?: Device) {
   }
 }
 
-async function executeDeployCommand(ctx: CommandContext, device?: Device) {
+async function executeDeployCommand(ctx: Context, device?: Device) {
   let filePath: string;
   try {
     filePath = currentFilePath(ctx, ".yaml");
@@ -77,14 +77,14 @@ async function executeDeployCommand(ctx: CommandContext, device?: Device) {
   }
 }
 
-export function createRunCommand(cmdContext: CommandContext): () => void {
+export function createRunCommand(ctx: Context): () => void {
   return (device?: Device) => {
-    executeRunCommand(cmdContext, device);
+    executeRunCommand(ctx, device);
   };
 }
 
-export function createDeployCommand(cmdContext: CommandContext): () => void {
+export function createDeployCommand(ctx: Context): () => void {
   return (device?: Device) => {
-    executeDeployCommand(cmdContext, device);
+    executeDeployCommand(ctx, device);
   };
 }
