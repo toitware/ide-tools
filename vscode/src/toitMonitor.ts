@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import { window as Window } from "vscode";
-import { CommandContext, ensureAuth, selectPort } from "./utils";
+import { Context, ensureAuth, selectPort } from "./utils";
 
-async function serialMonitor(ctx: CommandContext) {
+async function serialMonitor(ctx: Context) {
   try {
     await ensureAuth(ctx);
   } catch (e) {
@@ -22,6 +22,6 @@ async function serialMonitor(ctx: CommandContext) {
   }
 }
 
-export function createSerialMonitor(ctx: CommandContext): () => void {
+export function createSerialMonitor(ctx: Context): () => void {
   return () => serialMonitor(ctx);
 }

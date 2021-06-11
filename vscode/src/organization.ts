@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import { ExtensionContext, StatusBarAlignment, window as Window } from "vscode";
-import { CommandContext, ensureAuth, getFirmwareVersion, getOrganization, selectOrganization, setOrganization } from "./utils";
+import { Context, ensureAuth, getFirmwareVersion, getOrganization, selectOrganization, setOrganization } from "./utils";
 
-export async function activateToitStatusBar(ctx: CommandContext, extensionContext: ExtensionContext): Promise<void> {
+export async function activateToitStatusBar(ctx: Context, extensionContext: ExtensionContext): Promise<void> {
   const toitStatus = Window.createStatusBarItem(StatusBarAlignment.Left, 100);
   extensionContext.subscriptions.push(toitStatus);
   ctx.setStatusBar(toitStatus);
@@ -14,7 +14,7 @@ export async function activateToitStatusBar(ctx: CommandContext, extensionContex
   toitStatus.show();
 }
 
-async function updateStatus(ctx: CommandContext) {
+async function updateStatus(ctx: Context) {
   const toitStatus = ctx.getStatusBar();
   if (!toitStatus) return;
   const org = await getOrganization(ctx);
@@ -22,7 +22,7 @@ async function updateStatus(ctx: CommandContext) {
   toitStatus.text = `Toit: ${org} (${firmwareVersion})`;
 }
 
-async function executeCommand(ctx: CommandContext) {
+async function executeCommand(ctx: Context) {
   await ensureAuth(ctx);
   const org = await selectOrganization(ctx);
   await setOrganization(ctx, org);
@@ -30,6 +30,6 @@ async function executeCommand(ctx: CommandContext) {
   ctx.refreshDeviceView();
 }
 
-export function createSetOrgCommand(ctx: CommandContext): () => void {
+export function createSetOrgCommand(ctx: Context): () => void {
   return async() => executeCommand(ctx);
 }

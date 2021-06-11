@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import { window as Window } from "vscode";
-import { CommandContext, ensureAuth, promptForWiFiInfo, selectPort, WiFiInfo } from "./utils";
+import { Context, ensureAuth, promptForWiFiInfo, selectPort, WiFiInfo } from "./utils";
 
-async function serialMonitor(ctx: CommandContext) {
+async function serialMonitor(ctx: Context) {
   try {
     await ensureAuth(ctx);
   } catch (e) {
@@ -24,6 +24,6 @@ async function serialMonitor(ctx: CommandContext) {
   }
 }
 
-export function createSerialProvision(ctx: CommandContext): () => void {
+export function createSerialProvision(ctx: Context): () => void {
   return () => serialMonitor(ctx);
 }
