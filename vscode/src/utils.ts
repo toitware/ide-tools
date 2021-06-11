@@ -7,6 +7,7 @@ import { InputBoxOptions, OutputChannel, QuickPickItem, StatusBarItem, Terminal,
 import { App, ConsoleApp } from "./app";
 import { ConsoleDevice, Device, RelatedDevice } from "./device";
 import { ConsoleOrganization, Organization } from "./org";
+import { SerialProvider } from "./serialView";
 import { ToitDataProvider } from "./treeView";
 import cp = require("child_process");
 const execFile = promisify(cp.execFile);
@@ -14,6 +15,7 @@ const execFile = promisify(cp.execFile);
 export class Context {
   statusBar?: StatusBarItem;
   deviceViewProvider?: ToitDataProvider;
+  serialProvider?: SerialProvider;
   lastSelectedDevice?: RelatedDevice;
   lastSelectedPort?: string;
   toitExec : string = getToitPath();
@@ -41,8 +43,16 @@ export class Context {
     this.deviceViewProvider = provider;
   }
 
+  setSerialProvider(provider: SerialProvider) : void {
+    this.serialProvider = provider;
+  }
+
   refreshDeviceView(data?: TreeItem) : void {
-    if (this.deviceViewProvider) this.deviceViewProvider.refresh(data);
+    this.deviceViewProvider?.refresh(data);
+  }
+
+  refreshSerialView(data?: TreeItem) : void {
+    this.serialProvider?.refresh(data);
   }
 
   lastDevice(): Device | undefined {
@@ -255,7 +265,7 @@ export function currentFilePath(suffix: string): string {
   return filePath;
 }
 
-async function listPorts(ctx: Context): Promise<string[]> {
+export async function listPorts(ctx: Context): Promise<string[]> {
   const { stdout } = await execFile(ctx.toitExec, [ "serial", "ports" ]);
   return stdout.split("\n").filter(str => str !== "");
 }

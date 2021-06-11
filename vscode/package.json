@@ -39,9 +39,13 @@
                 {
                     "id": "toitDeviceView",
                     "name": "Devices",
-                    "contextualTitle": "Device Explorer",
-                    "icon": "./resources/logo.svg",
                     "when": "toit.extensionActive"
+                },
+                {
+                    "id": "toitSerialView",
+                    "name": "Serial Ports",
+                    "when": "toit.extensionActive",
+                    "visibility": "collapsed"
                 }
             ]
         },
