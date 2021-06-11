@@ -48,11 +48,11 @@ export class Context {
   }
 
   refreshDeviceView(data?: TreeItem) : void {
-    if (this.deviceViewProvider) this.deviceViewProvider.refresh(data);
+    this.deviceViewProvider?.refresh(data);
   }
 
   refreshSerialView(data?: TreeItem) : void {
-    if (this.serialProvider) this.serialProvider.refresh(data);
+    this.serialProvider?.refresh(data);
   }
 
   lastDevice(): Device | undefined {
