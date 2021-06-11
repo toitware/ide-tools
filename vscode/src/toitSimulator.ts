@@ -1,8 +1,8 @@
-import cp = require("child_process");
 import { promisify } from "util";
 import { OutputChannel, window as Window } from "vscode";
 import { Device } from "./device";
 import { CommandContext, ensureAuth, getToitPath, selectDevice } from "./utils";
+import cp = require("child_process");
 const execFile = promisify(cp.execFile);
 
 async function executeStopCommand(ctx: CommandContext, device?: Device) {
@@ -46,11 +46,11 @@ async function executeStartCommand(ctx: CommandContext) {
       args.push("--alias");
       args.push(name);
     }
-    const commandProcess = cp.spawn(getToitPath(), args);
+    const { stdout, stderr } = await execFile(getToitPath(), args);
     const toitOutput: OutputChannel = ctx.toitOutput();
     toitOutput.show();
-    commandProcess.stdout.on("data", data => toitOutput.append(`${data}`));
-    commandProcess.stderr.on("data", data => toitOutput.append(`${data}`));
+    toitOutput.append(stdout);
+    toitOutput.append(stderr)
 
     ctx.refreshDeviceView();
   } catch (e) {
