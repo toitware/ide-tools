@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import { commands as Commands, ExtensionContext } from "vscode";
+import { activateTreeView, deactivateTreeView } from "./deviceView";
 import { activateLsp, deactivateLsp } from "./lspClient";
 import { activateToitStatusBar, createSetOrgCommand } from "./organization";
 import { activateSerialView } from "./serialView";
@@ -12,7 +13,6 @@ import { createSerialMonitor } from "./toitMonitor";
 import { createSerialProvision } from "./toitProvision";
 import { createStartSimCommand, createStopSimCommand } from "./toitSimulator";
 import { createUninstallCommand } from "./toitUninstall";
-import { activateTreeView, deactivateTreeView } from "./treeView";
 import { Context } from "./utils";
 
 export function activate(extContext: ExtensionContext): void {

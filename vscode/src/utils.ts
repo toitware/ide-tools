@@ -6,9 +6,9 @@ import { promisify } from "util";
 import { InputBoxOptions, OutputChannel, QuickPickItem, StatusBarItem, Terminal, TreeItem, window as Window, workspace as Workspace } from "vscode";
 import { App, ConsoleApp } from "./app";
 import { ConsoleDevice, Device, RelatedDevice } from "./device";
+import { ToitDataProvider } from "./deviceView";
 import { ConsoleOrganization, Organization } from "./org";
 import { SerialProvider } from "./serialView";
-import { ToitDataProvider } from "./treeView";
 import cp = require("child_process");
 const execFile = promisify(cp.execFile);
 
