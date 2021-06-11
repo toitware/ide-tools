@@ -1,0 +1,16 @@
+// Copyright (C) 2021 Toitware ApS. All rights reserved.
+// Use of this source code is governed by an MIT-style license that can be
+// found in the LICENSE file.
+
+import { ThemeIcon, TreeItem, TreeItemCollapsibleState } from "vscode";
+
+export class SerialPort extends TreeItem {
+  name: string;
+
+  iconPath = new ThemeIcon("plug");
+
+  constructor(name: string) {
+    super(name, TreeItemCollapsibleState.None);
+    this.name = name;
+  }
+}
