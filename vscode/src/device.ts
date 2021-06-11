@@ -2,8 +2,7 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file.
 
-import * as path from "path";
-import { MarkdownString, TreeItem, TreeItemCollapsibleState } from "vscode";
+import { MarkdownString, ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState } from "vscode";
 
 /**
  * Method for retrieving the related device.
@@ -25,14 +24,9 @@ export interface ConsoleDevice {
 }
 
 export class Device extends TreeItem implements RelatedDevice {
-  static activeIcons = {
-    "light": path.join(__filename, "..", "..", "resources", "light", "active.svg"),
-    "dark": path.join(__filename, "..", "..", "resources", "dark", "active.svg")
-  };
-  static inactiveIcons = {
-    "light": path.join(__filename, "..", "..", "resources", "light", "inactive.svg"),
-    "dark": path.join(__filename, "..", "..", "resources", "dark", "inactive.svg")
-  };
+  static activeIcons = new ThemeIcon("pulse", new ThemeColor("debugIcon.startForeground"));
+  static inactiveIcons = new ThemeIcon("remove", new ThemeColor("debugIcon.stopForeground"));
+
 
   deviceID: string;
   isSimulator: boolean;
