@@ -11,7 +11,7 @@ import { ToitDataProvider } from "./treeView";
 import cp = require("child_process");
 const execFile = promisify(cp.execFile);
 
-export class CommandContext {
+export class Context {
   statusBar?: StatusBarItem;
   deviceViewProvider?: ToitDataProvider;
   lastSelectedDevice?: RelatedDevice;
@@ -103,7 +103,7 @@ export class CommandContext {
   }
 }
 
-export async function listApps(ctx: CommandContext, device: Device): Promise<App[]> {
+export async function listApps(ctx: Context, device: Device): Promise<App[]> {
   // TODO(Lau): change this when is_active is part of json.
   const cmdArgs =  [ "dev", "-d", device.deviceID, "ps", "-o", "json" ];
   const { stdout } = await execFile(ctx.toitExec, cmdArgs);
@@ -127,7 +127,7 @@ class DeviceItem implements QuickPickItem, RelatedDevice {
   }
 }
 
-export async function listDevices(ctx: CommandContext): Promise<DeviceItem[]> {
+export async function listDevices(ctx: Context): Promise<DeviceItem[]> {
   // TODO(Lau): change this when is_active is part of json.
   const cmdArgs =  [ "devices", "--names", "-o", "json" ];
   const jsonAll = await execFile(ctx.toitExec, cmdArgs);
@@ -145,7 +145,7 @@ export async function listDevices(ctx: CommandContext): Promise<DeviceItem[]> {
   return allDevices;
 }
 
-function preferLastPicked(ctx: CommandContext, devices: DeviceItem[]) {
+function preferLastPicked(ctx: Context, devices: DeviceItem[]) {
   const lastDevice = ctx.lastDevice();
   if (!lastDevice) return;
 
@@ -158,7 +158,7 @@ export interface SelectOptions {
   simulatorOnly: boolean;
 }
 
-export async function selectDevice(ctx: CommandContext, config: SelectOptions): Promise<Device> {
+export async function selectDevice(ctx: Context, config: SelectOptions): Promise<Device> {
   let deviceItems = await listDevices(ctx);
   if (config.activeOnly) deviceItems = deviceItems.filter(item => item.device().isActive);
   if (config.simulatorOnly) deviceItems = deviceItems.filter(item => item.device().isSimulator);
@@ -170,11 +170,11 @@ export async function selectDevice(ctx: CommandContext, config: SelectOptions): 
   return device.device();
 }
 
-async function login(ctx: CommandContext): Promise<void> {
+async function login(ctx: Context): Promise<void> {
   await execFile(ctx.toitExec, [ "auth", "login" ]);
 }
 
-async function authInfo(ctx: CommandContext): Promise<AuthInfo> {
+async function authInfo(ctx: Context): Promise<AuthInfo> {
   const { stdout } = await execFile(ctx.toitExec, [ "auth", "info", "-s", "-o", "json" ]);
   return JSON.parse(stdout);
 }
@@ -192,17 +192,17 @@ interface AuthInfo {
   /* eslint-enable @typescript-eslint/naming-convention */
 }
 
-export async function isAuthenticated(ctx: CommandContext): Promise<boolean> {
+export async function isAuthenticated(ctx: Context): Promise<boolean> {
   const info = await authInfo(ctx);
   return info.status === "authenticated";
 }
 
-async function consoleContext(ctx: CommandContext): Promise<string> {
+async function consoleContext(ctx: Context): Promise<string> {
   const { stdout } = await execFile(ctx.toitExec, [ "context", "default" ]);
   return stdout.trim();
 }
 
-export async function ensureAuth(ctx: CommandContext): Promise<void> {
+export async function ensureAuth(ctx: Context): Promise<void> {
   if (await consoleContext(ctx) === "local") return;
 
   if (await isAuthenticated(ctx)) return;
@@ -255,12 +255,12 @@ export function currentFilePath(suffix: string): string {
   return filePath;
 }
 
-async function listPorts(ctx: CommandContext): Promise<string[]> {
+async function listPorts(ctx: Context): Promise<string[]> {
   const { stdout } = await execFile(ctx.toitExec, [ "serial", "ports" ]);
   return stdout.split("\n").filter(str => str !== "");
 }
 
-export async function selectPort(ctx: CommandContext): Promise<string> {
+export async function selectPort(ctx: Context): Promise<string> {
   const ports = await listPorts(ctx);
   ports.reverse();
 
@@ -284,7 +284,7 @@ function preferElement<T>(index: number, list: T[]): void {
   list.unshift(preferred);
 }
 
-export async function uninstallApp(ctx: CommandContext, app: App): Promise<void> {
+export async function uninstallApp(ctx: Context, app: App): Promise<void> {
   await execFile(ctx.toitExec, [ "dev", "-d", app.deviceID, "uninstall", app.jobID ]);
 }
 
@@ -297,7 +297,7 @@ class OrganizationItem extends Organization implements QuickPickItem {
   }
 }
 
-export async function getOrganization(ctx: CommandContext): Promise<string> {
+export async function getOrganization(ctx: Context): Promise<string> {
   await ensureAuth(ctx);
   const { stdout } = await execFile(ctx.toitExec, [ "org", "get" ]);
   // The output of the command if of the form:
@@ -308,7 +308,7 @@ export async function getOrganization(ctx: CommandContext): Promise<string> {
 }
 
 
-async function listOrganizations(ctx: CommandContext): Promise<OrganizationItem[]> {
+async function listOrganizations(ctx: Context): Promise<OrganizationItem[]> {
   // TODO(Lau): change this when is_active is part of json.
   const cmdArgs =  [ "org", "list", "-o", "json" ];
   const { stdout } = await execFile(ctx.toitExec, cmdArgs);
@@ -318,14 +318,14 @@ async function listOrganizations(ctx: CommandContext): Promise<OrganizationItem[
     map(org => new OrganizationItem(org));
 }
 
-export async function selectOrganization(ctx: CommandContext): Promise<Organization> {
+export async function selectOrganization(ctx: Context): Promise<Organization> {
   const organizations = await listOrganizations(ctx);
   const org = await Window.showQuickPick(organizations, { "placeHolder": "Pick an organization" });
   if (!org) throw new Error("No organization selected.");
   return org;
 }
 
-export async function setOrganization(ctx: CommandContext, org: Organization): Promise<void> {
+export async function setOrganization(ctx: Context, org: Organization): Promise<void> {
   const cmdArgs =  [ "org", "use", org.organizationID ];
   await execFile(ctx.toitExec, cmdArgs);
 }
@@ -334,7 +334,7 @@ export function getToitPath(): string {
   return Workspace.getConfiguration("toit").get("Path", "toit");
 }
 
-export async function getFirmwareVersion(ctx: CommandContext): Promise<string> {
+export async function getFirmwareVersion(ctx: Context): Promise<string> {
   await ensureAuth(ctx);
   const { stdout } = await execFile(ctx.toitExec, [ "firmware", "version", "-o", "short" ]);
   return stdout.trimEnd();

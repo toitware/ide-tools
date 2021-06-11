@@ -12,26 +12,26 @@ import { createSerialProvision } from "./toitProvision";
 import { createStartSimCommand, createStopSimCommand } from "./toitSimulator";
 import { createUninstallCommand } from "./toitUninstall";
 import { activateTreeView, deactivateTreeView } from "./treeView";
-import { CommandContext } from "./utils";
+import { Context } from "./utils";
 
-export function activate(context: ExtensionContext): void {
+export function activate(extContext: ExtensionContext): void {
   Commands.executeCommand("setContext", "toit.extensionActive", true);
-  const cmdContext = new CommandContext();
-  activateTreeView(cmdContext);
+  const ctx = new Context();
+  activateTreeView(ctx);
 
-  context.subscriptions.push(Commands.registerCommand("toit.serialProvision", createSerialProvision(cmdContext)));
-  context.subscriptions.push(Commands.registerCommand("toit.serialMonitor", createSerialMonitor(cmdContext)));
-  context.subscriptions.push(Commands.registerCommand("toit.ensureAuth", createEnsureAuth(cmdContext)));
-  context.subscriptions.push(Commands.registerCommand("toit.refreshView", () => cmdContext.refreshDeviceView()));
-  context.subscriptions.push(Commands.registerCommand("toit.uninstallApp", createUninstallCommand(cmdContext)));
-  context.subscriptions.push(Commands.registerCommand("toit.devRun", createRunCommand(cmdContext)));
-  context.subscriptions.push(Commands.registerCommand("toit.devDeploy", createDeployCommand(cmdContext)));
-  context.subscriptions.push(Commands.registerCommand("toit.setOrganization", createSetOrgCommand(cmdContext)));
-  context.subscriptions.push(Commands.registerCommand("toit.stopSimulator", createStopSimCommand(cmdContext)));
-  context.subscriptions.push(Commands.registerCommand("toit.startSimulator", createStartSimCommand(cmdContext)));
+  extContext.subscriptions.push(Commands.registerCommand("toit.serialProvision", createSerialProvision(ctx)));
+  extContext.subscriptions.push(Commands.registerCommand("toit.serialMonitor", createSerialMonitor(ctx)));
+  extContext.subscriptions.push(Commands.registerCommand("toit.ensureAuth", createEnsureAuth(ctx)));
+  extContext.subscriptions.push(Commands.registerCommand("toit.refreshView", () => ctx.refreshDeviceView()));
+  extContext.subscriptions.push(Commands.registerCommand("toit.uninstallApp", createUninstallCommand(ctx)));
+  extContext.subscriptions.push(Commands.registerCommand("toit.devRun", createRunCommand(ctx)));
+  extContext.subscriptions.push(Commands.registerCommand("toit.devDeploy", createDeployCommand(ctx)));
+  extContext.subscriptions.push(Commands.registerCommand("toit.setOrganization", createSetOrgCommand(ctx)));
+  extContext.subscriptions.push(Commands.registerCommand("toit.stopSimulator", createStopSimCommand(ctx)));
+  extContext.subscriptions.push(Commands.registerCommand("toit.startSimulator", createStartSimCommand(ctx)));
 
-  activateToitStatusBar(cmdContext, context);
-  activateLsp(context);
+  activateToitStatusBar(ctx, extContext);
+  activateLsp(extContext);
 }
 
 export function deactivate(): Thenable<void> {

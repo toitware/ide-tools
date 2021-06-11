@@ -5,11 +5,11 @@
 import { promisify } from "util";
 import { window as Window } from "vscode";
 import { Device } from "./device";
-import { CommandContext, ensureAuth, getToitPath, selectDevice } from "./utils";
+import { Context, ensureAuth, getToitPath, selectDevice } from "./utils";
 import cp = require("child_process");
 const execFile = promisify(cp.execFile);
 
-async function executeStopCommand(ctx: CommandContext, device?: Device) {
+async function executeStopCommand(ctx: Context, device?: Device) {
   try {
     await ensureAuth(ctx);
   } catch (e) {
@@ -27,13 +27,13 @@ async function executeStopCommand(ctx: CommandContext, device?: Device) {
   }
 }
 
-export function createStopSimCommand(cmdContext: CommandContext): () => void {
+export function createStopSimCommand(ctx: Context): () => void {
   return (dev?: Device) => {
-    executeStopCommand(cmdContext, dev);
+    executeStopCommand(ctx, dev);
   };
 }
 
-async function executeStartCommand(ctx: CommandContext) {
+async function executeStartCommand(ctx: Context) {
   try {
     await ensureAuth(ctx);
   } catch (e) {
@@ -59,8 +59,8 @@ async function executeStartCommand(ctx: CommandContext) {
   }
 }
 
-export function createStartSimCommand(cmdContext: CommandContext): () => void {
+export function createStartSimCommand(ctx: Context): () => void {
   return () => {
-    executeStartCommand(cmdContext);
+    executeStartCommand(ctx);
   };
 }

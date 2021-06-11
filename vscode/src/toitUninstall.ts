@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import { App, RelatedApp } from "./app";
-import { CommandContext, uninstallApp } from "./utils";
+import { Context, uninstallApp } from "./utils";
 
-export function createUninstallCommand(cmdContext: CommandContext): (app: App) => void {
+export function createUninstallCommand(ctx: Context): (app: App) => void {
   return async(app: RelatedApp) => {
-    await uninstallApp(cmdContext, app.app());
-    cmdContext.refreshDeviceView();
+    await uninstallApp(ctx, app.app());
+    ctx.refreshDeviceView();
   };
 }

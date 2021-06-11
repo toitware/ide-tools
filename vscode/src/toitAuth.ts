@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import { window as Window } from "vscode";
-import { CommandContext, ensureAuth } from "./utils";
+import { Context, ensureAuth } from "./utils";
 
-async function ensureAuthCommand(cmdContext: CommandContext): Promise<void> {
+async function ensureAuthCommand(ctx: Context): Promise<void> {
   try {
-    await ensureAuth(cmdContext);
+    await ensureAuth(ctx);
   } catch(e) {
     Window.showErrorMessage(`Login to toit.io failed: ${e.message}.`);
     return;
@@ -15,6 +15,6 @@ async function ensureAuthCommand(cmdContext: CommandContext): Promise<void> {
   Window.showInformationMessage(`Authenticated with toit.io.`);
 }
 
-export function createEnsureAuth(cmdContext: CommandContext): () => void {
-  return () => ensureAuthCommand(cmdContext);
+export function createEnsureAuth(ctx: Context): () => void {
+  return () => ensureAuthCommand(ctx);
 }
