@@ -61,7 +61,7 @@ export class CommandContext {
     this.lastSelectedPort = port;
   }
 
-  toitOutput(): OutputChannel {
+  toitOutputChannel(): OutputChannel {
     if (!this.toitOut) this.toitOut = Window.createOutputChannel("Toit");
 
     return this.toitOut as OutputChannel;
@@ -74,6 +74,21 @@ export class CommandContext {
     output = Window.createOutputChannel(`Toit (${name})`);
     this.outputs.set(id, output);
     return output;
+  }
+
+  toitOutput(...lines: string[]): void {
+    const out = this.toitOutputChannel();
+    this.writeOutput(out, lines);
+  }
+
+  output(id: string, name: string, ...lines: string[]): void {
+    const out = this.outputChannel(id, name);
+    this.writeOutput(out, lines);
+  }
+
+  writeOutput(out: OutputChannel, lines: string[]): void {
+    out.show()
+    lines.forEach(line => out.append(line));
   }
 
   serials: Map<string, Terminal> = new Map();

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import { promisify } from "util";
-import { OutputChannel, window as Window } from "vscode";
+import { window as Window } from "vscode";
 import { Device } from "./device";
 import { CommandContext, ensureAuth, getToitPath, selectDevice } from "./utils";
 import cp = require("child_process");
@@ -51,10 +51,7 @@ async function executeStartCommand(ctx: CommandContext) {
       args.push(name);
     }
     const { stdout, stderr } = await execFile(getToitPath(), args);
-    const toitOutput: OutputChannel = ctx.toitOutput();
-    toitOutput.show();
-    toitOutput.append(stdout);
-    toitOutput.append(stderr)
+    ctx.toitOutput(stdout, stderr);
 
     ctx.refreshDeviceView();
   } catch (e) {

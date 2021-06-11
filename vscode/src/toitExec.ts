@@ -68,12 +68,8 @@ async function executeDeployCommand(ctx: CommandContext, device?: Device) {
 
   try {
     if (!device) device = await selectDevice(ctx, { "activeOnly": false, "simulatorOnly": false });
-
     const { stdout, stderr } = await execFile("toit", [ "dev", "-d", device.name, "deploy", filePath ]);
-    const toitOutput: OutputChannel = ctx.outputChannel(device.deviceID, device.name);
-    toitOutput.show();
-    toitOutput.append(stdout);
-    toitOutput.append(stderr);
+    ctx.output(device.deviceID, device.name, stdout, stderr);
     ctx.refreshDeviceView(device);
     ctx.setLastFile(".yaml", filePath);
   } catch (e) {
