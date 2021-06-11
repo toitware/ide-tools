@@ -87,7 +87,7 @@ export class CommandContext {
   }
 
   writeOutput(out: OutputChannel, lines: string[]): void {
-    out.show()
+    out.show();
     lines.forEach(line => out.append(line));
   }
 
