@@ -41,7 +41,7 @@ async function executeRunCommand(ctx: Context, device?: Device) {
   try {
     if (!device) device = await selectDevice(ctx, { "activeOnly": true, "simulatorOnly": false });
 
-    const commandProcess = cp.spawn("toit", [ "dev", "-d", device.name, "run", filePath ]);
+    const commandProcess = cp.spawn(ctx.toitExec, [ "dev", "-d", device.name, "run", filePath ]);
     const toitOutput: OutputChannel = ctx.outputChannel(device.deviceID, device.name);
     toitOutput.show();
     commandProcess.stdout.on("data", data => toitOutput.append(`${data}`));
@@ -69,7 +69,7 @@ async function executeDeployCommand(ctx: Context, device?: Device) {
   try {
     if (!device) device = await selectDevice(ctx, { "activeOnly": false, "simulatorOnly": false });
 
-    const { stdout, stderr } = await execFile("toit", [ "dev", "-d", device.name, "deploy", filePath ]);
+    const { stdout, stderr } = await execFile(ctx.toitExec, [ "dev", "-d", device.name, "deploy", filePath ]);
     ctx.output(device.deviceID, device.name, stdout, stderr);
     ctx.refreshDeviceView(device);
     ctx.setLastFile(".yaml", filePath);

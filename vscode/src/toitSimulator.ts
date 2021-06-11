@@ -20,7 +20,7 @@ async function executeStopCommand(ctx: Context, device?: Device) {
     if (!device) device = await selectDevice(ctx, {"activeOnly": false, "simulatorOnly": true});
 
     if (!device.isSimulator) return Window.showErrorMessage("Non-simulator selected.");
-    await execFile("toit", [ "simulator", "stop", device.deviceID ]);
+    await execFile(ctx.toitExec, [ "simulator", "stop", device.deviceID ]);
     ctx.refreshDeviceView(device);
   } catch (e) {
     Window.showErrorMessage(`Stop simulator failed: ${e.message}`);
@@ -50,7 +50,7 @@ async function executeStartCommand(ctx: Context) {
       args.push("--alias");
       args.push(name);
     }
-    const { stdout, stderr } = await execFile("toit", args);
+    const { stdout, stderr } = await execFile(ctx.toitExec, args);
     ctx.toitOutput(stdout, stderr);
 
     ctx.refreshDeviceView();
