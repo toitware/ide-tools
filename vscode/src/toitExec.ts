@@ -5,7 +5,7 @@
 import { promisify } from "util";
 import { OutputChannel, window as Window } from "vscode";
 import { Device } from "./device";
-import { } from "./treeView";
+import { } from "./deviceView";
 import { Context, ensureAuth, selectDevice } from "./utils";
 import cp = require("child_process");
 const execFile = promisify(cp.execFile);
