@@ -20,8 +20,8 @@ export interface ConsoleDevice {
 }
 
 export class Device extends TreeItem implements RelatedDevice {
-  static activeIcons = new ThemeIcon('pulse', new ThemeColor('debugIcon.startForeground'));
-  static inactiveIcons = new ThemeIcon('remove', new ThemeColor('debugIcon.stopForeground'));
+  static activeIcons = new ThemeIcon("pulse", new ThemeColor("debugIcon.startForeground"));
+  static inactiveIcons = new ThemeIcon("remove", new ThemeColor("debugIcon.stopForeground"));
 
   deviceID: string;
   isSimulator: boolean;
