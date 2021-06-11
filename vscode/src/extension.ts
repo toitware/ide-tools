@@ -5,6 +5,7 @@
 import { commands as Commands, ExtensionContext } from "vscode";
 import { activateLsp, deactivateLsp } from "./lspClient";
 import { activateToitStatusBar, createSetOrgCommand } from "./organization";
+import { activateSerialView } from "./serialView";
 import { createEnsureAuth } from "./toitAuth";
 import { createDeployCommand, createRunCommand } from "./toitExec";
 import { createSerialMonitor } from "./toitMonitor";
@@ -18,6 +19,7 @@ export function activate(extContext: ExtensionContext): void {
   Commands.executeCommand("setContext", "toit.extensionActive", true);
   const ctx = new Context();
   activateTreeView(ctx);
+  activateSerialView(ctx);
 
   extContext.subscriptions.push(Commands.registerCommand("toit.serialProvision", createSerialProvision(ctx)));
   extContext.subscriptions.push(Commands.registerCommand("toit.serialMonitor", createSerialMonitor(ctx)));
