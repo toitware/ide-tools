@@ -5,7 +5,7 @@
 import * as fs from "fs";
 import { platform } from "os";
 import * as p from "path";
-import { ExtensionContext, OutputChannel, RelativePattern, TextDocument, Uri, window as Window, workspace as Workspace, WorkspaceFolder } from "vscode";
+import { ExtensionContext, OutputChannel, TextDocument, Uri, window as Window, workspace as Workspace, WorkspaceFolder } from "vscode";
 import { DocumentSelector, LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-languageclient";
 import { getToitPath } from "./utils";
 
@@ -112,7 +112,7 @@ function startToitLsp(_: ExtensionContext,
   const documentSelector: DocumentSelector = [{
     "language": "toit",
     "scheme": scheme,
-    "pattern": ""+pattern
+    "pattern": pattern
   }];
 
   const clientOptions: LanguageClientOptions = {
@@ -145,11 +145,11 @@ function startToitLsp(_: ExtensionContext,
   return result;
 }
 
-export interface ClientConfiguration {
+interface ClientConfiguration {
   workingDir?: string
   workspaceFolder?: WorkspaceFolder
   scheme: string
-  pattern?: RelativePattern
+  pattern?: string
 }
 
 export function activateLsp(context: ExtensionContext): void {
@@ -173,12 +173,13 @@ export function activateLsp(context: ExtensionContext): void {
         "workingDir": workingDir,
         "workspaceFolder": outerFolder,
         "scheme": "file",
-        "pattern": new RelativePattern(outerFolder, "**/*")
+        "pattern": outerFolder.uri.fsPath + "/**/*"
       };
     }
     const path = uri.fsPath;
-    let workingDir: string|undefined = p.dirname(path);
-    const pattern = new RelativePattern(workingDir, "*");
+    let workingDir = p.dirname(path);
+    // Clients outside the working-dir only go one level deep.
+    const pattern = workingDir + "/*";
     // Can't use a non-existing directory as working directory.
     while (!fs.existsSync(workingDir) ||
         !fs.statSync(workingDir).isDirectory) {
@@ -188,7 +189,6 @@ export function activateLsp(context: ExtensionContext): void {
       "workingDir": workingDir,
       "workspaceFolder": undefined,
       "scheme": "file",
-      // Clients outside the working-dir only go one level deep.
       "pattern": pattern
     };
   }
