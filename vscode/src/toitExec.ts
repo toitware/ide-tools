@@ -6,7 +6,7 @@ import { promisify } from "util";
 import { OutputChannel, window as Window } from "vscode";
 import { Device } from "./device";
 import { } from "./treeView";
-import { Context, ensureAuth, getToitPath, selectDevice } from "./utils";
+import { Context, ensureAuth, selectDevice } from "./utils";
 import cp = require("child_process");
 const execFile = promisify(cp.execFile);
 
@@ -41,7 +41,7 @@ async function executeRunCommand(ctx: Context, device?: Device) {
   try {
     if (!device) device = await selectDevice(ctx, { "activeOnly": true, "simulatorOnly": false });
 
-    const commandProcess = cp.spawn(getToitPath(), [ "dev", "-d", device.name, "run", filePath ]);
+    const commandProcess = cp.spawn("toit", [ "dev", "-d", device.name, "run", filePath ]);
     const toitOutput: OutputChannel = ctx.outputChannel(device.deviceID, device.name);
     toitOutput.show();
     commandProcess.stdout.on("data", data => toitOutput.append(`${data}`));

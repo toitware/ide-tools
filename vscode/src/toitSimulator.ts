@@ -5,7 +5,7 @@
 import { promisify } from "util";
 import { window as Window } from "vscode";
 import { Device } from "./device";
-import { Context, ensureAuth, getToitPath, selectDevice } from "./utils";
+import { Context, ensureAuth, selectDevice } from "./utils";
 import cp = require("child_process");
 const execFile = promisify(cp.execFile);
 
@@ -20,7 +20,7 @@ async function executeStopCommand(ctx: Context, device?: Device) {
     if (!device) device = await selectDevice(ctx, {"activeOnly": false, "simulatorOnly": true});
 
     if (!device.isSimulator) return Window.showErrorMessage("Non-simulator selected.");
-    await execFile(getToitPath(), [ "simulator", "stop", device.deviceID ]);
+    await execFile("toit", [ "simulator", "stop", device.deviceID ]);
     ctx.refreshDeviceView(device);
   } catch (e) {
     Window.showErrorMessage(`Stop simulator failed: ${e.message}`);
@@ -50,7 +50,7 @@ async function executeStartCommand(ctx: Context) {
       args.push("--alias");
       args.push(name);
     }
-    const { stdout, stderr } = await execFile(getToitPath(), args);
+    const { stdout, stderr } = await execFile("toit", args);
     ctx.toitOutput(stdout, stderr);
 
     ctx.refreshDeviceView();
