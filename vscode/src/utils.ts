@@ -6,7 +6,7 @@ import { promisify } from "util";
 import { InputBoxOptions, OutputChannel, QuickPickItem, StatusBarItem, Terminal, TreeItem, window as Window, workspace as Workspace } from "vscode";
 import { App, ConsoleApp } from "./app";
 import { ConsoleDevice, Device, RelatedDevice } from "./device";
-import { ToitDataProvider } from "./deviceView";
+import { DeviceProvider } from "./deviceView";
 import { ConsoleOrganization, Organization } from "./org";
 import { SerialProvider } from "./serialView";
 import cp = require("child_process");
@@ -14,7 +14,7 @@ const execFile = promisify(cp.execFile);
 
 export class Context {
   statusBar?: StatusBarItem;
-  deviceViewProvider?: ToitDataProvider;
+  deviceProvider?: DeviceProvider;
   serialProvider?: SerialProvider;
   lastSelectedDevice?: RelatedDevice;
   lastSelectedPort?: string;
@@ -39,8 +39,8 @@ export class Context {
     return this.lastFiles.get(extension);
   }
 
-  setDeviceProvider(provider: ToitDataProvider) : void {
-    this.deviceViewProvider = provider;
+  setDeviceProvider(provider: DeviceProvider) : void {
+    this.deviceProvider = provider;
   }
 
   setSerialProvider(provider: SerialProvider) : void {
@@ -48,7 +48,7 @@ export class Context {
   }
 
   refreshDeviceView(data?: TreeItem) : void {
-    this.deviceViewProvider?.refresh(data);
+    this.deviceProvider?.refresh(data);
   }
 
   refreshSerialView(data?: TreeItem) : void {

@@ -11,7 +11,7 @@ let viewRefresher: NodeJS.Timeout;
 
 export function activateTreeView(ctx: Context): void {
   viewRefresher = setInterval(() => ctx.refreshDeviceView(), 60000);
-  const deviceDataProvider = new ToitDataProvider(ctx);
+  const deviceDataProvider = new DeviceProvider(ctx);
   Window.createTreeView("toitDeviceView", { "treeDataProvider": deviceDataProvider } );
   ctx.setDeviceProvider(deviceDataProvider);
 }
@@ -19,7 +19,7 @@ export function activateTreeView(ctx: Context): void {
 export function deactivateTreeView(): void {
   clearInterval(viewRefresher);
 }
-export class ToitDataProvider implements TreeDataProvider<TreeItem> {
+export class DeviceProvider implements TreeDataProvider<TreeItem> {
 
   private _onDidChangeTreeData: EventEmitter<TreeItem | undefined | null> = new EventEmitter<TreeItem | undefined | null>();
   readonly onDidChangeTreeData: Event<TreeItem | undefined | null> = this._onDidChangeTreeData.event;
