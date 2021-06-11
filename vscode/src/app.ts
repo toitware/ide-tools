@@ -1,3 +1,8 @@
+// Copyright (C) 2021 Toitware ApS. All rights reserved.
+// Use of this source code is governed by an MIT-style license that can be
+// found in the LICENSE file.
+
+
 import { ThemeIcon, TreeItem, TreeItemCollapsibleState } from "vscode";
 import { Device, RelatedDevice } from "./device";
 
@@ -55,6 +60,7 @@ export class App extends TreeItem implements RelatedApp, RelatedDevice {
     // TreeItem fields
     this.contextValue = "application";
     this.iconPath = new ThemeIcon("primitive-square");
+
   }
 
   app(): App {

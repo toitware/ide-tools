@@ -1,3 +1,7 @@
+// Copyright (C) 2021 Toitware ApS. All rights reserved.
+// Use of this source code is governed by an MIT-style license that can be
+// found in the LICENSE file.
+
 import { MarkdownString, ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState } from "vscode";
 
 /**
@@ -22,6 +26,7 @@ export interface ConsoleDevice {
 export class Device extends TreeItem implements RelatedDevice {
   static activeIcons = new ThemeIcon("pulse", new ThemeColor("debugIcon.startForeground"));
   static inactiveIcons = new ThemeIcon("remove", new ThemeColor("debugIcon.stopForeground"));
+
 
   deviceID: string;
   isSimulator: boolean;

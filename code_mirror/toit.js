@@ -1,5 +1,6 @@
-// CodeMirror, copyright (c) by Toitware ApS.
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Copyright (C) 2021 Toitware ApS. All rights reserved.
+// Use of this source code is governed by an MIT-style license that can be
+// found in the LICENSE file.
 
 (function (mod) {
   if (typeof window === "undefined" || typeof window.navigator == 'undefined')
