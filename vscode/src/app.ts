@@ -1,5 +1,4 @@
-import * as path from "path";
-import { TreeItem, TreeItemCollapsibleState } from "vscode";
+import { ThemeIcon, TreeItem, TreeItemCollapsibleState } from "vscode";
 import { Device, RelatedDevice } from "./device";
 
 export interface RelatedApp {
@@ -55,10 +54,7 @@ export class App extends TreeItem implements RelatedApp, RelatedDevice {
 
     // TreeItem fields
     this.contextValue = "application";
-    this.iconPath = {
-      "light": path.join(__filename, "..", "..", "resources", "light", "app.svg"),
-      "dark": path.join(__filename, "..", "..", "resources", "dark", "app.svg")
-    };
+    this.iconPath = new ThemeIcon("primitive-square");
   }
 
   app(): App {
