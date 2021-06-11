@@ -65,7 +65,7 @@ function startToitLsp(_: ExtensionContext,
   let lspArguments: Array<string> | string | null | undefined = lspSettings.get("arguments");
   let debugClientToServer = !!lspSettings.get("debug.clientToServer");
 
-  if (toitPath === null || toitPath === undefined) {
+  if (toitPath === null || toitPath === undefined || toitPath === "") {
     toitPath = getToitPath();
   }
   if (lspArguments === null || lspArguments === undefined) {

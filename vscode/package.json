@@ -211,9 +211,8 @@
                         "string",
                         "null"
                     ],
-                    "default": "toit",
                     "description": "The path to the 'toit' command line tool.",
-                    "deprecationMessage": "Deprecated: Please use toit.Path instead."
+                    "deprecationMessage": "Deprecated: Use toit.Path instead."
                 },
                 "toitLanguageServer.arguments": {
                     "type": [
