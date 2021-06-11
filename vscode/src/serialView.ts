@@ -46,7 +46,7 @@ export class SerialProvider implements TreeDataProvider<TreeItem> {
       constructor() {
         super(port, TreeItemCollapsibleState.None);
       }
-    });
+    }());
   }
 
   getTreeItem(element: TreeItem): TreeItem | Thenable<TreeItem> {
