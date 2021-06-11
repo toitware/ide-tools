@@ -76,7 +76,7 @@
                 "icon": "$(trash)"
             },
             {
-                "command": "toit.refreshView",
+                "command": "toit.refreshDeviceView",
                 "title": "Refresh",
                 "category": "Toit",
                 "icon": "$(refresh)",
@@ -130,7 +130,7 @@
                     "group": "navigation@0"
                 },
                 {
-                    "command": "toit.refreshView",
+                    "command": "toit.refreshDeviceView",
                     "when": "view == toitDeviceView",
                     "group": "navigation@1"
                 },

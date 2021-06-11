@@ -24,7 +24,7 @@ export function activate(extContext: ExtensionContext): void {
   extContext.subscriptions.push(Commands.registerCommand("toit.serialProvision", createSerialProvision(ctx)));
   extContext.subscriptions.push(Commands.registerCommand("toit.serialMonitor", createSerialMonitor(ctx)));
   extContext.subscriptions.push(Commands.registerCommand("toit.ensureAuth", createEnsureAuth(ctx)));
-  extContext.subscriptions.push(Commands.registerCommand("toit.refreshView", () => ctx.refreshDeviceView()));
+  extContext.subscriptions.push(Commands.registerCommand("toit.refreshDeviceView", () => ctx.refreshDeviceView()));
   extContext.subscriptions.push(Commands.registerCommand("toit.refreshSerialView", () => ctx.refreshSerialView()));
   extContext.subscriptions.push(Commands.registerCommand("toit.uninstallApp", createUninstallCommand(ctx)));
   extContext.subscriptions.push(Commands.registerCommand("toit.devRun", createRunCommand(ctx)));
