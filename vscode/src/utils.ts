@@ -47,10 +47,6 @@ export class Context {
     this.serialProvider = provider;
   }
 
-  setSerialProvider(provider: SerialProvider) : void {
-    this.serialProvider = provider;
-  }
-
   refreshDeviceView(data?: TreeItem) : void {
     this.deviceProvider?.refresh(data);
   }
