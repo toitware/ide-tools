@@ -48,7 +48,11 @@ export class Context {
   }
 
   refreshDeviceView(data?: TreeItem) : void {
-    if (this.deviceViewProvider) this.deviceViewProvider.refresh(data);
+    this.deviceViewProvider?.refresh(data);
+  }
+
+  refreshSerialView(data?: TreeItem) : void {
+    this.serialProvider?.refresh(data);
   }
 
   refreshSerialView(data?: TreeItem) : void {
