@@ -55,10 +55,6 @@ export class Context {
     this.serialProvider?.refresh(data);
   }
 
-  refreshSerialView(data?: TreeItem) : void {
-    if (this.serialProvider) this.serialProvider.refresh(data);
-  }
-
   lastDevice(): Device | undefined {
     return this.lastSelectedDevice?.device();
   }
