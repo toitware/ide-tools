@@ -7,7 +7,6 @@
 EXTENSIONS="*.ts *.toit *.js"
 
 new_files=$(git diff --name-only --diff-filter=A --cached -- $EXTENSIONS)
-new_files=$(find vscode/src -name "*.ts")
 
 for f in $new_files; do
   if ! grep -L "Copyright .* Toitware" "$f" 2>&1 1>/dev/null; then
