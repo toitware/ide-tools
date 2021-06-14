@@ -173,7 +173,7 @@ export function activateLsp(context: ExtensionContext): void {
         "workingDir": workingDir,
         "workspaceFolder": outerFolder,
         "scheme": "file",
-        "pattern": outerFolder.uri.fsPath + "/**/*"
+        "pattern": workingDir + "/**/*"
       };
     }
     const path = uri.fsPath;
