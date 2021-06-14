@@ -102,9 +102,9 @@ pipeline {
                 sh "yarn run vsce publish $BUILD_VERSION -p $AZURE_TOKEN"
               }
 
-              // withCredentials([string(credentialsId: 'leon-open-vsx-access-token', variable: 'OPEN_VSX_TOKEN')]) {
-              //   sh "yarn run ovsx publish $BUILD_VERSION -p $OPEN_VSX_TOKEN toit-${NIGHTLY_VERSION}.vsix"
-              // }
+              withCredentials([string(credentialsId: 'leon-open-vsx-access-token', variable: 'OPEN_VSX_TOKEN')]) {
+                sh "yarn run ovsx publish --pat $OPEN_VSX_TOKEN toit-$BUILD_VERSION.vsix"
+              }
             }
           }
         }
