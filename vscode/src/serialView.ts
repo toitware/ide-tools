@@ -4,7 +4,7 @@
 
 import { Event, EventEmitter, TreeDataProvider, TreeItem, window as Window } from "vscode";
 import { SerialPort } from "./serialPort";
-import { Context, isAuthenticated, listPorts } from "./utils";
+import { Context, getSerialInfo, isAuthenticated, listPorts } from "./utils";
 
 let viewRefresher: NodeJS.Timeout;
 
@@ -18,6 +18,7 @@ export function activateSerialView(ctx: Context): void {
 export function deactivateSerialView(): void {
   clearInterval(viewRefresher);
 }
+
 export class SerialProvider implements TreeDataProvider<TreeItem> {
   private _onDidChangeTreeData: EventEmitter<TreeItem | undefined | null> = new EventEmitter<TreeItem | undefined | null>();
   readonly onDidChangeTreeData: Event<TreeItem | undefined | null> = this._onDidChangeTreeData.event;
@@ -39,8 +40,16 @@ export class SerialProvider implements TreeDataProvider<TreeItem> {
   async getChildren(element?: TreeItem): Promise<TreeItem[]> {
     if (!await isAuthenticated(this.context)) return [];
 
-    if (element) return [];
+    if (element) {
+      if (element instanceof SerialPort) {
+        const info = await getSerialInfo(this.context, element);
+        if (info) {
+          return [info];
+        }
+      }
 
+      return [];
+    }
     const ports = await listPorts(this.context);
     return ports.map(port => new SerialPort(port));
   }

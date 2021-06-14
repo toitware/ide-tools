@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 import { promisify } from "util";
-import { InputBoxOptions, OutputChannel, QuickPickItem, StatusBarItem, Terminal, TreeItem, window as Window, workspace as Workspace } from "vscode";
+import { InputBoxOptions, OutputChannel, QuickPickItem, StatusBarItem, Terminal, TreeItem, TreeView, window as Window, workspace as Workspace } from "vscode";
 import { App, ConsoleApp } from "./app";
-import { ConsoleDevice, Device, RelatedDevice } from "./device";
+import { ConsoleDevice, ConsoleDeviceInfo, Device, DeviceInfo, RelatedDevice } from "./device";
 import { DeviceProvider } from "./deviceView";
 import { ConsoleOrganization, Organization } from "./org";
+import { ConsoleSerialInfo, SerialInfo, SerialPort } from "./serialPort";
 import { SerialProvider } from "./serialView";
 import cp = require("child_process");
 const execFile = promisify(cp.execFile);
@@ -15,6 +16,7 @@ const execFile = promisify(cp.execFile);
 export class Context {
   statusBar?: StatusBarItem;
   deviceProvider?: DeviceProvider;
+  deviceView?: TreeView<TreeItem>;
   serialProvider?: SerialProvider;
   lastSelectedDevice?: RelatedDevice;
   lastSelectedPort?: string;
@@ -22,6 +24,14 @@ export class Context {
   toitOut?: OutputChannel;
   lastFiles: Map<string, string> = new Map();
   outputs: Map<string, OutputChannel> = new Map();
+
+  async getDeviceView(): Promise<TreeView<TreeItem> | undefined> {
+    return this.deviceView;
+  }
+
+  setDeviceView(deviceView: TreeView<TreeItem>): void {
+    this.deviceView = deviceView;
+  }
 
   setStatusBar(sb: StatusBarItem): void {
     this.statusBar = sb;
@@ -37,6 +47,10 @@ export class Context {
 
   getLastFile(extension: string): string | undefined {
     return this.lastFiles.get(extension);
+  }
+
+  getDeviceProvider(): DeviceProvider | undefined {
+    return this.deviceProvider;
   }
 
   setDeviceProvider(provider: DeviceProvider) : void {
@@ -348,4 +362,35 @@ export async function getFirmwareVersion(ctx: Context): Promise<string> {
   await ensureAuth(ctx);
   const { stdout } = await execFile(ctx.toitExec, [ "firmware", "version", "-o", "short" ]);
   return stdout.trimEnd();
+}
+
+export async function getSerialInfo(ctx: Context, port: SerialPort): Promise<SerialInfo | undefined> {
+  const cmdArgs =  [ "serial", "info", "--port", port.name ];
+  try {
+    const { stdout } = await execFile(ctx.toitExec, cmdArgs);
+    return new SerialInfo(JSON.parse(stdout) as ConsoleSerialInfo);
+  } catch(e) {
+    return undefined;
+  }
+}
+
+export async function getDeviceInfo(ctx: Context, hwid: string): Promise<DeviceInfo | undefined> {
+  const cmdArgs =  [ "device", "info", "--hardware", hwid, "-o", "json" ];
+  try {
+    const { stdout } = await execFile(ctx.toitExec, cmdArgs);
+    return new DeviceInfo(JSON.parse(stdout) as ConsoleDeviceInfo);
+  } catch(e) {
+    return undefined;
+  }
+}
+
+export async function revealDevice(ctx: Context, hwid: string): Promise<void> {
+  const deviceInfo = await getDeviceInfo(ctx, hwid);
+  if (!deviceInfo) return; // TODO Add warning or error message?
+
+  const device = await ctx.getDeviceProvider()?.getDevice(deviceInfo.deviceID);
+  if (!device) {
+    return; // TODO(Lau): Add warning or error message? Make sure to differentiate between hidden view and wrong org.
+  }
+  await (await ctx.getDeviceView())?.reveal(device, { focus: true, select: false, expand: true });
 }

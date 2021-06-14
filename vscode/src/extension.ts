@@ -13,7 +13,7 @@ import { createSerialMonitor } from "./toitMonitor";
 import { createSerialProvision } from "./toitProvision";
 import { createStartSimCommand, createStopSimCommand } from "./toitSimulator";
 import { createUninstallCommand } from "./toitUninstall";
-import { Context } from "./utils";
+import { Context, revealDevice } from "./utils";
 
 export function activate(extContext: ExtensionContext): void {
   Commands.executeCommand("setContext", "toit.extensionActive", true);
@@ -32,6 +32,7 @@ export function activate(extContext: ExtensionContext): void {
   extContext.subscriptions.push(Commands.registerCommand("toit.setOrganization", createSetOrgCommand(ctx)));
   extContext.subscriptions.push(Commands.registerCommand("toit.stopSimulator", createStopSimCommand(ctx)));
   extContext.subscriptions.push(Commands.registerCommand("toit.startSimulator", createStartSimCommand(ctx)));
+  extContext.subscriptions.push(Commands.registerCommand("toit.revealDevice", async (hwID) => await revealDevice(ctx, hwID)));
 
   activateToitStatusBar(ctx, extContext);
   activateLsp(extContext);

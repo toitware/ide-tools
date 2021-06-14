@@ -80,3 +80,35 @@ ${new Date(device.lastSeen).toLocaleDateString(undefined, {"weekday": "long", "y
     return this;
   }
 }
+
+export interface ConsoleDeviceInfo {
+  /* eslint-disable @typescript-eslint/naming-convention */
+  configured_firmware: string;
+  device_id: string;
+  hardware_id: string;
+  last_seen: string;
+  name: string;
+  next_action: string;
+  running_firmware: string;
+  /* eslint-enable @typescript-eslint/naming-convention */
+}
+
+export class DeviceInfo {
+  configuredFirmware: string;
+  deviceID: string;
+  hardwareID: string;
+  lastSeen: string;
+  name: string;
+  nextAction: string;
+  runningFirmware: string;
+
+  constructor(info: ConsoleDeviceInfo) {
+    this.configuredFirmware = info.configured_firmware;
+    this.deviceID = info.device_id;
+    this.hardwareID = info.hardware_id;
+    this.lastSeen = info.last_seen;
+    this.name = info.name;
+    this.nextAction = info.next_action;
+    this.runningFirmware = info.running_firmware;
+  }
+}
