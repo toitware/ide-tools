@@ -2,7 +2,8 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file.
 
-import { Event, EventEmitter, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, window as Window } from "vscode";
+import { Event, EventEmitter, TreeDataProvider, TreeItem, window as Window } from "vscode";
+import { SerialPort } from "./serialPort";
 import { Context, isAuthenticated, listPorts } from "./utils";
 
 let viewRefresher: NodeJS.Timeout;
@@ -41,12 +42,7 @@ export class SerialProvider implements TreeDataProvider<TreeItem> {
     if (element) return [];
 
     const ports = await listPorts(this.context);
-    return ports.map(port => new class extends TreeItem {
-      iconPath = new ThemeIcon("plug");
-      constructor() {
-        super(port, TreeItemCollapsibleState.None);
-      }
-    }());
+    return ports.map(port => new SerialPort(port));
   }
 
   getTreeItem(element: TreeItem): TreeItem | Thenable<TreeItem> {
