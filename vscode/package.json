@@ -90,13 +90,6 @@
                 "enablement": "toit.extensionActive"
             },
             {
-                "command": "toit.refreshSerialView",
-                "title": "Refresh",
-                "category": "Toit",
-                "icon": "$(refresh)",
-                "enablement": "toit.extensionActive"
-            },
-            {
                 "command": "toit.ensureAuth",
                 "title": "Log in to toit.io",
                 "category": "Toit",
