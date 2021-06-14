@@ -32,11 +32,11 @@ export class SerialInfo extends TreeItem {
     this.name = info.name;
     this.model = info.model;
     this.hardwareID = info.hardware_id;
-    this.contextValue = "device-info"
+    this.contextValue = "device-info";
     this.command = {
-      command: 'toit.revealDevice',
-      arguments: [this.hardwareID],
-      title: 'Goto device'
+      "command": "toit.revealDevice",
+      "arguments": [this.hardwareID],
+      "title": "Goto device"
     };
   }
 }

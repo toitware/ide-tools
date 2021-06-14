@@ -67,7 +67,6 @@ export class DeviceProvider implements TreeDataProvider<TreeItem> {
       this.deviceMap = undefined;
       return this.devices;
     }
-    }
     if (element instanceof Device) return listApps(this.context, element);
 
     return [];

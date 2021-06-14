@@ -32,7 +32,7 @@ export function activate(extContext: ExtensionContext): void {
   extContext.subscriptions.push(Commands.registerCommand("toit.setOrganization", createSetOrgCommand(ctx)));
   extContext.subscriptions.push(Commands.registerCommand("toit.stopSimulator", createStopSimCommand(ctx)));
   extContext.subscriptions.push(Commands.registerCommand("toit.startSimulator", createStartSimCommand(ctx)));
-  extContext.subscriptions.push(Commands.registerCommand("toit.revealDevice", async (hwID) => await revealDevice(ctx, hwID)));
+  extContext.subscriptions.push(Commands.registerCommand("toit.revealDevice", async(hwID) => await revealDevice(ctx, hwID)));
 
   activateToitStatusBar(ctx, extContext);
   activateLsp(extContext);
