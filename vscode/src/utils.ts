@@ -281,6 +281,7 @@ export function currentFilePath(suffix: string): string {
 
 export async function listPorts(ctx: Context): Promise<string[]> {
   const { stdout } = await execFile(ctx.toitExec, [ "serial", "ports" ]);
+  if (stdout.startsWith("No serial ports detected.")) return [];
   return stdout.split("\n").filter(str => str !== "");
 }
 
