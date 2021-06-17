@@ -23,11 +23,16 @@ async function updateStatus(ctx: Context) {
 }
 
 async function executeCommand(ctx: Context) {
-  await ensureAuth(ctx);
-  const org = await selectOrganization(ctx);
-  await setOrganization(ctx, org);
-  await updateStatus(ctx);
-  ctx.refreshDeviceView();
+  try {
+    await ensureAuth(ctx);
+    const org = await selectOrganization(ctx);
+    await setOrganization(ctx, org);
+    await updateStatus(ctx);
+    ctx.refreshDeviceView();
+    ctx.refreshSerialView();
+  } catch (e) {
+    return Window.showErrorMessage(`Unable to change organization: ${e.message}.`)
+  }
 }
 
 export function createSetOrgCommand(ctx: Context): () => void {
