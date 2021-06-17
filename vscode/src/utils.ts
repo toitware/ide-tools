@@ -25,7 +25,7 @@ export class Context {
   lastFiles: Map<string, string> = new Map();
   outputs: Map<string, OutputChannel> = new Map();
 
-  async getDeviceView(): Promise<TreeView<TreeItem> | undefined> {
+  getDeviceView(): TreeView<TreeItem> | undefined {
     return this.deviceView;
   }
 
