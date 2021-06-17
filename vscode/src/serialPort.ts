@@ -6,6 +6,7 @@ import { DeviceInfo } from "./device";
 
 export class SerialPort extends TreeItem {
   iconPath = new ThemeIcon("plug");
+  contextValue = "serial-port";
   name: string;
   constructor(port: string) {
     super(port, TreeItemCollapsibleState.Collapsed);

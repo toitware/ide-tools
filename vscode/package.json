@@ -111,8 +111,9 @@
             },
             {
                 "command": "toit.serialProvision",
-                "title": "Provision a device connected via serial",
+                "title": "Provision",
                 "category": "Toit",
+                "icon": "$(add)",
                 "enablement": "toit.extensionActive"
             },
             {
@@ -142,6 +143,11 @@
                 }
             ],
             "view/item/context": [
+                {
+                    "command": "toit.serialProvision",
+                    "when": "view == toitSerialView && viewItem == serial-port",
+                    "group": "inline"
+                },
                 {
                     "command": "toit.uninstallApp",
                     "when": "view == toitDeviceView && viewItem == application",
