@@ -61,6 +61,11 @@ export class Context {
     this.serialProvider = provider;
   }
 
+  refreshViews(): void {
+    this.refreshSerialView();
+    this.refreshDeviceView();
+  }
+
   refreshDeviceView(data?: TreeItem) : void {
     this.deviceProvider?.refresh(data);
   }
@@ -232,8 +237,7 @@ export async function ensureAuth(ctx: Context): Promise<void> {
   if (await isAuthenticated(ctx)) return;
 
   await login(ctx);
-  ctx.refreshDeviceView();
-  ctx.refreshSerialView();
+  ctx.refreshViews();
 }
 
 export interface WiFiInfo {

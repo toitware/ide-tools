@@ -28,8 +28,7 @@ async function executeCommand(ctx: Context) {
     const org = await selectOrganization(ctx);
     await setOrganization(ctx, org);
     await updateStatus(ctx);
-    ctx.refreshDeviceView();
-    ctx.refreshSerialView();
+    ctx.refreshViews();
   } catch (e) {
     return Window.showErrorMessage(`Unable to change organization: ${e.message}.`)
   }
