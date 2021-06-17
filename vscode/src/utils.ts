@@ -357,7 +357,9 @@ export async function getSerialInfo(ctx: Context, port: SerialPort): Promise<Ser
   const cmdArgs =  [ "serial", "info", "--port", port.name ];
   try {
     const { stdout } = await execFile(ctx.toitExec, cmdArgs);
-    return new SerialInfo(JSON.parse(stdout) as ConsoleSerialInfo);
+    const serialInfo = JSON.parse(stdout) as ConsoleSerialInfo;
+    const deviceInfo = await getDeviceInfo(ctx, serialInfo.hardware_id);
+    return new SerialInfo(serialInfo, deviceInfo);
   } catch(e) {
     return undefined;
   }
