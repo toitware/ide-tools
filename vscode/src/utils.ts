@@ -246,6 +246,7 @@ export async function ensureAuth(ctx: Context): Promise<void> {
 
   await login(ctx);
   ctx.refreshDeviceView();
+  ctx.refreshSerialView();
 }
 
 export interface WiFiInfo {
