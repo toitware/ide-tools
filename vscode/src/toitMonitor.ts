@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import { window as Window } from "vscode";
+import { SerialPort } from "./serialPort";
 import { Context, ensureAuth, selectPort } from "./utils";
 
-async function serialMonitor(ctx: Context) {
+async function serialMonitor(ctx: Context, serialPort?: SerialPort) {
   try {
     await ensureAuth(ctx);
   } catch (e) {
@@ -13,7 +14,7 @@ async function serialMonitor(ctx: Context) {
   }
 
   try {
-    const port = await selectPort(ctx);
+    const port = serialPort ? serialPort.name : await selectPort(ctx);
     const terminal = ctx.serialTerminal(port);
     terminal.show();
     terminal.sendText(`${ctx.toitExec} serial monitor --port '${port}'`);
@@ -23,5 +24,5 @@ async function serialMonitor(ctx: Context) {
 }
 
 export function createSerialMonitor(ctx: Context): () => void {
-  return () => serialMonitor(ctx);
+  return (port?: SerialPort) => serialMonitor(ctx, port);
 }
