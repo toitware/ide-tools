@@ -265,7 +265,9 @@
         "webpack-cli": "^3.3.12"
     },
     "dependencies": {
+        "glob-parent": "^5.1.2",
         "ovsx": "^0.1.0",
+        "underscore": "^1.12.1",
         "vsce": "^1.77.0",
         "vscode-languageclient": "^5.2.1"
     },
