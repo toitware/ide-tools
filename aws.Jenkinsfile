@@ -99,11 +99,12 @@ pipeline {
           steps {
             dir('vscode') {
               withCredentials([string(credentialsId: 'leon-azure-access-token', variable: 'AZURE_TOKEN')]) {
-                sh "yarn run vsce publish --baseImagesUrl https://github.com/toitware/ide-tools/raw/master/vscode/ -p $AZURE_TOKEN $BUILD_VERSION"
+                sh 'yarn run vsce publish --baseImagesUrl https://github.com/toitware/ide-tools/raw/master/vscode/ -p $AZURE_TOKEN $BUILD_VERSION'
               }
 
               withCredentials([string(credentialsId: 'leon-open-vsx-access-token', variable: 'OPEN_VSX_TOKEN')]) {
-                sh "yarn run ovsx publish --baseImagesUrl https://github.com/toitware/ide-tools/raw/master/vscode/ -p $OPEN_VSX_TOKEN toit-$BUILD_VERSION.vsix"
+                sh "yarn package"
+                sh 'yarn run ovsx publish --baseImagesUrl https://github.com/toitware/ide-tools/raw/master/vscode/ -p $OPEN_VSX_TOKEN toit-${BUILD_VERSION#v}.vsix'
               }
             }
           }
