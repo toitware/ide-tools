@@ -111,15 +111,16 @@
             },
             {
                 "command": "toit.serialProvision",
-                "title": "Provision",
+                "title": "Provision device",
                 "category": "Toit",
                 "icon": "$(add)",
                 "enablement": "toit.extensionActive"
             },
             {
                 "command": "toit.serialMonitor",
-                "title": "Monitor serial output from a device",
+                "title": "Monitor serial output",
                 "category": "Toit",
+                "icon": "$(selection)",
                 "enablement": "toit.extensionActive"
             }
         ],
@@ -146,7 +147,12 @@
                 {
                     "command": "toit.serialProvision",
                     "when": "view == toitSerialView && viewItem == serial-port",
-                    "group": "inline"
+                    "group": "inline@0"
+                },
+                {
+                    "command": "toit.serialMonitor",
+                    "when": "view == toitSerialView && viewItem == serial-port",
+                    "group": "inline@1"
                 },
                 {
                     "command": "toit.uninstallApp",
