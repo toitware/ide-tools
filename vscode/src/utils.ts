@@ -258,13 +258,13 @@ export async function promptForWiFiInfo(): Promise<WiFiInfo> {
     "prompt": "Enter Wi-Fi SSID"
   };
   const ssid = await Window.showInputBox(ssidPromptOptions);
-  if (!ssid) throw new Error("No Wi-Fi ssid provided");
+  if (ssid === undefined) throw new Error("No Wi-Fi ssid provided");
 
   const passwordPromptOptions: InputBoxOptions = {
     "prompt": "Enter Wi-Fi password"
   };
   const password = await Window.showInputBox(passwordPromptOptions);
-  if (!password) throw new Error("No Wi-Fi password provided");
+  if (password === undefined) throw new Error("No Wi-Fi password provided");
 
   return { "ssid": ssid, "password": password};
 }
