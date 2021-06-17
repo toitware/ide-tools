@@ -2,6 +2,7 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file.
 import { ThemeIcon, TreeItem, TreeItemCollapsibleState } from "vscode";
+import { DeviceInfo } from "./device";
 
 export class SerialPort extends TreeItem {
   iconPath = new ThemeIcon("plug");
@@ -26,8 +27,8 @@ export class SerialInfo extends TreeItem {
   model: string;
   hardwareID: string;
 
-  constructor(info: ConsoleSerialInfo) {
-    super(info.name, TreeItemCollapsibleState.None);
+  constructor(info: ConsoleSerialInfo, deviceInfo?: DeviceInfo) {
+    super(deviceInfo ? deviceInfo.name : info.name, TreeItemCollapsibleState.None);
     this.name = info.name;
     this.model = info.model;
     this.hardwareID = info.hardware_id;
