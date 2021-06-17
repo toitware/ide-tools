@@ -231,19 +231,6 @@ export async function ensureAuth(ctx: Context): Promise<void> {
 
   if (await isAuthenticated(ctx)) return;
 
-  const userPromptOptions: InputBoxOptions = {
-    "prompt": "Enter your e-mail for toit.io"
-  };
-  const user = await Window.showInputBox(userPromptOptions);
-  if (!user) throw new Error("No e-mail provided");
-
-  const passwordPromptOptions: InputBoxOptions = {
-    "prompt": "Enter your password for toit.io",
-    "password": true
-  };
-  const password = await Window.showInputBox(passwordPromptOptions);
-  if (!password) throw new Error("No password provided");
-
   await login(ctx);
   ctx.refreshDeviceView();
   ctx.refreshSerialView();
