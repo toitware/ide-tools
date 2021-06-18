@@ -136,7 +136,6 @@
                     "when": "view == toitDeviceView",
                     "group": "navigation@1"
                 },
-
                 {
                     "command": "toit.refreshSerialView",
                     "when": "view == toitSerialView",
@@ -273,13 +272,11 @@
         "ts-loader": "^6.2.2",
         "tslint": "^5.20.1",
         "typescript": "^3.9.5",
-        "webpack": "^4.46.0",
-        "webpack-cli": "^3.3.12"
+        "webpack": "^5.39.1",
+        "webpack-cli": "^4.7.2"
     },
     "dependencies": {
-        "glob-parent": "^5.1.2",
-        "ovsx": "^0.1.0",
-        "underscore": "^1.12.1",
+        "ovsx": "^0.2.0",
         "vsce": "^1.77.0",
         "vscode-languageclient": "^5.2.1"
     },
