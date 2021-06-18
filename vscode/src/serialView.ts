@@ -9,7 +9,7 @@ import { Context, getSerialInfo, isAuthenticated, listPorts } from "./utils";
 let viewRefresher: NodeJS.Timeout;
 
 export function activateSerialView(ctx: Context): void {
-  viewRefresher = setInterval(() => ctx.refreshDeviceView(), 60000);
+  viewRefresher = setInterval(() => ctx.refreshSerialView(), 60000);
   const provider = new SerialProvider(ctx);
   Window.createTreeView("toitSerialView", { "treeDataProvider": provider } );
   ctx.setSerialProvider(provider);
