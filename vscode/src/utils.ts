@@ -227,13 +227,23 @@ async function consoleContext(ctx: Context): Promise<string> {
 }
 
 export async function ensureAuth(ctx: Context): Promise<void> {
+  ctx.toitOutput("ensure auth\n");
   if (await consoleContext(ctx) === "local") return;
 
   if (await isAuthenticated(ctx)) return;
 
+  await promptLogin(ctx);
+}
+
+async function promptLogin(ctx: Context) {
+  const response = await Window.showWarningMessage("Authenticate with toit.io to use the Toit extension.", "Log in");
+  if (!response) return;
+
   await login(ctx);
-  ctx.refreshDeviceView();
-  ctx.refreshSerialView();
+  if (isAuthenticated(ctx)) {
+    ctx.refreshDeviceView();
+    ctx.refreshSerialView();
+  }
 }
 
 export interface WiFiInfo {
