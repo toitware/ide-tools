@@ -16,7 +16,7 @@ async function serialMonitor(ctx: Context, serialPort?: SerialPort) {
   try {
     const port = serialPort ? serialPort.name : await selectPort(ctx);
     const terminal = ctx.serialTerminal(port);
-    terminal.show();
+    terminal.show(true);
     terminal.sendText(`${ctx.toitExec} serial monitor --port '${port}'`);
   } catch (e) {
     return Window.showErrorMessage(`Unable to monitor: ${e.message}`);

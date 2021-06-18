@@ -17,7 +17,7 @@ async function serialMonitor(ctx: Context, serialPort?: SerialPort) {
     const port = serialPort ? SerialPort.name : await selectPort(ctx);
     const wifiInfo: WiFiInfo = await promptForWiFiInfo();
     const terminal = ctx.serialTerminal(port);
-    terminal.show();
+    terminal.show(true);
     const provisionCmd = `${ctx.toitExec} serial provision --port ${port} --model esp32-4mb -p wifi.ssid='${wifiInfo.ssid}' -p wifi.password='${wifiInfo.password}'`;
     terminal.sendText(provisionCmd);
   } catch (e) {

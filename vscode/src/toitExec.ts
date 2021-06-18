@@ -43,7 +43,7 @@ async function executeRunCommand(ctx: Context, device?: Device) {
 
     const commandProcess = cp.spawn(ctx.toitExec, [ "dev", "-d", device.name, "run", filePath ]);
     const toitOutput: OutputChannel = ctx.outputChannel(device.deviceID, device.name);
-    toitOutput.show();
+    toitOutput.show(true);
     commandProcess.stdout.on("data", data => toitOutput.append(`${data}`));
     commandProcess.stderr.on("data", data => toitOutput.append(`${data}`));
     ctx.setLastFile(".toit", filePath);
