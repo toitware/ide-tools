@@ -103,8 +103,7 @@ pipeline {
               }
 
               withCredentials([string(credentialsId: 'leon-open-vsx-access-token', variable: 'OPEN_VSX_TOKEN')]) {
-                sh "yarn package"
-                sh 'yarn run ovsx publish --baseImagesUrl https://github.com/toitware/ide-tools/raw/master/vscode/ -p $OPEN_VSX_TOKEN toit-${BUILD_VERSION#v}.vsix'
+                sh 'yarn run ovsx publish --baseImagesUrl https://github.com/toitware/ide-tools/raw/master/vscode/ -p $OPEN_VSX_TOKEN'
               }
             }
           }
