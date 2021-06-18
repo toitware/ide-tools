@@ -258,8 +258,17 @@ export async function ensureAuth(ctx: Context): Promise<void> {
 
   if (await isAuthenticated(ctx)) return;
 
+  await promptLogin(ctx);
+}
+
+async function promptLogin(ctx: Context) {
+  const response = await Window.showWarningMessage("Authenticate with toit.io to use the Toit extension.", "Log in");
+  if (!response) return;
+
   await login(ctx);
-  ctx.refreshViews();
+  if (isAuthenticated(ctx)) {
+    ctx.refreshViews();
+  }
 }
 
 export interface WiFiInfo {
