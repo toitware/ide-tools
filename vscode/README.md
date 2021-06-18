@@ -1,5 +1,9 @@
 # Toit for Visual Studio Code
 
+[![The MIT License](https://img.shields.io/badge/license-MIT-orange.svg?style=flat-square)](http://opensource.org/licenses/MIT)
+[![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/toit.toit.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=toit.toit)
+[![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/toit.toit.svg?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=toit.toit)
+
 The Toit extension add language support for the Toit programming language, including syntax highlighting, integrated static analysis, code completion, and device overview.
 
 ## Quick start

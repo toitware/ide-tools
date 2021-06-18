@@ -61,6 +61,11 @@ export class Context {
     this.serialProvider = provider;
   }
 
+  refreshViews(): void {
+    this.refreshSerialView();
+    this.refreshDeviceView();
+  }
+
   refreshDeviceView(data?: TreeItem) : void {
     this.deviceProvider?.refresh(data);
   }
@@ -241,8 +246,7 @@ async function promptLogin(ctx: Context) {
 
   await login(ctx);
   if (isAuthenticated(ctx)) {
-    ctx.refreshDeviceView();
-    ctx.refreshSerialView();
+    ctx.refreshViews();
   }
 }
 
