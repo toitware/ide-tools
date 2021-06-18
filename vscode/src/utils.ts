@@ -232,7 +232,6 @@ async function consoleContext(ctx: Context): Promise<string> {
 }
 
 export async function ensureAuth(ctx: Context): Promise<void> {
-  ctx.toitOutput("ensure auth\n");
   if (await consoleContext(ctx) === "local") return;
 
   if (await isAuthenticated(ctx)) return;
