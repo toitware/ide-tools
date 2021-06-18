@@ -23,7 +23,8 @@ export class Context {
   toitExec : string = getToitPath();
   toitOut?: OutputChannel;
   lastFiles: Map<string, string> = new Map();
-  outputs: Map<string, OutputChannel> = new Map();
+  outputs: Map<string, DeviceOutput> = new Map();
+  serials: Map<string, Terminal> = new Map();
 
   getDeviceView(): TreeView<TreeItem> | undefined {
     return this.deviceView;
@@ -96,31 +97,17 @@ export class Context {
     return this.toitOut as OutputChannel;
   }
 
-  outputChannel(id: string, name: string): OutputChannel {
-    let output = this.outputs.get(id);
-    if (output) return output;
-
-    output = Window.createOutputChannel(`Toit (${name})`);
-    this.outputs.set(id, output);
-    return output;
-  }
-
   toitOutput(...lines: string[]): void {
     const out = this.toitOutputChannel();
-    this.writeOutput(out, lines);
-  }
-
-  output(id: string, name: string, ...lines: string[]): void {
-    const out = this.outputChannel(id, name);
-    this.writeOutput(out, lines);
-  }
-
-  writeOutput(out: OutputChannel, lines: string[]): void {
-    out.show();
+    out.show(true);
     lines.forEach(line => out.append(line));
   }
 
-  serials: Map<string, Terminal> = new Map();
+  startDeviceOutput(device: Device): void {
+    if (!this.outputs.has(device.deviceID)) this.outputs.set(device.deviceID, new DeviceOutput(this, device));
+    const out = this.outputs.get(device.deviceID);
+    out?.start();
+  }
 
   serialTerminal(port: string): Terminal {
     let serial = this.serials.get(port);
@@ -129,6 +116,41 @@ export class Context {
     serial = Window.createTerminal(`Toit serial (${port})`);
     this.serials.set(port, serial);
     return serial;
+  }
+}
+
+class DeviceOutput {
+  context: Context;
+  device: Device;
+  childProcess?: cp.ChildProcess;
+  output?: OutputChannel;
+
+  constructor(ctx: Context, device: Device) {
+    this.context = ctx;
+    this.device = device;
+  }
+
+  start() {
+    if (this.childProcess) {
+      if (this.output) this.output.show(true);
+      return;
+    }
+
+    this.output = Window.createOutputChannel(`Toit (${this.device.name})`);
+    this.output.show(true);
+    this.childProcess = cp.execFile(this.context.toitExec, [ "dev", "-d", this.device.deviceID, "logs" ]);
+    this.childProcess.stdout?.on("data", data => this.output?.append(data));
+    this.childProcess.stderr?.on("data", data => this.output?.append(data));
+  }
+
+  stop() {
+    if (this.childProcess?.kill()) this.childProcess = undefined;
+  }
+
+  dispose() {
+    this.stop();
+    this.output?.dispose();
+    this.output = undefined;
   }
 }
 
