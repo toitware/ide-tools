@@ -30,11 +30,11 @@ async function executeCommand(ctx: Context) {
 
   try {
     await setOrganization(ctx, org);
+    await updateStatus(ctx);
+    ctx.refreshViews();
   } catch (e) {
     return Window.showErrorMessage(`Unable to change organization: ${e.message}.`);
   }
-  await updateStatus(ctx);
-  ctx.refreshViews();
 }
 
 export function createSetOrgCommand(ctx: Context): () => void {
