@@ -41,8 +41,8 @@ async function executeRunCommand(ctx: Context, device?: Device) {
   try {
     if (!device) device = await selectDevice(ctx, { "activeOnly": true, "simulatorOnly": false });
 
-    cp.spawn(ctx.toitExec, [ "dev", "-d", device.name, "run", filePath ]);
     ctx.startDeviceOutput(device);
+    cp.spawn(ctx.toitExec, [ "dev", "-d", device.name, "run", filePath ]);
     ctx.setLastFile(".toit", filePath);
   } catch (e) {
     Window.showErrorMessage(`Run app failed: ${e.message}`);
