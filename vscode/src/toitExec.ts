@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import { promisify } from "util";
-import { OutputChannel, window as Window } from "vscode";
+import { window as Window } from "vscode";
 import { Device } from "./device";
 import { } from "./deviceView";
 import { Context, ensureAuth, selectDevice } from "./utils";
@@ -41,11 +41,8 @@ async function executeRunCommand(ctx: Context, device?: Device) {
   try {
     if (!device) device = await selectDevice(ctx, { "activeOnly": true, "simulatorOnly": false });
 
-    const commandProcess = cp.spawn(ctx.toitExec, [ "dev", "-d", device.name, "run", filePath ]);
-    const toitOutput: OutputChannel = ctx.outputChannel(device.deviceID, device.name);
-    toitOutput.show(true);
-    commandProcess.stdout.on("data", data => toitOutput.append(`${data}`));
-    commandProcess.stderr.on("data", data => toitOutput.append(`${data}`));
+    ctx.startDeviceOutput(device);
+    cp.spawn(ctx.toitExec, [ "dev", "-d", device.name, "run", filePath ]);
     ctx.setLastFile(".toit", filePath);
   } catch (e) {
     Window.showErrorMessage(`Run app failed: ${e.message}`);
@@ -69,8 +66,8 @@ async function executeDeployCommand(ctx: Context, device?: Device) {
   try {
     if (!device) device = await selectDevice(ctx, { "activeOnly": false, "simulatorOnly": false });
 
-    const { stdout, stderr } = await execFile(ctx.toitExec, [ "dev", "-d", device.name, "deploy", filePath ]);
-    ctx.output(device.deviceID, device.name, stdout, stderr);
+    ctx.startDeviceOutput(device);
+    await execFile(ctx.toitExec, [ "dev", "-d", device.name, "deploy", filePath ]);
     ctx.refreshDeviceView(device);
     ctx.setLastFile(".yaml", filePath);
   } catch (e) {
