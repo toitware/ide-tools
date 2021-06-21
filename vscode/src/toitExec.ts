@@ -36,7 +36,7 @@ async function executeRunCommand(ctx: Context, device?: Device) {
 
   if (!device) device = await selectDevice(ctx, { "activeOnly": true, "simulatorOnly": false });
 
-  if (!device) return;
+  if (!device) return;  // Device selection prompt dismissed.
 
   try {
     cp.spawn(ctx.toitExec, [ "dev", "-d", device.name, "run", filePath ]);
@@ -59,7 +59,7 @@ async function executeDeployCommand(ctx: Context, device?: Device) {
 
   if (!device) device = await selectDevice(ctx, { "activeOnly": false, "simulatorOnly": false });
 
-  if (!device) return;
+  if (!device) return;  // Device selection prompt dismissed.
 
   try {
     ctx.startDeviceOutput(device);
