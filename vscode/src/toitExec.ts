@@ -39,8 +39,8 @@ async function executeRunCommand(ctx: Context, device?: Device) {
   if (!device) return;  // Device selection prompt dismissed.
 
   try {
-    cp.spawn(ctx.toitExec, [ "dev", "-d", device.name, "run", filePath ]);
     ctx.startDeviceOutput(device);
+    cp.spawn(ctx.toitExec, [ "dev", "-d", device.name, "run", filePath ]);
     ctx.setLastFile(".toit", filePath);
   } catch (e) {
     Window.showErrorMessage(`Run app failed: ${e.message}`);
