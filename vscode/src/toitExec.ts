@@ -32,15 +32,10 @@ async function executeRunCommand(ctx: Context, device?: Device) {
     return Window.showErrorMessage(`Unable to run file: ${e.message}`);
   }
 
-  try {
-    await ensureAuth(ctx);
-  } catch (e) {
-    return Window.showErrorMessage(`Login failed: ${e.message}.`);
-  }
+  await ensureAuth(ctx);
+  if (!device) device = await selectDevice(ctx, { "activeOnly": true, "simulatorOnly": false });
 
   try {
-    if (!device) device = await selectDevice(ctx, { "activeOnly": true, "simulatorOnly": false });
-
     cp.spawn(ctx.toitExec, [ "dev", "-d", device.name, "run", filePath ]);
     ctx.startDeviceOutput(device);
     ctx.setLastFile(".toit", filePath);
@@ -57,15 +52,11 @@ async function executeDeployCommand(ctx: Context, device?: Device) {
     return Window.showErrorMessage(`Unable to deploy file: ${e.message}`);
   }
 
-  try {
-    await ensureAuth(ctx);
-  } catch (e) {
-    return Window.showErrorMessage(`Login failed: ${e.message}.`);
-  }
+  await ensureAuth(ctx);
+
+  if (!device) device = await selectDevice(ctx, { "activeOnly": false, "simulatorOnly": false });
 
   try {
-    if (!device) device = await selectDevice(ctx, { "activeOnly": false, "simulatorOnly": false });
-
     ctx.startDeviceOutput(device);
     await execFile(ctx.toitExec, [ "dev", "-d", device.name, "deploy", filePath ]);
     ctx.refreshDeviceView(device);

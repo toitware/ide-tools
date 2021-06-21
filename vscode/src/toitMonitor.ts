@@ -7,14 +7,10 @@ import { SerialPort } from "./serialPort";
 import { Context, ensureAuth, selectPort } from "./utils";
 
 async function serialMonitor(ctx: Context, serialPort?: SerialPort) {
-  try {
-    await ensureAuth(ctx);
-  } catch (e) {
-    return Window.showErrorMessage(`Login failed: ${e.message}.`);
-  }
+  await ensureAuth(ctx);
 
+  const port = serialPort ? serialPort.name : await selectPort(ctx);
   try {
-    const port = serialPort ? serialPort.name : await selectPort(ctx);
     const terminal = ctx.serialTerminal(port);
     terminal.show(true);
     terminal.sendText(`${ctx.toitExec} serial monitor --port '${port}'`);
