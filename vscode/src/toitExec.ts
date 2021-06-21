@@ -32,8 +32,8 @@ async function executeRunCommand(ctx: Context, device?: Device) {
     return Window.showErrorMessage(`Unable to run file: ${e.message}`);
   }
 
-  await ensureAuth(ctx);
   if (!device) device = await selectDevice(ctx, { "activeOnly": true, "simulatorOnly": false });
+  if (!await ensureAuth(ctx)) return;
 
   try {
     cp.spawn(ctx.toitExec, [ "dev", "-d", device.name, "run", filePath ]);
@@ -52,7 +52,7 @@ async function executeDeployCommand(ctx: Context, device?: Device) {
     return Window.showErrorMessage(`Unable to deploy file: ${e.message}`);
   }
 
-  await ensureAuth(ctx);
+  if (!await ensureAuth(ctx)) return;
 
   if (!device) device = await selectDevice(ctx, { "activeOnly": false, "simulatorOnly": false });
 

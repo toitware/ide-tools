@@ -6,13 +6,11 @@ import { window as Window } from "vscode";
 import { Context, ensureAuth } from "./utils";
 
 async function ensureAuthCommand(ctx: Context): Promise<void> {
-  try {
-    await ensureAuth(ctx);
-  } catch(e) {
-    Window.showErrorMessage(`Login to toit.io failed: ${e.message}.`);
-    return;
+  if (await ensureAuth(ctx)) {
+    Window.showInformationMessage("Authenticated with toit.io.");
+  } else {
+    Window.showErrorMessage("Login to toit.io failed.");
   }
-  Window.showInformationMessage(`Authenticated with toit.io.`);
 }
 
 export function createEnsureAuth(ctx: Context): () => void {

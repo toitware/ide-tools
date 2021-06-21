@@ -10,7 +10,7 @@ import cp = require("child_process");
 const execFile = promisify(cp.execFile);
 
 async function executeStopCommand(ctx: Context, device?: Device) {
-  await ensureAuth(ctx);
+  if (!await ensureAuth(ctx)) return;
   if (!device) device = await selectDevice(ctx, {"activeOnly": false, "simulatorOnly": true});
 
   if (!device.isSimulator) return Window.showErrorMessage("Non-simulator selected.");
@@ -30,7 +30,7 @@ export function createStopSimCommand(ctx: Context): () => void {
 }
 
 async function executeStartCommand(ctx: Context) {
-  await ensureAuth(ctx);
+  if (!await ensureAuth(ctx)) return;
   const name = await Window.showInputBox({"title": "Simulator name", "prompt": "Enter simulator name. Leave empty for random name."});
   if (name === undefined) return;  // Name prompt was dismissed.
 

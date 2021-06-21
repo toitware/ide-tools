@@ -7,7 +7,7 @@ import { SerialPort } from "./serialPort";
 import { Context, ensureAuth, promptForWiFiInfo, selectPort, WiFiInfo } from "./utils";
 
 async function serialMonitor(ctx: Context, serialPort?: SerialPort) {
-  await ensureAuth(ctx);
+  if (!await ensureAuth(ctx)) return;
 
   const port = serialPort ? SerialPort.name : await selectPort(ctx);
   const wifiInfo: WiFiInfo = await promptForWiFiInfo();

@@ -7,7 +7,7 @@ import { SerialPort } from "./serialPort";
 import { Context, ensureAuth, selectPort } from "./utils";
 
 async function serialMonitor(ctx: Context, serialPort?: SerialPort) {
-  await ensureAuth(ctx);
+  if (!await ensureAuth(ctx)) return;
 
   const port = serialPort ? serialPort.name : await selectPort(ctx);
   try {
