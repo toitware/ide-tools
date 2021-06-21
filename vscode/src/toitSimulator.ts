@@ -13,6 +13,8 @@ async function executeStopCommand(ctx: Context, device?: Device) {
   if (!await ensureAuth(ctx)) return;
   if (!device) device = await selectDevice(ctx, {"activeOnly": false, "simulatorOnly": true});
 
+  if (!device) return;
+
   if (!device.isSimulator) return Window.showErrorMessage("Non-simulator selected.");
 
   try {

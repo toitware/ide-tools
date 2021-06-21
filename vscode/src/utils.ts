@@ -209,13 +209,13 @@ export interface SelectOptions {
   simulatorOnly: boolean;
 }
 
-export async function selectDevice(ctx: Context, config: SelectOptions): Promise<Device> {
+export async function selectDevice(ctx: Context, config: SelectOptions): Promise<Device | undefined> {
   let deviceItems = await listDevices(ctx);
   if (config.activeOnly) deviceItems = deviceItems.filter(item => item.device().isActive);
   if (config.simulatorOnly) deviceItems = deviceItems.filter(item => item.device().isSimulator);
   preferLastPicked(ctx, deviceItems);
   const device = await Window.showQuickPick(deviceItems, { "placeHolder": "Pick a device" });
-  if (!device) throw new Error("No device selected.");
+  if (!device) return undefined;
 
   ctx.setLastDevice(device);
   return device.device();
@@ -278,18 +278,18 @@ export interface WiFiInfo {
   password: string;
 }
 
-export async function promptForWiFiInfo(): Promise<WiFiInfo> {
+export async function promptForWiFiInfo(): Promise<WiFiInfo | undefined> {
   const ssidPromptOptions: InputBoxOptions = {
     "prompt": "Enter Wi-Fi SSID"
   };
   const ssid = await Window.showInputBox(ssidPromptOptions);
-  if (!ssid) throw new Error("No Wi-Fi SSID provided");
+  if (!ssid) return undefined;
 
   const passwordPromptOptions: InputBoxOptions = {
     "prompt": "Enter Wi-Fi password"
   };
   const password = await Window.showInputBox(passwordPromptOptions);
-  if (password === undefined) throw new Error("No Wi-Fi password provided");
+  if (password === undefined) return undefined;
 
   return { "ssid": ssid, "password": password};
 }
@@ -310,7 +310,7 @@ export async function listPorts(ctx: Context): Promise<string[]> {
   return stdout.split("\n").filter(str => str !== "");
 }
 
-export async function selectPort(ctx: Context): Promise<string> {
+export async function selectPort(ctx: Context): Promise<string | undefined> {
   const ports = await listPorts(ctx);
   ports.reverse();
 
@@ -321,7 +321,7 @@ export async function selectPort(ctx: Context): Promise<string> {
   }
 
   const port = await Window.showQuickPick(ports, { "placeHolder": "Pick a port" });
-  if (!port) throw new Error("No port selected.");
+  if (!port) return undefined;
 
   ctx.setLastPort(port);
   return port;
@@ -368,11 +368,9 @@ async function listOrganizations(ctx: Context): Promise<OrganizationItem[]> {
     map(org => new OrganizationItem(org));
 }
 
-export async function selectOrganization(ctx: Context): Promise<Organization> {
+export async function selectOrganization(ctx: Context): Promise<Organization | undefined> {
   const organizations = await listOrganizations(ctx);
-  const org = await Window.showQuickPick(organizations, { "placeHolder": "Pick an organization" });
-  if (!org) throw new Error("No organization selected.");
-  return org;
+  return await Window.showQuickPick(organizations, { "placeHolder": "Pick an organization" });
 }
 
 export async function setOrganization(ctx: Context, org: Organization): Promise<void> {

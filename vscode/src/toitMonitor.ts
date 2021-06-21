@@ -10,6 +10,8 @@ async function serialMonitor(ctx: Context, serialPort?: SerialPort) {
   if (!await ensureAuth(ctx)) return;
 
   const port = serialPort ? serialPort.name : await selectPort(ctx);
+  if (port === undefined) return;
+
   try {
     const terminal = ctx.serialTerminal(port);
     terminal.show(true);

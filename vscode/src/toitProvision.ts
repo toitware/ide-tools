@@ -4,13 +4,17 @@
 
 import { window as Window } from "vscode";
 import { SerialPort } from "./serialPort";
-import { Context, ensureAuth, promptForWiFiInfo, selectPort, WiFiInfo } from "./utils";
+import { Context, ensureAuth, promptForWiFiInfo, selectPort } from "./utils";
 
 async function serialMonitor(ctx: Context, serialPort?: SerialPort) {
   if (!await ensureAuth(ctx)) return;
 
   const port = serialPort ? SerialPort.name : await selectPort(ctx);
-  const wifiInfo: WiFiInfo = await promptForWiFiInfo();
+  if (port === undefined) return;
+
+  const wifiInfo = await promptForWiFiInfo();
+  if (!wifiInfo) return;
+
   try {
     const terminal = ctx.serialTerminal(port);
     terminal.show(true);
