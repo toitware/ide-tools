@@ -23,14 +23,17 @@ async function updateStatus(ctx: Context) {
 }
 
 async function executeCommand(ctx: Context) {
+  if (!await ensureAuth(ctx)) return;
+
+  const org = await selectOrganization(ctx);
+  if (org === undefined) return;
+
   try {
-    await ensureAuth(ctx);
-    const org = await selectOrganization(ctx);
     await setOrganization(ctx, org);
     await updateStatus(ctx);
     ctx.refreshViews();
   } catch (e) {
-    return Window.showErrorMessage(`Unable to change organization: ${e.message}.`)
+    return Window.showErrorMessage(`Unable to change organization: ${e.message}.`);
   }
 }
 

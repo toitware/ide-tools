@@ -4,18 +4,18 @@
 
 import { window as Window } from "vscode";
 import { SerialPort } from "./serialPort";
-import { Context, ensureAuth, promptForWiFiInfo, selectPort, WiFiInfo } from "./utils";
+import { Context, ensureAuth, promptForWiFiInfo, selectPort } from "./utils";
 
 async function serialMonitor(ctx: Context, serialPort?: SerialPort) {
-  try {
-    await ensureAuth(ctx);
-  } catch (e) {
-    return Window.showErrorMessage(`Login failed: ${e.message}.`);
-  }
+  if (!await ensureAuth(ctx)) return;
+
+  const port = serialPort ? SerialPort.name : await selectPort(ctx);
+  if (port === undefined) return;  // Port selection prompt dismissed.
+
+  const wifiInfo = await promptForWiFiInfo();
+  if (!wifiInfo) return;  // WiFi dialog dismissed.
 
   try {
-    const port = serialPort ? SerialPort.name : await selectPort(ctx);
-    const wifiInfo: WiFiInfo = await promptForWiFiInfo();
     const terminal = ctx.serialTerminal(port);
     terminal.show(true);
     const provisionCmd = `${ctx.toitExec} serial provision --port ${port} --model esp32-4mb -p wifi.ssid='${wifiInfo.ssid}' -p wifi.password='${wifiInfo.password}'`;

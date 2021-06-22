@@ -10,16 +10,14 @@ import cp = require("child_process");
 const execFile = promisify(cp.execFile);
 
 async function executeStopCommand(ctx: Context, device?: Device) {
-  try {
-    await ensureAuth(ctx);
-  } catch (e) {
-    return Window.showErrorMessage(`Login failed: ${e.message}.`);
-  }
+  if (!await ensureAuth(ctx)) return;
+  if (!device) device = await selectDevice(ctx, {"activeOnly": false, "simulatorOnly": true});
+
+  if (!device) return;  // Device selection dismissed.
+
+  if (!device.isSimulator) return Window.showErrorMessage("Non-simulator selected.");
 
   try {
-    if (!device) device = await selectDevice(ctx, {"activeOnly": false, "simulatorOnly": true});
-
-    if (!device.isSimulator) return Window.showErrorMessage("Non-simulator selected.");
     await execFile(ctx.toitExec, [ "simulator", "stop", device.deviceID ]);
     ctx.refreshDeviceView(device);
   } catch (e) {
@@ -34,17 +32,11 @@ export function createStopSimCommand(ctx: Context): () => void {
 }
 
 async function executeStartCommand(ctx: Context) {
-  try {
-    await ensureAuth(ctx);
-  } catch (e) {
-    return Window.showErrorMessage(`Login failed: ${e.message}.`);
-  }
+  if (!await ensureAuth(ctx)) return;
+  const name = await Window.showInputBox({"title": "Simulator name", "prompt": "Enter simulator name. Leave empty for random name."});
+  if (name === undefined) return;  // Name prompt was dismissed.
 
   try {
-    const name = await Window.showInputBox({"title": "Simulator name", "prompt": "Enter simulator name. Leave empty for random name."});
-
-    if (name === undefined) throw new Error("Name prompt dismissed.");
-
     const args = [ "simulator", "start" ];
     if (name) {
       args.push("--alias");
