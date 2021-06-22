@@ -10,10 +10,10 @@ async function serialMonitor(ctx: Context, serialPort?: SerialPort) {
   if (!await ensureAuth(ctx)) return;
 
   const port = serialPort ? SerialPort.name : await selectPort(ctx);
-  if (port === undefined) return;
+  if (port === undefined) return;  // Port selection prompt dismissed.
 
   const wifiInfo = await promptForWiFiInfo();
-  if (!wifiInfo) return;
+  if (!wifiInfo) return;  // WiFi dialog dismissed.
 
   try {
     const terminal = ctx.serialTerminal(port);

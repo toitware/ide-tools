@@ -215,7 +215,7 @@ export async function selectDevice(ctx: Context, config: SelectOptions): Promise
   if (config.simulatorOnly) deviceItems = deviceItems.filter(item => item.device().isSimulator);
   preferLastPicked(ctx, deviceItems);
   const device = await Window.showQuickPick(deviceItems, { "placeHolder": "Pick a device" });
-  if (!device) return undefined;
+  if (!device) return undefined; // Device selection dismissed.
 
   ctx.setLastDevice(device);
   return device.device();
