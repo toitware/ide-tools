@@ -8,6 +8,7 @@ import { App, ConsoleApp } from "./app";
 import { ConsoleDevice, ConsoleDeviceInfo, Device, DeviceInfo, RelatedDevice } from "./device";
 import { DeviceProvider } from "./deviceView";
 import { ConsoleOrganization, Organization } from "./org";
+import { updateStatus } from "./organization";
 import { ConsoleSerialInfo, SerialInfo, SerialPort } from "./serialPort";
 import { SerialProvider } from "./serialView";
 import cp = require("child_process");
@@ -221,8 +222,16 @@ export async function selectDevice(ctx: Context, config: SelectOptions): Promise
   return device.device();
 }
 
-async function login(ctx: Context): Promise<void> {
+export async function login(ctx: Context): Promise<boolean> {
+  // TODO add timeout.
   await execFile(ctx.toitExec, [ "auth", "login" ]);
+  if (await isAuthenticated(ctx)) {
+    ctx.refreshViews();
+    updateStatus(ctx);
+    return true;
+  }
+  return false;
+
 }
 
 async function authInfo(ctx: Context): Promise<AuthInfo> {
@@ -263,13 +272,8 @@ export async function ensureAuth(ctx: Context): Promise<boolean> {
 
 async function promptLogin(ctx: Context): Promise<boolean> {
   const response = await Window.showWarningMessage("Authenticate with toit.io to use the Toit extension.", "Log in");
-  if (!response) return false;
+  if (response === "Log in") return await login(ctx);
 
-  await login(ctx);
-  if (isAuthenticated(ctx)) {
-    ctx.refreshViews();
-    return true;
-  }
   return false;
 }
 
@@ -347,8 +351,8 @@ class OrganizationItem extends Organization implements QuickPickItem {
   }
 }
 
-export async function getOrganization(ctx: Context): Promise<string> {
-  await ensureAuth(ctx);
+export async function getOrganization(ctx: Context): Promise<string | undefined> {
+  if (!await isAuthenticated(ctx)) return undefined;
   const { stdout } = await execFile(ctx.toitExec, [ "org", "get" ]);
   // The output of the command if of the form:
   // Logged in to Toitware
@@ -382,8 +386,8 @@ export function getToitPath(): string {
   return Workspace.getConfiguration("toit").get("Path", "toit");
 }
 
-export async function getFirmwareVersion(ctx: Context): Promise<string> {
-  await ensureAuth(ctx);
+export async function getFirmwareVersion(ctx: Context): Promise<string | undefined> {
+  if (!await isAuthenticated(ctx)) return undefined;
   const { stdout } = await execFile(ctx.toitExec, [ "firmware", "version", "-o", "short" ]);
   return stdout.trimEnd();
 }

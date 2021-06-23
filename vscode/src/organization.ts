@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import { ExtensionContext, StatusBarAlignment, window as Window } from "vscode";
-import { Context, ensureAuth, getFirmwareVersion, getOrganization, selectOrganization, setOrganization } from "./utils";
+import { Context, ensureAuth, getFirmwareVersion, getOrganization, isAuthenticated, selectOrganization, setOrganization } from "./utils";
 
 export async function activateToitStatusBar(ctx: Context, extensionContext: ExtensionContext): Promise<void> {
   const toitStatus = Window.createStatusBarItem(StatusBarAlignment.Left, 100);
@@ -14,7 +14,8 @@ export async function activateToitStatusBar(ctx: Context, extensionContext: Exte
   toitStatus.show();
 }
 
-async function updateStatus(ctx: Context) {
+export async function updateStatus(ctx: Context): Promise<void> {
+  if (!await isAuthenticated(ctx)) return;
   const toitStatus = ctx.getStatusBar();
   if (!toitStatus) return;
   const org = await getOrganization(ctx);
