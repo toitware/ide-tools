@@ -41,13 +41,9 @@ export class SerialProvider implements TreeDataProvider<TreeItem> {
     if (!await isAuthenticated(this.context)) return [];
 
     if (element) {
-      this.context.toitOutput("get elem children\n");
       if (element instanceof SerialPort) {
-        this.context.toitOutput("get serial children\n");
         const info = await getSerialInfo(this.context, element);
-        this.context.toitOutput("got info\n");
         if (info) return [info];
-        this.context.toitOutput("no info\n");
       }
 
       return [];
