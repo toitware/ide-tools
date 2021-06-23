@@ -422,5 +422,5 @@ export async function revealDevice(ctx: Context, hwid: string): Promise<void> {
   if (!device) {
     return; // TODO(Lau): Add warning or error message? Make sure to differentiate between hidden view and wrong org.
   }
-  await (await ctx.getDeviceView())?.reveal(device, { "focus": true, "select": false, "expand": true });
+  await ctx.getDeviceView()?.reveal(device, { "focus": true, "select": false, "expand": true });
 }
