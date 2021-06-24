@@ -52,7 +52,7 @@
         "viewsWelcome": [
             {
                 "view": "toitDeviceView",
-                "contents": "No devices found.\n\nTry to login\n[Login](command:toit.ensureAuth)",
+                "contents": "No devices found.\n\nTry to log in\n[Log in](command:toit.ensureAuth)",
                 "when": "toit.extensionActive"
             }
         ],

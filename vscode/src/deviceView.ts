@@ -46,6 +46,7 @@ export class DeviceProvider implements TreeDataProvider<TreeItem> {
   }
 
   async retrieveDevices(): Promise<void> {
+    if (!await isAuthenticated(this.context)) return;
     const deviceItems = await listDevices(this.context);
     this.devices = deviceItems.map(item => item.device());
   }

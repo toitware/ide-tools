@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import { window as Window } from "vscode";
-import { Context, ensureAuth } from "./utils";
+import { Context, isAuthenticated, login } from "./utils";
 
 async function ensureAuthCommand(ctx: Context): Promise<void> {
-  if (await ensureAuth(ctx)) {
+  if (await isAuthenticated(ctx) || await login(ctx)) {
     Window.showInformationMessage("Authenticated with toit.io.");
   } else {
     Window.showErrorMessage("Login to toit.io failed.");
