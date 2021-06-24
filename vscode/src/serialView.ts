@@ -6,19 +6,11 @@ import { Event, EventEmitter, TreeDataProvider, TreeItem, window as Window } fro
 import { SerialPort } from "./serialPort";
 import { Context, getSerialInfo, isAuthenticated, listPorts } from "./utils";
 
-let viewRefresher: NodeJS.Timeout;
-
 export function activateSerialView(ctx: Context): void {
-  viewRefresher = setInterval(() => ctx.refreshSerialView(), 60000);
   const provider = new SerialProvider(ctx);
   Window.createTreeView("toitSerialView", { "treeDataProvider": provider } );
   ctx.setSerialProvider(provider);
 }
-
-export function deactivateSerialView(): void {
-  clearInterval(viewRefresher);
-}
-
 export class SerialProvider implements TreeDataProvider<TreeItem> {
   private _onDidChangeTreeData: EventEmitter<TreeItem | undefined | null> = new EventEmitter<TreeItem | undefined | null>();
   readonly onDidChangeTreeData: Event<TreeItem | undefined | null> = this._onDidChangeTreeData.event;
