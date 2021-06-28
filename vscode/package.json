@@ -257,18 +257,23 @@
         "compile-prod": "webpack --mode production",
         "compile": "webpack --mode development",
         "watch": "webpack --mode development --watch",
+        "test-compile": "tsc -p ./",
         "lint": "eslint src --ext ts",
         "lint-fix": "eslint src --ext ts --fix",
         "package": "vsce package --yarn",
         "clean": "rm -rf ./out ./dist ./node_modules"
     },
     "devDependencies": {
+        "@types/glob": "^7.1.1",
+        "@types/mocha": "^5.2.6",
         "@types/node": "^12.20.7",
         "@types/vscode": "^1.55.0",
         "@typescript-eslint/eslint-plugin": "^4.24.0",
         "@typescript-eslint/parser": "^4.24.0",
         "eslint": "^7.26.0",
+        "glob": "^7.1.4",
         "js-yaml": "^3.14.0",
+        "mocha": "^6.1.4",
         "ts-loader": "^6.2.2",
         "tslint": "^5.20.1",
         "typescript": "^3.9.5",
@@ -278,7 +283,8 @@
     "dependencies": {
         "ovsx": "^0.2.0",
         "vsce": "^1.77.0",
-        "vscode-languageclient": "^5.2.1"
+        "vscode-languageclient": "^5.2.1",
+        "vscode-test": "^1.5.2"
     },
     "version": "1.0.0"
 }
