@@ -11,10 +11,10 @@
       "runtimeExecutable": "${execPath}",
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}",
-        "--extensionTestsPath=${workspaceFolder}/out/test/runTest"
+        "--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
       ],
       "outFiles": [ "${workspaceFolder}/out/**/*.js" ],
-      "preLaunchTask": "npm: watch"
+      "preLaunchTask": "npm: test-watch"
     },
     {
       "args": [
