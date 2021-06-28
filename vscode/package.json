@@ -256,7 +256,7 @@
     "scripts": {
         "compile-prod": "webpack --mode production",
         "compile": "webpack --mode development",
-        "watch": "webpack --mode development --watch",
+        "watch": "tsc -p ./ --watch",
         "test-compile": "tsc -p ./",
         "lint": "eslint src --ext ts",
         "lint-fix": "eslint src --ext ts --fix",
