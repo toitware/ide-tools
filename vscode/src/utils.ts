@@ -156,7 +156,6 @@ class DeviceOutput {
 }
 
 export async function listApps(ctx: Context, device: Device): Promise<App[]> {
-  // TODO(Lau): change this when is_active is part of json.
   const cmdArgs =  [ "dev", "-d", device.deviceID, "ps", "-o", "json" ];
   const { stdout } = await execFile(ctx.toitExec, cmdArgs);
   return stdout.split("\n").
@@ -169,8 +168,8 @@ class DeviceItem implements QuickPickItem, RelatedDevice {
   dev: Device;
   label: string;
 
-  constructor(device: ConsoleDevice, active: boolean) {
-    this.dev = new Device(device, active);
+  constructor(device: ConsoleDevice) {
+    this.dev = new Device(device);
     this.label = this.dev.name;
   }
 
@@ -180,21 +179,11 @@ class DeviceItem implements QuickPickItem, RelatedDevice {
 }
 
 export async function listDevices(ctx: Context): Promise<DeviceItem[]> {
-  // TODO(Lau): change this when is_active is part of json.
-  const cmdArgs =  [ "devices", "--names", "-o", "json" ];
-  const jsonAll = await execFile(ctx.toitExec, cmdArgs);
-  cmdArgs.push("--active");
-  const jsonActive = await execFile(ctx.toitExec, cmdArgs);
-
-  const activeDevices = jsonActive.stdout.split("\n").
-    filter(str => str !== "").
-    map(json => JSON.parse(json) as ConsoleDevice);
-
-  const allDevices = jsonAll.stdout.split("\n").
+  const jsonAll = await execFile(ctx.toitExec, [ "devices", "--names", "-o", "json" ]);
+  return jsonAll.stdout.split("\n").
     filter(str => str !== "").
     map(json => JSON.parse(json) as ConsoleDevice).
-    map(device => new DeviceItem(device, !!activeDevices.find(o => o.device_id === device.device_id)));
-  return allDevices;
+    map(device => new DeviceItem(device));
 }
 
 function preferLastPicked(ctx: Context, devices: DeviceItem[]) {
