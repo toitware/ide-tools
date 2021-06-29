@@ -34,18 +34,22 @@ pipeline {
           }
         }
 
-        // stage("test") {
-        //     dir("vscode") {
-        //       steps {
-        //           sh "yarn test"
-        //       }
-        //       post {
-        //           always {
-        //               junit "junit.xml"
-        //           }
-        //       }
-        //     }
-        // }
+        stage("test") {
+            dir("vscode") {
+              steps {
+                  sh """
+                    export DISPLAY=':99.0'
+                    /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+                    yarn jenkins-test
+                    """
+              }
+              // post {
+              //     always {
+              //         junit "junit.xml"
+              //     }
+              // }
+            }
+        }
 
         stage('compile') {
           steps {
