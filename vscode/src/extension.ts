@@ -14,10 +14,41 @@ import { createSerialProvision } from "./toitProvision";
 import { createStartSimCommand, createStopSimCommand } from "./toitSimulator";
 import { createUninstallCommand } from "./toitUninstall";
 import { Context, revealDevice } from "./utils";
+import cp = require("child_process");
+import compareVersions = require("compare-versions");
 
-export function activate(extContext: ExtensionContext): void {
-  Commands.executeCommand("setContext", "toit.extensionActive", true);
+const MIN_TOIT_VERSION = "1.7.0";
+
+async function checkToitCLI(ctx: Context): Promise<boolean> {
+  return new Promise<boolean>( (resolve) => {
+    cp.execFile(ctx.toitExec, [ "version", "-o", "json" ],
+      (err, stdout) => {
+        if (err?.code === "ENOENT") {
+          // TODO(Lau): show action item.
+          return resolve(false);
+        }
+        try {
+          const info = JSON.parse(stdout);
+          if (!info.version) return resolve(false);
+          if (compareVersions(MIN_TOIT_VERSION, info.version.substring(1)) > 0) return resolve(false);
+          // TODO: Add a version check.
+          return resolve(true);
+        } catch {
+          // TODO(Lau): show action item.
+          return resolve(false);
+        }
+      });
+  });
+}
+
+export async function activate(extContext: ExtensionContext): Promise<void> {
   const ctx = new Context();
+  if (!await checkToitCLI(ctx)) {
+    return;
+  }
+
+  Commands.executeCommand("setContext", "toit.extensionActive", true);
+
   activateTreeView(ctx);
   activateSerialView(ctx);
 
