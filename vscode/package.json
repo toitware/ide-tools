@@ -260,6 +260,7 @@
         "watch": "webpack --mode development --watch",
         "test-watch": "tsc -p ./ -watch",
         "test-compile": "tsc -p ./",
+        "test": "tsc -p ./ && node ./out/sample/test/runTest.js",
         "lint": "eslint src --ext ts",
         "lint-fix": "eslint src --ext ts --fix",
         "package": "vsce package --yarn",
