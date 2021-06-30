@@ -5,7 +5,12 @@ import * as path from "path";
 export function run(): Promise<void> {
   // Create the mocha test
   const mocha = new Mocha({
-    "ui": "tdd"
+    "ui": "tdd",
+    "reporter": "mocha-junit-reporter",
+    "reporterOptions": {
+      "mochaFile": "./test_result.xml",
+      "jenkinsMode": true
+    }
   });
   mocha.useColors(true);
 
