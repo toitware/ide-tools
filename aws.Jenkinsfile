@@ -43,11 +43,11 @@ pipeline {
                     yarn jenkins-test
                     """
               }
-              // post {
-              //     always {
-              //         junit "junit.xml"
-              //     }
-              // }
+              post {
+                  always {
+                      junit "vscode_test.xml"
+                  }
+              }
             }
         }
 

@@ -8,7 +8,7 @@ export function run(): Promise<void> {
     "ui": "tdd",
     "reporter": "mocha-junit-reporter",
     "reporterOptions": {
-      "mochaFile": "./test_result.xml",
+      "mochaFile": "./vscode_test.xml",
       "jenkinsMode": true
     }
   });
