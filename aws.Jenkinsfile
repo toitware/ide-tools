@@ -35,22 +35,22 @@ pipeline {
         }
 
         stage("test") {
-            steps {
+          steps {
+            dir("vscode") {
+                sh """
+                  export DISPLAY=':99.0'
+                  /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+                  yarn jenkins-test
+                  """
+            }
+          }
+          post {
+            always {
               dir("vscode") {
-                  sh """
-                    export DISPLAY=':99.0'
-                    /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-                    yarn jenkins-test
-                    """
-              }
-              post {
-                  always {
-                    dir("vscode") {
-                      junit "vscode_test.xml"
-                    }
-                  }
+                junit "vscode_test.xml"
               }
             }
+          }
         }
 
         stage('compile') {
