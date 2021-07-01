@@ -2,7 +2,7 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file.
 
-import { commands as Commands, ExtensionContext } from "vscode";
+import { commands as Commands, env, ExtensionContext, Uri, window as Window } from "vscode";
 import { activateTreeView, deactivateTreeView } from "./deviceView";
 import { activateLsp, deactivateLsp } from "./lspClient";
 import { activateToitStatusBar, createSetOrgCommand } from "./organization";
@@ -21,29 +21,31 @@ const MIN_TOIT_VERSION = "1.7.0";
 
 async function checkToitCLI(ctx: Context): Promise<boolean> {
   return new Promise<boolean>( (resolve) => {
-    cp.execFile(ctx.toitExec, [ "version", "-o", "json" ],
-      (err, stdout) => {
-        if (err?.code === "ENOENT") {
-          // TODO(Lau): show action item.
-          return resolve(false);
-        }
-        try {
-          const info = JSON.parse(stdout);
-          if (!info.version) return resolve(false);
-          if (compareVersions(MIN_TOIT_VERSION, info.version.substring(1)) > 0) return resolve(false);
-          // TODO: Add a version check.
-          return resolve(true);
-        } catch {
-          // TODO(Lau): show action item.
-          return resolve(false);
-        }
-      });
+    cp.execFile(ctx.toitExec, [ "version", "-o", "json" ], (err) => {
+      if (err?.code === "ENOENT") {
+        return resolve(false);
+      }
+      resolve(true);
+    });
   });
+}
+
+async function missingCLIPrompt() {
+  const installAction = "Install";
+  const settingsAction = "UpdateSettings";
+  const action = await Window.showErrorMessage("Could not find `toit`. Please make sure `toit` is installed and set the toitPath setting to the executable (reload the window to activate the extension).", installAction, settingsAction);
+  if (action === installAction) {
+    env.openExternal(Uri.parse("https://docs.toit.io/getstarted/installation"));
+  } else if (action === settingsAction) {
+    Commands.executeCommand( "workbench.action.openSettings", "toit.Path" );
+  }
 }
 
 export async function activate(extContext: ExtensionContext): Promise<void> {
   const ctx = new Context();
-  if (!await checkToitCLI(ctx)) {
+  const toitCLI = await checkToitCLI(ctx);
+  if (!toitCLI) {
+    missingCLIPrompt();
     return;
   }
 
