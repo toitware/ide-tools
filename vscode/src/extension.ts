@@ -15,7 +15,6 @@ import { createStartSimCommand, createStopSimCommand } from "./toitSimulator";
 import { createUninstallCommand } from "./toitUninstall";
 import { Context, revealDevice } from "./utils";
 import cp = require("child_process");
-import compareVersions = require("compare-versions");
 
 async function checkToitCLI(ctx: Context): Promise<boolean> {
   return new Promise<boolean>( (resolve) => {
