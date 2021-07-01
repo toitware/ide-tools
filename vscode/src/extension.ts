@@ -21,9 +21,7 @@ const MIN_TOIT_VERSION = "1.7.0";
 
 async function checkToitCLI(ctx: Context): Promise<boolean> {
   try {
-    const stdout = cp.execFileSync(ctx.toitExec, [ "version", "-o", "json" ]);
-    const versionJSON = JSON.parse(stdout);
-    const version = clean(versionJSON?.version);
+    const version = clean(cp.execFileSync(ctx.toitExec, [ "version", "-o", "short" ]));
     if (!version || gt(MIN_TOIT_VERSION, version)) {
       invalidCLIVersionPrompt(ctx, version);
       return false;
@@ -32,8 +30,6 @@ async function checkToitCLI(ctx: Context): Promise<boolean> {
   } catch (err) {
     if (err?.code === "ENOENT") {
       missingCLIPrompt();
-    } else {
-      invalidCLIVersionPrompt(ctx);
     }
     return false;
   }
