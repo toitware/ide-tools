@@ -2,6 +2,7 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file.
 
+import { clean, gt } from "semver";
 import { commands as Commands, env, ExtensionContext, Uri, window as Window } from "vscode";
 import { activateTreeView, deactivateTreeView } from "./deviceView";
 import { activateLsp, deactivateLsp } from "./lspClient";
@@ -16,15 +17,35 @@ import { createUninstallCommand } from "./toitUninstall";
 import { Context, revealDevice } from "./utils";
 import cp = require("child_process");
 
+const MIN_TOIT_VERSION = "1.7.0";
+
 async function checkToitCLI(ctx: Context): Promise<boolean> {
-  return new Promise<boolean>( (resolve) => {
-    cp.execFile(ctx.toitExec, [ "version", "-o", "json" ], (err) => {
-      if (err?.code === "ENOENT") {
-        return resolve(false);
-      }
-      resolve(true);
-    });
-  });
+  try {
+    const stdout = cp.execFileSync(ctx.toitExec, [ "version", "-o", "json" ]);
+    const versionJSON = JSON.parse(stdout);
+    const version = clean(versionJSON?.version);
+    if (!version || gt(MIN_TOIT_VERSION, version)) {
+      invalidCLIVersionPrompt(ctx, version);
+      return false;
+    }
+
+  } catch (err) {
+    if (err?.code === "ENOENT") {
+      missingCLIPrompt();
+    } else {
+      invalidCLIVersionPrompt(ctx);
+    }
+    return false;
+  }
+  return true;
+}
+
+async function invalidCLIVersionPrompt(ctx: Context, version?: string | null): Promise<void> {
+  const updateToitAction = "Update toit executable";
+  const action = await Window.showErrorMessage(`Toit executable${version ? ` ${version}` : ""} is outdated. Please update the executable to use the extension (reload window to activate the extension).`, updateToitAction);
+  if (action === updateToitAction) {
+    cp.execFileSync(ctx.toitExec, ["update"]);
+  }
 }
 
 async function missingCLIPrompt() {
@@ -40,11 +61,8 @@ async function missingCLIPrompt() {
 
 export async function activate(extContext: ExtensionContext): Promise<void> {
   const ctx = new Context();
-  const toitCLI = await checkToitCLI(ctx);
-  if (!toitCLI) {
-    missingCLIPrompt();
-    return;
-  }
+  if (!await checkToitCLI(ctx)) return;
+
 
   Commands.executeCommand("setContext", "toit.extensionActive", true);
 
