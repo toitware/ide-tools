@@ -17,8 +17,6 @@ import { Context, revealDevice } from "./utils";
 import cp = require("child_process");
 import compareVersions = require("compare-versions");
 
-const MIN_TOIT_VERSION = "1.7.0";
-
 async function checkToitCLI(ctx: Context): Promise<boolean> {
   return new Promise<boolean>( (resolve) => {
     cp.execFile(ctx.toitExec, [ "version", "-o", "json" ], (err) => {
