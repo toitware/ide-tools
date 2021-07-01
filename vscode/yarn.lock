@@ -113,10 +113,10 @@
   "resolved" "https://registry.npmjs.org/@types/mocha/-/mocha-5.2.7.tgz"
   "version" "5.2.7"
 
-"@types/node@*", "@types/node@^12.20.7":
-  "integrity" "sha512-F6S4Chv4JicJmyrwlDkxUdGNSplsQdGwp1A0AJloEVDirWdZOAiRHhovDlsFkKUrquUXhz1imJhXHsf59auyAg=="
-  "resolved" "https://registry.npmjs.org/@types/node/-/node-12.20.15.tgz"
-  "version" "12.20.15"
+"@types/node@*", "@types/node@^14.17.1":
+  "integrity" "sha512-8kQ3+wKGRNN0ghtEn7EGps/B8CzuBz1nXZEIGGLP2GnwbqYn4dbTs7k+VKLTq1HvZLRCIDtN3Snx1Ege8B7L5A=="
+  "resolved" "https://registry.npmjs.org/@types/node/-/node-14.17.4.tgz"
+  "version" "14.17.4"
 
 "@types/vscode@^1.55.0":
   "integrity" "sha512-FeznBFtIDCWRluojTsi9c3LLcCHOXP5etQfBK42+ixo1CoEAchkw39tuui9zomjZuKfUVL33KZUDIwHZ/xvOkQ=="
@@ -726,6 +726,11 @@
   "integrity" "sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw=="
   "resolved" "https://registry.npmjs.org/commander/-/commander-7.2.0.tgz"
   "version" "7.2.0"
+
+"compare-versions@^3.6.0":
+  "integrity" "sha512-W6Af2Iw1z4CB7q4uU4hv646dW9GQuBM+YpC0UvUCWSD8w90SJjp+ujJuXaEMtAXBtSqGfMPuFOVn4/+FlaqfBA=="
+  "resolved" "https://registry.npmjs.org/compare-versions/-/compare-versions-3.6.0.tgz"
+  "version" "3.6.0"
 
 "concat-map@0.0.1":
   "integrity" "sha1-2Klr13/Wjfd5OnMDajug1UBdR3s="
