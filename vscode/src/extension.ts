@@ -32,8 +32,8 @@ async function checkToitCLI(ctx: Context): Promise<boolean> {
 
 async function missingCLIPrompt() {
   const installAction = "Install";
-  const settingsAction = "UpdateSettings";
-  const action = await Window.showErrorMessage("Could not find `toit`. Please make sure `toit` is installed and set the toitPath setting to the executable (reload the window to activate the extension).", installAction, settingsAction);
+  const settingsAction = "Update settings";
+  const action = await Window.showErrorMessage("Could not find the `toit` executable. Please make sure `toit` is installed and set the toit.Path setting to the executable (reload the window to activate the extension).", installAction, settingsAction);
   if (action === installAction) {
     env.openExternal(Uri.parse("https://docs.toit.io/getstarted/installation"));
   } else if (action === settingsAction) {
