@@ -2,6 +2,7 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file.
 
+import { clean, gt } from "semver";
 import { commands as Commands, env, ExtensionContext, Uri, window as Window } from "vscode";
 import { activateTreeView, deactivateTreeView } from "./deviceView";
 import { activateLsp, deactivateLsp } from "./lspClient";
@@ -16,15 +17,31 @@ import { createUninstallCommand } from "./toitUninstall";
 import { Context, revealDevice } from "./utils";
 import cp = require("child_process");
 
+const MIN_TOIT_VERSION = "1.7.0";
+
 async function checkToitCLI(ctx: Context): Promise<boolean> {
-  return new Promise<boolean>( (resolve) => {
-    cp.execFile(ctx.toitExec, [ "version", "-o", "json" ], (err) => {
-      if (err?.code === "ENOENT") {
-        return resolve(false);
-      }
-      resolve(true);
-    });
-  });
+  try {
+    const version = clean(cp.execFileSync(ctx.toitExec, [ "version", "-o", "short" ]));
+    if (!version || gt(MIN_TOIT_VERSION, version)) {
+      invalidCLIVersionPrompt(ctx, version);
+      return false;
+    }
+
+  } catch (err) {
+    if (err?.code === "ENOENT") {
+      missingCLIPrompt();
+    }
+    return false;
+  }
+  return true;
+}
+
+async function invalidCLIVersionPrompt(ctx: Context, version?: string | null): Promise<void> {
+  const updateToitAction = "Update toit executable";
+  const action = await Window.showErrorMessage(`Toit executable${version ? ` ${version}` : ""} is outdated. Please update the executable to use the extension (reload window to activate the extension).`, updateToitAction);
+  if (action === updateToitAction) {
+    cp.execFileSync(ctx.toitExec, ["update"]);
+  }
 }
 
 async function missingCLIPrompt() {
@@ -40,31 +57,27 @@ async function missingCLIPrompt() {
 
 export async function activate(extContext: ExtensionContext): Promise<void> {
   const ctx = new Context();
-  const toitCLI = await checkToitCLI(ctx);
-  if (!toitCLI) {
-    missingCLIPrompt();
-    return;
+  if (await checkToitCLI(ctx)) {
+    Commands.executeCommand("setContext", "toit.extensionActive", true);
+
+    activateTreeView(ctx);
+    activateSerialView(ctx);
+
+    extContext.subscriptions.push(Commands.registerCommand("toit.serialProvision", createSerialProvision(ctx)));
+    extContext.subscriptions.push(Commands.registerCommand("toit.serialMonitor", createSerialMonitor(ctx)));
+    extContext.subscriptions.push(Commands.registerCommand("toit.ensureAuth", createEnsureAuth(ctx)));
+    extContext.subscriptions.push(Commands.registerCommand("toit.refreshDeviceView", () => ctx.refreshDeviceView()));
+    extContext.subscriptions.push(Commands.registerCommand("toit.refreshSerialView", () => ctx.refreshSerialView()));
+    extContext.subscriptions.push(Commands.registerCommand("toit.uninstallApp", createUninstallCommand(ctx)));
+    extContext.subscriptions.push(Commands.registerCommand("toit.devRun", createRunCommand(ctx)));
+    extContext.subscriptions.push(Commands.registerCommand("toit.devDeploy", createDeployCommand(ctx)));
+    extContext.subscriptions.push(Commands.registerCommand("toit.setOrganization", createSetOrgCommand(ctx)));
+    extContext.subscriptions.push(Commands.registerCommand("toit.stopSimulator", createStopSimCommand(ctx)));
+    extContext.subscriptions.push(Commands.registerCommand("toit.startSimulator", createStartSimCommand(ctx)));
+    extContext.subscriptions.push(Commands.registerCommand("toit.revealDevice", async(hwID) => await revealDevice(ctx, hwID)));
+
+    activateToitStatusBar(ctx, extContext);
   }
-
-  Commands.executeCommand("setContext", "toit.extensionActive", true);
-
-  activateTreeView(ctx);
-  activateSerialView(ctx);
-
-  extContext.subscriptions.push(Commands.registerCommand("toit.serialProvision", createSerialProvision(ctx)));
-  extContext.subscriptions.push(Commands.registerCommand("toit.serialMonitor", createSerialMonitor(ctx)));
-  extContext.subscriptions.push(Commands.registerCommand("toit.ensureAuth", createEnsureAuth(ctx)));
-  extContext.subscriptions.push(Commands.registerCommand("toit.refreshDeviceView", () => ctx.refreshDeviceView()));
-  extContext.subscriptions.push(Commands.registerCommand("toit.refreshSerialView", () => ctx.refreshSerialView()));
-  extContext.subscriptions.push(Commands.registerCommand("toit.uninstallApp", createUninstallCommand(ctx)));
-  extContext.subscriptions.push(Commands.registerCommand("toit.devRun", createRunCommand(ctx)));
-  extContext.subscriptions.push(Commands.registerCommand("toit.devDeploy", createDeployCommand(ctx)));
-  extContext.subscriptions.push(Commands.registerCommand("toit.setOrganization", createSetOrgCommand(ctx)));
-  extContext.subscriptions.push(Commands.registerCommand("toit.stopSimulator", createStopSimCommand(ctx)));
-  extContext.subscriptions.push(Commands.registerCommand("toit.startSimulator", createStartSimCommand(ctx)));
-  extContext.subscriptions.push(Commands.registerCommand("toit.revealDevice", async(hwID) => await revealDevice(ctx, hwID)));
-
-  activateToitStatusBar(ctx, extContext);
   activateLsp(extContext);
 }
 

@@ -270,6 +270,7 @@
         "@types/glob": "^7.1.1",
         "@types/mocha": "^5.2.6",
         "@types/node": "^14.17.1",
+        "@types/semver": "^7.3.5",
         "@types/vscode": "^1.55.0",
         "@typescript-eslint/eslint-plugin": "^4.24.0",
         "@typescript-eslint/parser": "^4.24.0",
@@ -286,6 +287,7 @@
     },
     "dependencies": {
         "ovsx": "^0.2.0",
+        "semver": "^7.3.5",
         "vsce": "^1.77.0",
         "vscode-languageclient": "^5.2.1",
         "vscode-test": "^1.5.2"
