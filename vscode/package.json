@@ -292,7 +292,6 @@
     "dependencies": {
         "ovsx": "^0.2.0",
         "semver": "^7.3.5",
-        "update": "^0.4.2",
         "vsce": "^1.77.0",
         "vscode-languageclient": "^5.2.1",
         "vscode-test": "^1.5.2"
