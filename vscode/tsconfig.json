@@ -6,13 +6,21 @@
         "lib": [
             "es6"
         ],
+        "types": ["jest"],
         "sourceMap": true,
-        "rootDir": "src",
         "strict": true,
         "noFallthroughCasesInSwitch": true,
-        "noUnusedParameters": true
+        "noUnusedParameters": true,
+        "resolveJsonModule": true,
+        "allowJs": true,
+        "checkJs": false
     },
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "build",
+        "dist",
+        "out",
+        "src/**/*.js",
+        "src/**/*.jsx"
     ]
 }

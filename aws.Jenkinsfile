@@ -21,7 +21,7 @@ pipeline {
         stage('install') {
           steps {
             dir('vscode') {
-              sh 'yarn install'
+              sh 'npm install'
             }
           }
         }
@@ -29,7 +29,7 @@ pipeline {
         stage('lint') {
           steps {
             dir('vscode') {
-              sh 'yarn lint'
+              sh 'npm run lint'
             }
           }
         }
@@ -40,14 +40,14 @@ pipeline {
                 sh """
                   export DISPLAY=':99.0'
                   /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-                  yarn jenkins-test
+                  npm run jenkins-test
                   """
             }
           }
           post {
             always {
               dir("vscode") {
-                junit "vscode_test.xml"
+                junit "junit.xml"
               }
             }
           }
@@ -56,7 +56,7 @@ pipeline {
         stage('compile') {
           steps {
             dir('vscode') {
-              sh 'yarn compile-prod'
+              sh 'npm run compile-prod'
             }
           }
         }
@@ -65,7 +65,7 @@ pipeline {
           steps {
             dir('vscode') {
               sh "npm version ${NIGHTLY_VERSION} --allow-same-version"
-              sh "yarn package"
+              sh "npm run package"
             }
           }
           post {
@@ -85,11 +85,11 @@ pipeline {
           steps {
             dir('vscode') {
               withCredentials([string(credentialsId: 'leon-azure-access-token', variable: 'AZURE_TOKEN')]) {
-                sh 'yarn run vsce publish --baseImagesUrl https://github.com/toitware/ide-tools/raw/master/vscode/ -p $AZURE_TOKEN $BUILD_VERSION'
+                sh 'npm run vsce publish --baseImagesUrl https://github.com/toitware/ide-tools/raw/master/vscode/ -p $AZURE_TOKEN $BUILD_VERSION'
               }
 
               withCredentials([string(credentialsId: 'leon-open-vsx-access-token', variable: 'OPEN_VSX_TOKEN')]) {
-                sh 'yarn run ovsx publish --baseImagesUrl https://github.com/toitware/ide-tools/raw/master/vscode/ -p $OPEN_VSX_TOKEN'
+                sh 'npm run ovsx publish --baseImagesUrl https://github.com/toitware/ide-tools/raw/master/vscode/ -p $OPEN_VSX_TOKEN'
               }
             }
           }

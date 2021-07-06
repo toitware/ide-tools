@@ -26,7 +26,6 @@ async function checkToitCLI(ctx: Context): Promise<boolean> {
       invalidCLIVersionPrompt(ctx, version);
       return false;
     }
-
   } catch (err) {
     if (err?.code === "ENOENT") {
       missingCLIPrompt();
