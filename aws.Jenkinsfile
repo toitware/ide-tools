@@ -75,26 +75,6 @@ pipeline {
           }
         }
 
-        stage('upload') {
-          when {
-            anyOf {
-              branch 'master'
-              branch pattern: "release-v\\d+.\\d+", comparator: 'REGEXP'
-              tag 'v*'
-            }
-          }
-
-          steps {
-            dir('vscode') {
-              withCredentials([[$class: 'FileBinding', credentialsId: 'gcloud-service-auth', variable: 'GOOGLE_APPLICATION_CREDENTIALS']]) {
-                sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
-                sh 'gcloud config set project infrastructure-220307'
-                sh "FILEEXT=vsix toitarchive toit-${NIGHTLY_VERSION}.vsix toit-archive toit-vscode $BUILD_VERSION"
-              }
-            }
-          }
-        }
-
         stage("publish") {
           when {
             anyOf {
