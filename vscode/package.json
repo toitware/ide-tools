@@ -5,8 +5,9 @@
     "publisher": "toit",
     "version": "1.1.0",
     "license": "MIT",
+    "type": "commonjs",
     "engines": {
-        "vscode": "^1.55.0"
+        "vscode": "^1.44.0"
     },
     "categories": [
         "Programming Languages"
@@ -260,7 +261,7 @@
         "watch": "webpack --mode development --watch",
         "test-watch": "tsc -p ./ -watch",
         "test-compile": "tsc -p ./",
-        "jenkins-test": "tsc -p ./ && node ./out/test/runTest.js",
+        "jenkins-test": "tsc -p ./ && ts-node ./test/runTest.ts",
         "test": "jest",
         "test:jenkins": "jest --ci --reporters=jest-junit",
         "lint": "eslint src --ext ts",
@@ -277,7 +278,7 @@
         "@types/jest": "^26.0.23",
         "@types/node": "^14.17.1",
         "@types/semver": "^7.3.5",
-        "@types/vscode": "^1.55.0",
+        "@types/vscode": "^1.44.0",
         "@typescript-eslint/eslint-plugin": "^4.24.0",
         "@typescript-eslint/parser": "^4.24.0",
         "babel-jest": "^27.0.6",
