@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="0.0000" tests="1" failures="0">
+  <testsuite name="" timestamp="2021-06-30T06:54:24" tests="0" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Root Suite.Extension Test Suite" timestamp="2021-06-30T06:54:24" tests="1" file="/home/lau/toitware/ide-tools/vscode/out/test/suite/extension.test.js" time="0.0000" failures="0">
+    <testcase name="Sample test" time="0.0000" classname="Extension Test Suite">
+    </testcase>
+  </testsuite>
+</testsuites>
