@@ -47,7 +47,7 @@ pipeline {
           post {
             always {
               dir("vscode") {
-                junit "vscode_test.xml"
+                junit "junit.xml"
               }
             }
           }

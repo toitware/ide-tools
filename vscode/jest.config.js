@@ -15,5 +15,6 @@ module.exports = {
   "modulePaths": ["<rootDir>"],
   "moduleNameMapper": {
     "vscode": path.join(__dirname, "test", "setup", "vscode.js")
-  }
+  },
+  "reporters": [ "default", "jest-junit" ]
 };
