@@ -25,7 +25,7 @@ export class SerialProvider implements TreeDataProvider<TreeItem> {
     this.context = ctx;
   }
 
-  getParent(_element: TreeItem): TreeItem | undefined {
+  getParent(): TreeItem | undefined {
     return undefined;
   }
 
