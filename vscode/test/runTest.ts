@@ -20,8 +20,7 @@ async function main() {
     await runTests({
       "version": vscodeVersion,
       extensionDevelopmentPath,
-      extensionTestsPath,
-      "launchArgs": ["--disable-extensions"]
+      extensionTestsPath
     });
   } catch (err) {
     console.error("Failed to run tests", err);
