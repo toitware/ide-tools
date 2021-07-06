@@ -1,2 +1,1 @@
-
 module.exports = global.vscode;

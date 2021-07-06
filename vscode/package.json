@@ -262,8 +262,6 @@
         "test-watch": "tsc -p ./ -watch",
         "test-compile": "tsc -p ./",
         "jenkins-test": "tsc -p ./ && ts-node ./test/runTest.ts",
-        "test": "jest",
-        "test:jenkins": "jest --ci --reporters=jest-junit",
         "lint": "eslint src --ext ts",
         "lint-fix": "eslint src --ext ts --fix",
         "package": "vsce package --yarn",
