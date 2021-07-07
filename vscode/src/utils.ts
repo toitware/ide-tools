@@ -2,9 +2,9 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file.
 
-import { promisify } from "util";
 import { InputBoxOptions, OutputChannel, QuickPickItem, StatusBarItem, Terminal, TreeItem, TreeView, window as Window, workspace as Workspace } from "vscode";
 import { App, ConsoleApp } from "./app";
+import { toitExecFile, toitExecFilePromise } from "./cli";
 import { ConsoleDevice, ConsoleDeviceInfo, Device, DeviceInfo, RelatedDevice } from "./device";
 import { DeviceProvider } from "./deviceView";
 import { ConsoleOrganization, Organization } from "./org";
@@ -12,8 +12,6 @@ import { updateStatus } from "./organization";
 import { ConsoleSerialInfo, SerialInfo, SerialPort } from "./serialPort";
 import { SerialProvider } from "./serialView";
 import cp = require("child_process");
-const execFile = promisify(cp.execFile);
-
 export class Context {
   statusBar?: StatusBarItem;
   deviceProvider?: DeviceProvider;
@@ -139,7 +137,7 @@ class DeviceOutput {
 
     this.output = Window.createOutputChannel(`Toit (${this.device.name})`);
     this.output.show(true);
-    this.childProcess = cp.execFile(this.context.toitExec, [ "dev", "-d", this.device.deviceID, "logs" ]);
+    this.childProcess = toitExecFile(this.context, "dev", "-d", this.device.deviceID, "logs" );
     this.childProcess.stdout?.on("data", data => this.output?.append(data));
     this.childProcess.stderr?.on("data", data => this.output?.append(data));
   }
@@ -156,8 +154,7 @@ class DeviceOutput {
 }
 
 export async function listApps(ctx: Context, device: Device): Promise<App[]> {
-  const cmdArgs =  [ "dev", "-d", device.deviceID, "ps", "-o", "json" ];
-  const { stdout } = await execFile(ctx.toitExec, cmdArgs);
+  const { stdout } = await toitExecFilePromise(ctx, "dev", "-d", device.deviceID, "ps", "-o", "json");
   return stdout.split("\n").
     filter(str => str !== "").
     map(json => JSON.parse(json) as ConsoleApp).
@@ -179,8 +176,8 @@ class DeviceItem implements QuickPickItem, RelatedDevice {
 }
 
 export async function listDevices(ctx: Context): Promise<DeviceItem[]> {
-  const jsonAll = await execFile(ctx.toitExec, [ "devices", "--names", "-o", "json" ]);
-  return jsonAll.stdout.split("\n").
+  const { stdout } = await toitExecFilePromise(ctx, "devices", "--names", "-o", "json" );
+  return stdout.split("\n").
     filter(str => str !== "").
     map(json => JSON.parse(json) as ConsoleDevice).
     map(device => new DeviceItem(device));
@@ -213,7 +210,7 @@ export async function selectDevice(ctx: Context, config: SelectOptions): Promise
 
 export async function login(ctx: Context): Promise<boolean> {
   // TODO add timeout.
-  await execFile(ctx.toitExec, [ "auth", "login" ]);
+  await toitExecFilePromise(ctx, "auth", "login" );
   if (await isAuthenticated(ctx)) {
     ctx.refreshViews();
     updateStatus(ctx);
@@ -224,7 +221,7 @@ export async function login(ctx: Context): Promise<boolean> {
 }
 
 async function authInfo(ctx: Context): Promise<AuthInfo> {
-  const { stdout } = await execFile(ctx.toitExec, [ "auth", "info", "-s", "-o", "json" ]);
+  const { stdout } = await toitExecFilePromise(ctx, "auth", "info", "-s", "-o", "json" );
   return JSON.parse(stdout);
 }
 
@@ -247,7 +244,7 @@ export async function isAuthenticated(ctx: Context): Promise<boolean> {
 }
 
 async function consoleContext(ctx: Context): Promise<string> {
-  const { stdout } = await execFile(ctx.toitExec, [ "context", "default" ]);
+  const { stdout } = await toitExecFilePromise(ctx, "context", "default" );
   return stdout.trim();
 }
 
@@ -298,7 +295,7 @@ export function currentFilePath(suffix: string): string {
 }
 
 export async function listPorts(ctx: Context): Promise<string[]> {
-  const { stdout } = await execFile(ctx.toitExec, [ "serial", "ports" ]);
+  const { stdout } = await toitExecFilePromise(ctx, "serial", "ports" );
   if (stdout.startsWith("No serial ports detected.")) return [];
   return stdout.split("\n").filter(str => str !== "");
 }
@@ -328,7 +325,7 @@ function preferElement<T>(index: number, list: T[]): void {
 }
 
 export async function uninstallApp(ctx: Context, app: App): Promise<void> {
-  await execFile(ctx.toitExec, [ "dev", "-d", app.deviceID, "uninstall", app.jobID ]);
+  await toitExecFilePromise(ctx, "dev", "-d", app.deviceID, "uninstall", app.jobID );
 }
 
 class OrganizationItem extends Organization implements QuickPickItem {
@@ -342,7 +339,7 @@ class OrganizationItem extends Organization implements QuickPickItem {
 
 export async function getOrganization(ctx: Context): Promise<string | undefined> {
   if (!await isAuthenticated(ctx)) return undefined;
-  const { stdout } = await execFile(ctx.toitExec, [ "org", "get" ]);
+  const { stdout } = await toitExecFilePromise(ctx, "org", "get" );
   // The output of the command if of the form:
   // Logged in to Toitware
   // 01234567890123
@@ -352,9 +349,7 @@ export async function getOrganization(ctx: Context): Promise<string | undefined>
 
 
 async function listOrganizations(ctx: Context): Promise<OrganizationItem[]> {
-  // TODO(Lau): change this when is_active is part of json.
-  const cmdArgs =  [ "org", "list", "-o", "json" ];
-  const { stdout } = await execFile(ctx.toitExec, cmdArgs);
+  const { stdout } = await toitExecFilePromise(ctx, "org", "list", "-o", "json");
   return stdout.split("\n").
     filter(str => str !== "").
     map(json => JSON.parse(json) as ConsoleOrganization).
@@ -367,8 +362,7 @@ export async function selectOrganization(ctx: Context): Promise<Organization | u
 }
 
 export async function setOrganization(ctx: Context, org: Organization): Promise<void> {
-  const cmdArgs =  [ "org", "use", org.organizationID ];
-  await execFile(ctx.toitExec, cmdArgs);
+  await toitExecFilePromise(ctx, "org", "use", org.organizationID);
 }
 
 export function getToitPath(): string {
@@ -377,14 +371,13 @@ export function getToitPath(): string {
 
 export async function getFirmwareVersion(ctx: Context): Promise<string | undefined> {
   if (!await isAuthenticated(ctx)) return undefined;
-  const { stdout } = await execFile(ctx.toitExec, [ "firmware", "version", "-o", "short" ]);
+  const { stdout } = await toitExecFilePromise(ctx, "firmware", "version", "-o", "short" );
   return stdout.trimEnd();
 }
 
 export async function getSerialInfo(ctx: Context, port: SerialPort): Promise<SerialInfo | undefined> {
-  const cmdArgs =  [ "serial", "info", "--port", port.name ];
   try {
-    const { stdout } = await execFile(ctx.toitExec, cmdArgs);
+    const { stdout } = await toitExecFilePromise(ctx, "serial", "info", "--port", port.name );
     const serialInfo = JSON.parse(stdout) as ConsoleSerialInfo;
     const deviceInfo = await getDeviceInfo(ctx, serialInfo.hardware_id);
     return new SerialInfo(serialInfo, deviceInfo);
@@ -394,9 +387,8 @@ export async function getSerialInfo(ctx: Context, port: SerialPort): Promise<Ser
 }
 
 export async function getDeviceInfo(ctx: Context, hwid: string): Promise<DeviceInfo | undefined> {
-  const cmdArgs =  [ "device", "info", "--hardware", hwid, "-o", "json" ];
   try {
-    const { stdout } = await execFile(ctx.toitExec, cmdArgs);
+    const { stdout } = await toitExecFilePromise(ctx, "device", "info", "--hardware", hwid, "-o", "json");
     return new DeviceInfo(JSON.parse(stdout) as ConsoleDeviceInfo);
   } catch(e) {
     return undefined;
