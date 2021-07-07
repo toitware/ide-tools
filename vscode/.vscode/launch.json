@@ -14,16 +14,16 @@
       "preLaunchTask": "npm: test-watch"
     },
     {
+      "name": "Launch Extension",
+      "type": "extensionHost",
+      "request": "launch",
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}"
       ],
-      "name": "Launch Extension",
       "outFiles": [
         "${workspaceFolder}/out/**/*.js"
       ],
       "preLaunchTask": "npm: compile",
-      "request": "launch",
-      "type": "extensionHost"
     }
   ]
 }
