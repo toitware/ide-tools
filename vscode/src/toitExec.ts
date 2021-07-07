@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import { window as Window } from "vscode";
-import { toitExecFile, toitSpawn } from "./cli";
+import { toitExecFilePromise, toitSpawn } from "./cli";
 import { Device } from "./device";
 import { } from "./deviceView";
 import { Context, ensureAuth, selectDevice } from "./utils";
@@ -61,7 +61,7 @@ async function executeDeployCommand(ctx: Context, device?: Device) {
 
   try {
     ctx.startDeviceOutput(device);
-    await toitExecFile(ctx, "dev", "-d", device.name, "deploy", filePath );
+    await toitExecFilePromise(ctx, "dev", "-d", device.name, "deploy", filePath );
     ctx.refreshDeviceView(device);
     ctx.setLastFile(".yaml", filePath);
   } catch (e) {

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import { window as Window } from "vscode";
-import { toitExecFile } from "./cli";
+import { toitExecFilePromise } from "./cli";
 import { Device } from "./device";
 import { Context, ensureAuth, selectDevice } from "./utils";
 
@@ -16,7 +16,7 @@ async function executeStopCommand(ctx: Context, device?: Device) {
   if (!device.isSimulator) return Window.showErrorMessage("Non-simulator selected.");
 
   try {
-    await toitExecFile(ctx, "simulator", "stop", device.deviceID);
+    await toitExecFilePromise(ctx, "simulator", "stop", device.deviceID);
     ctx.refreshDeviceView(device);
   } catch (e) {
     Window.showErrorMessage(`Stop simulator failed: ${e.message}`);
@@ -40,7 +40,7 @@ async function executeStartCommand(ctx: Context) {
       args.push("--alias");
       args.push(name);
     }
-    const { stdout, stderr } = await toitExecFile(ctx, ...args);
+    const { stdout, stderr } = await toitExecFilePromise(ctx, ...args);
     ctx.toitOutput(stdout, stderr);
 
     ctx.refreshDeviceView();
