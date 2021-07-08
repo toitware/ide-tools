@@ -5,7 +5,7 @@ import { Context } from "./utils";
 const execFile = promisify(cp.execFile);
 
 export function toitExecFileSync(ctx: Context, ...args: string[]): string {
-  return cp.execFileSync(ctx.toitExec, args);
+  return cp.execFileSync(ctx.toitExec, args, {"encoding": "utf8"});
 }
 
 export function toitExecFilePromise(ctx: Context, ...args: string[]): Promise<{stdout: string, stderr: string}> {
