@@ -161,7 +161,7 @@ export async function listApps(ctx: Context, device: Device): Promise<App[]> {
     map(app => new App(app, device));
 }
 
-class DeviceItem implements QuickPickItem, RelatedDevice {
+export class DeviceItem implements QuickPickItem, RelatedDevice {
   dev: Device;
   label: string;
 
