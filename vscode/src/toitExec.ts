@@ -2,13 +2,11 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file.
 
-import { promisify } from "util";
 import { window as Window } from "vscode";
+import { toitExecFilePromise, toitSpawn } from "./cli";
 import { Device } from "./device";
 import { } from "./deviceView";
 import { Context, ensureAuth, selectDevice } from "./utils";
-import cp = require("child_process");
-const execFile = promisify(cp.execFile);
 
 
 function currentFilePath(ctx: Context, suffix: string): string {
@@ -40,7 +38,7 @@ async function executeRunCommand(ctx: Context, device?: Device) {
 
   try {
     ctx.startDeviceOutput(device);
-    cp.spawn(ctx.toitExec, [ "dev", "-d", device.name, "run", filePath ]);
+    toitSpawn(ctx, "dev", "-d", device.name, "run", filePath );
     ctx.setLastFile(".toit", filePath);
   } catch (e) {
     Window.showErrorMessage(`Run app failed: ${e.message}`);
@@ -63,7 +61,7 @@ async function executeDeployCommand(ctx: Context, device?: Device) {
 
   try {
     ctx.startDeviceOutput(device);
-    await execFile(ctx.toitExec, [ "dev", "-d", device.name, "deploy", filePath ]);
+    await toitExecFilePromise(ctx, "dev", "-d", device.name, "deploy", filePath );
     ctx.refreshDeviceView(device);
     ctx.setLastFile(".yaml", filePath);
   } catch (e) {

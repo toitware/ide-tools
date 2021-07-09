@@ -2,12 +2,10 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file.
 
-import { promisify } from "util";
 import { window as Window } from "vscode";
+import { toitExecFilePromise } from "./cli";
 import { Device } from "./device";
 import { Context, ensureAuth, selectDevice } from "./utils";
-import cp = require("child_process");
-const execFile = promisify(cp.execFile);
 
 async function executeStopCommand(ctx: Context, device?: Device) {
   if (!await ensureAuth(ctx)) return;
@@ -18,7 +16,7 @@ async function executeStopCommand(ctx: Context, device?: Device) {
   if (!device.isSimulator) return Window.showErrorMessage("Non-simulator selected.");
 
   try {
-    await execFile(ctx.toitExec, [ "simulator", "stop", device.deviceID ]);
+    await toitExecFilePromise(ctx, "simulator", "stop", device.deviceID);
     ctx.refreshDeviceView(device);
   } catch (e) {
     Window.showErrorMessage(`Stop simulator failed: ${e.message}`);
@@ -42,7 +40,7 @@ async function executeStartCommand(ctx: Context) {
       args.push("--alias");
       args.push(name);
     }
-    const { stdout, stderr } = await execFile(ctx.toitExec, args);
+    const { stdout, stderr } = await toitExecFilePromise(ctx, ...args);
     ctx.toitOutput(stdout, stderr);
 
     ctx.refreshDeviceView();
