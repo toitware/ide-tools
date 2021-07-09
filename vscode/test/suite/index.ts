@@ -1,5 +1,5 @@
-import * as path from "path";
 import { runCLI } from "@jest/core";
+import * as path from "path";
 
 export function run(): Promise<void> {
   return new Promise<void>((c, e) => {
@@ -7,7 +7,7 @@ export function run(): Promise<void> {
     const projectRootPath = path.resolve(__dirname, "../../..");
     const config = path.join(projectRootPath, "jest.config.js");
 
-    runCLI({"config": config, "$0": "", "_": []}, [projectRootPath]).
+    runCLI({"config": config, "runInBand": true, "$0": "", "_": []}, [projectRootPath]).
       then((jestCLICallResult) => {
         jestCLICallResult.results.testResults.forEach((testResult) => {
           testResult.testResults.

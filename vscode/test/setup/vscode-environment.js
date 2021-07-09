@@ -1,4 +1,3 @@
-
 const NodeEnvironment = require("jest-environment-node");
 const vscode = require("vscode");
 
