@@ -18,7 +18,7 @@ export interface ConsoleDevice {
   is_active: boolean;
   is_simulator: boolean;
   name: string;
-  configure_firmware: string;
+  configured_firmware: string;
   last_seen: string;
   running_firmware: string;
   /* eslint-enable @typescript-eslint/naming-convention */
@@ -43,7 +43,7 @@ export class Device extends TreeItem implements RelatedDevice {
     this.deviceID = consoleDev.device_id;
     this.isSimulator = consoleDev.is_simulator;
     this.name = consoleDev.name;
-    this.configureFirmware = consoleDev.configure_firmware;
+    this.configureFirmware = consoleDev.configured_firmware;
     this.lastSeen = consoleDev.last_seen;
     this.runningFirmware = consoleDev.running_firmware;
 
