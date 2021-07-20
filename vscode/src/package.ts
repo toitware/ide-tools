@@ -21,7 +21,7 @@ export interface ConsoleDependency {
 
 export class Package {
   name: string;
-  description: string;
+  desc: string;
   license: string;
   url: string;
   version: string;
@@ -29,7 +29,7 @@ export class Package {
 
   constructor(pkg: ConsolePackage) {
     this.name = pkg.name;
-    this.description = pkg.description;
+    this.desc = pkg.description;
     this.license = pkg.license;
     this.url = pkg.url;
     this.version = pkg.version;
