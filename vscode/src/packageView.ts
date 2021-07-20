@@ -40,7 +40,7 @@ export class PackageProvider implements TreeDataProvider<TreeItem> {
     this.packages = [];
     packages.sort((a: Package, b: Package) => {
       if (a.name !== b.name) {
-        return a.name < b.name ? 1 : -1;
+        return a.name < b.name ? -1 : 1;
       }
       return compare(b.version, a.version);
     });
