@@ -29,7 +29,7 @@ export class Package extends TreeItem  {
   dependencies: ConsoleDependency[];
 
   constructor(pkg: ConsolePackage) {
-    super(pkg.name, TreeItemCollapsibleState.None);
+    super(pkg.name, TreeItemCollapsibleState.Collapsed);
     this.name = pkg.name;
     this.desc = pkg.description;
     this.license = pkg.license;
@@ -37,8 +37,19 @@ export class Package extends TreeItem  {
     this.version = pkg.version;
     this.dependencies = pkg.dependencies;
 
-    this.id = this.url + "@" + this.version;
+    this.id = this.url;
     this.contextValue = "package";
-    this.description = this.version;
+  }
+}
+
+export class Version extends TreeItem  {
+  pkg: Package;
+
+  constructor(pkg: Package) {
+    super(pkg.version, TreeItemCollapsibleState.None);
+    this.pkg = pkg;
+
+    this.id = pkg.url + "@" + pkg.version;
+    this.contextValue = "package-version";
   }
 }
