@@ -1,6 +1,6 @@
 
 export interface ConsolePackage {
-  // The JSON from console does not follow the naming-convention.
+  // The JSON from console may not follow the naming-convention.
   /* eslint-disable @typescript-eslint/naming-convention */
   name: string;
   description: string
@@ -12,7 +12,7 @@ export interface ConsolePackage {
 }
 
 export interface ConsoleDependency {
-  // The JSON from console does not follow the naming-convention.
+  // The JSON from console may not follow the naming-convention.
   /* eslint-disable @typescript-eslint/naming-convention */
   url: string
   version: string
