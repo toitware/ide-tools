@@ -12,7 +12,7 @@ export function toitExecFilePromise(ctx: Context, ...args: string[]): Promise<{s
   let exec = ctx.toitExec;
   if (args.length > 0 && args[0] === "pkg") {
     exec = ctx.pkgExec;
-    args.push("--cache", "~/.cache/toit/tpk/tmp/", "--config", "~/.config/toit/toit.yaml");
+    args.push("--cache", "$HOME/.cache/toit/tpk/tmp/", "--config", "$HOME/.config/toit/toit.yaml");
   }
   return execFile(exec, args);
 }
