@@ -85,14 +85,21 @@
             },
             {
                 "command": "toit.refreshDeviceView",
-                "title": "Refresh",
+                "title": "Refresh device view",
                 "category": "Toit",
                 "icon": "$(refresh)",
                 "enablement": "toit.extensionActive"
             },
             {
                 "command": "toit.refreshSerialView",
-                "title": "Refresh",
+                "title": "Refresh serial view",
+                "category": "Toit",
+                "icon": "$(refresh)",
+                "enablement": "toit.extensionActive"
+            },
+            {
+                "command": "toit.refreshPackageView",
+                "title": "Refresh package view",
                 "category": "Toit",
                 "icon": "$(refresh)",
                 "enablement": "toit.extensionActive"
@@ -148,6 +155,11 @@
                     "command": "toit.refreshSerialView",
                     "when": "view == toitSerialView",
                     "group": "navigation@1"
+                },
+                {
+                    "command": "toit.refreshPackageView",
+                    "when": "view == toitPackageView",
+                    "group": "navigation"
                 }
             ],
             "view/item/context": [
