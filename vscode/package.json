@@ -48,6 +48,12 @@
                     "name": "Serial Ports",
                     "when": "toit.extensionActive",
                     "visibility": "collapsed"
+                },
+                {
+                    "id": "toitPackageView",
+                    "name": "Packages",
+                    "when": "toit.extensionActive",
+                    "visibility": "collapsed"
                 }
             ]
         },

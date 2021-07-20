@@ -17,6 +17,7 @@ export class Context {
   statusBar?: StatusBarItem;
   deviceProvider?: DeviceProvider;
   deviceView?: TreeView<TreeItem>;
+  packageView?: TreeView<TreeItem>;
   serialProvider?: SerialProvider;
   lastSelectedDevice?: RelatedDevice;
   lastSelectedPort?: string;
@@ -26,6 +27,14 @@ export class Context {
   lastFiles: Map<string, string> = new Map();
   outputs: Map<string, DeviceOutput> = new Map();
   serials: Map<string, Terminal> = new Map();
+
+  getPackageView(): TreeView<TreeItem> | undefined {
+    return this.packageView;
+  }
+
+  setPackageView(packageView: TreeView<TreeItem>): void {
+    this.packageView = packageView;
+  }
 
   getDeviceView(): TreeView<TreeItem> | undefined {
     return this.deviceView;
