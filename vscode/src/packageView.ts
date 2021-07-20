@@ -38,6 +38,12 @@ export class PackageProvider implements TreeDataProvider<TreeItem> {
     const packages = await listPackages(this.context);
     this.versions = new Map<string, Version[]>();
     this.packages = [];
+    packages.sort((a: Package, b: Package) => {
+      if (a.name !== b.name) {
+        return a.name < b.name ? 1 : -1;
+      }
+      return compare(b.version, a.version);
+    });
     packages.forEach( (pkg: Package) => {
       if (!this.versions?.has(pkg.url)) {
         this.versions?.set(pkg.url, []);
@@ -45,9 +51,6 @@ export class PackageProvider implements TreeDataProvider<TreeItem> {
       }
       this.versions?.get(pkg.url)?.push(new Version(pkg));
     });
-    for (const versions of this.versions?.values()) {
-      versions.sort((a: Version, b: Version) => compare(a.pkg.version, b.pkg.version));
-    }
     return;
   }
 
