@@ -94,7 +94,7 @@ export class Context {
   }
 
   refreshPackageView(data?: TreeItem) : void {
-    this.serialProvider?.refresh(data);
+    this.packageProvider?.refresh(data);
   }
 
   lastDevice(): Device | undefined {
