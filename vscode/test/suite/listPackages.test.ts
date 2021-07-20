@@ -15,20 +15,28 @@ const mockedCLI = mocked(cli.toitExecFilePromise);
 
 
 describe("Packages list", () => {
+  const context = new Context();
   mockedCLI.mockResolvedValueOnce({
-    "stdout": "toit: github.com/toitware/registry:\n",
+    "stdout": "sync",
+    "stderr": ""
+  }).mockResolvedValueOnce({
+    "stdout": `toit: github.com/toitware/registry:\n`,
+    "stderr": ""
+  }).mockResolvedValueOnce({
+    "stdout": "sync",
     "stderr": ""
   }).mockResolvedValueOnce({
     "stdout": `toit: github.com/toitware/registry:\n${strPkg1}\n`,
+    "stderr": ""
+  }).mockResolvedValueOnce({
+    "stdout": "sync",
     "stderr": ""
   }).mockResolvedValue({
     "stdout": `toit: github.com/toitware/registry:\n${strPkg1}\n${strPkg2}\n${strPkg3}\n`,
     "stderr": ""
   });
-  const context = new Context();
   it("List no packages", () => expect(listPackages(context)).resolves.toStrictEqual([]));
 
   it("List one package", () => expect(listPackages(context)).resolves.toStrictEqual([new Package(pkg1)]));
-
   it("List three packages", () => expect(listPackages(context)).resolves.toStrictEqual([ new Package(pkg1), new Package(pkg2), new Package(pkg3) ]));
 });
