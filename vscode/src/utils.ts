@@ -9,6 +9,7 @@ import { ConsoleDevice, ConsoleDeviceInfo, Device, DeviceInfo, RelatedDevice } f
 import { DeviceProvider } from "./deviceView";
 import { ConsoleOrganization, Organization } from "./org";
 import { updateStatus } from "./organization";
+import { ConsolePackage, Package } from "./package";
 import { ConsoleSerialInfo, SerialInfo, SerialPort } from "./serialPort";
 import { SerialProvider } from "./serialView";
 import cp = require("child_process");
@@ -19,7 +20,8 @@ export class Context {
   serialProvider?: SerialProvider;
   lastSelectedDevice?: RelatedDevice;
   lastSelectedPort?: string;
-  toitExec : string = getToitPath();
+  toitExec: string = getToitPath();
+  pkgExec: string = Workspace.getConfiguration("toit").get("Pkg", "");
   toitOut?: OutputChannel;
   lastFiles: Map<string, string> = new Map();
   outputs: Map<string, DeviceOutput> = new Map();
@@ -404,4 +406,13 @@ export async function revealDevice(ctx: Context, hwid: string): Promise<void> {
     return; // TODO(Lau): Add warning or error message? Make sure to differentiate between hidden view and wrong org.
   }
   await ctx.getDeviceView()?.reveal(device, { "focus": true, "select": false, "expand": true });
+}
+
+export async function listPackages(ctx: Context): Promise<Package[]> {
+  await toitExecFilePromise(ctx, "pkg", "sync");
+  const { stdout } = await toitExecFilePromise(ctx, "pkg", "list", "-o", "json");
+  return stdout.split("\n").
+    filter(str => str !== "" && str.startsWith("{")).
+    map(json => JSON.parse(json) as ConsolePackage).
+    map(pkg => new Package(pkg));
 }

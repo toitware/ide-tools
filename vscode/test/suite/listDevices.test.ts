@@ -29,10 +29,5 @@ describe("Device list", () => {
 
   it("List one device", () => expect(listDevices(context)).resolves.toStrictEqual([new DeviceItem(device1)]));
 
-  mockedCLI.mockResolvedValue({
-    "stdout": `${strDevice1}\n${strDevice2}\n`,
-    "stderr": ""
-  });
-
   it("List two devices", () => expect(listDevices(context)).resolves.toStrictEqual([ new DeviceItem(device1), new DeviceItem(device2) ]));
 });
