@@ -9,7 +9,12 @@ export function toitExecFileSync(ctx: Context, ...args: string[]): string {
 }
 
 export function toitExecFilePromise(ctx: Context, ...args: string[]): Promise<{stdout: string, stderr: string}> {
-  return execFile(ctx.toitExec, args);
+  let exec = ctx.toitExec;
+  if (args.length > 0 && args[0] === "pkg") {
+    exec = ctx.pkgExec;
+    args.push("--cache", "~/.cache/toit/tpk/tmp/", "--config", "~/.config/toit/toit.yaml");
+  }
+  return execFile(exec, args);
 }
 
 export function toitExecFile(ctx: Context, ...args: string[]): cp.ChildProcess {

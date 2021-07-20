@@ -212,6 +212,12 @@
                     "default": "toit",
                     "description": "The path to 'toit' executable, e.g. `/usr/bin/toit`."
                 },
+                "toit.Pkg": {
+                    "type": "string",
+                    "default": "/home/lau/toitware/toit/tools/tpkg/build/tpkg",
+                    "description": "The path to 'toit' executable, e.g. `/usr/bin/toit`.",
+                    "toBeRemoved": "Remove when toit supports the correct tpkg output."
+                },
                 "toitLanguageServer.toitPath": {
                     "type": [
                         "string",
