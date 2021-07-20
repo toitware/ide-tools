@@ -409,9 +409,10 @@ export async function revealDevice(ctx: Context, hwid: string): Promise<void> {
 }
 
 export async function listPackages(ctx: Context): Promise<Package[]> {
-  const { stdout } = await toitExecFilePromise(ctx, "pkg", "list");
+  await toitExecFilePromise(ctx, "pkg", "sync");
+  const { stdout } = await toitExecFilePromise(ctx, "pkg", "list", "-o", "json");
   return stdout.split("\n").
-    filter(str => str !== "").
+    filter(str => str !== "" && str.startsWith("{")).
     map(json => JSON.parse(json) as ConsolePackage).
     map(pkg => new Package(pkg));
 }
