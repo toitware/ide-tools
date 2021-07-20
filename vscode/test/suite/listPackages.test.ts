@@ -16,13 +16,13 @@ const mockedCLI = mocked(cli.toitExecFilePromise);
 
 describe("Packages list", () => {
   mockedCLI.mockResolvedValueOnce({
-    "stdout": "\n",
+    "stdout": "toit: github.com/toitware/registry:\n",
     "stderr": ""
   }).mockResolvedValueOnce({
-    "stdout": `${strPkg1}\n`,
+    "stdout": `toit: github.com/toitware/registry:\n${strPkg1}\n`,
     "stderr": ""
   }).mockResolvedValue({
-    "stdout": `${strPkg1}\n${strPkg2}\n${strPkg3}\n`,
+    "stdout": `toit: github.com/toitware/registry:\n${strPkg1}\n${strPkg2}\n${strPkg3}\n`,
     "stderr": ""
   });
   const context = new Context();
