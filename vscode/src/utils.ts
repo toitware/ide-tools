@@ -2,7 +2,7 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file.
 
-import { InputBoxOptions, OutputChannel, QuickPickItem, StatusBarItem, Terminal, TreeItem, TreeView, window as Window, workspace as Workspace } from "vscode";
+import { ExtensionContext, InputBoxOptions, OutputChannel, QuickPickItem, StatusBarItem, Terminal, TreeItem, TreeView, window as Window, workspace as Workspace } from "vscode";
 import { App, ConsoleApp } from "./app";
 import { toitExecFile, toitExecFilePromise } from "./cli";
 import { ConsoleDevice, ConsoleDeviceInfo, Device, DeviceInfo, RelatedDevice } from "./device";
@@ -29,7 +29,15 @@ export class Context {
   lastFiles: Map<string, string> = new Map();
   outputs: Map<string, DeviceOutput> = new Map();
   serials: Map<string, Terminal> = new Map();
+  extensionContext?: ExtensionContext;
 
+  getExtensionContext(): ExtensionContext | undefined {
+    return this.extensionContext;
+  }
+
+  setExtensionContext(ctx: ExtensionContext): void {
+    this.extensionContext = ctx;
+  }
 
   getPackageView(): TreeView<TreeItem> | undefined {
     return this.packageView;

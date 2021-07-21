@@ -57,6 +57,7 @@ async function missingCLIPrompt() {
 
 export async function activate(extContext: ExtensionContext): Promise<void> {
   const ctx = new Context();
+  ctx.setExtensionContext(extContext);
   if (await checkToitCLI(ctx)) {
     Commands.executeCommand("setContext", "toit.extensionActive", true);
 
