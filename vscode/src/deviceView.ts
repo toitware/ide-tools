@@ -9,7 +9,7 @@ import { Context, isAuthenticated, listApps, listDevices } from "./utils";
 
 let viewRefresher: NodeJS.Timeout;
 
-export function activateTreeView(ctx: Context): void {
+export function activateDeviceView(ctx: Context): void {
   viewRefresher = setInterval(() => ctx.refreshDeviceView(), 60000);
   const deviceDataProvider = new DeviceProvider(ctx);
   const deviceView = Window.createTreeView("toitDeviceView", { "treeDataProvider": deviceDataProvider } );
@@ -17,7 +17,7 @@ export function activateTreeView(ctx: Context): void {
   ctx.setDeviceProvider(deviceDataProvider);
 }
 
-export function deactivateTreeView(): void {
+export function deactivateDeviceView(): void {
   clearInterval(viewRefresher);
 }
 export class DeviceProvider implements TreeDataProvider<TreeItem> {
