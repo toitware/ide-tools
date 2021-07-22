@@ -1,4 +1,4 @@
-import { TreeItem, TreeItemCollapsibleState } from "vscode";
+import { MarkdownString, TreeItem, TreeItemCollapsibleState } from "vscode";
 
 export interface ConsolePackage {
   // The JSON from console may not follow the naming-convention.
@@ -39,6 +39,24 @@ export class Package extends TreeItem  {
 
     this.id = this.url;
     this.contextValue = "package";
+    this.tooltip = new MarkdownString(Package.generateMarkdownString(this));
+  }
+
+  static generateMarkdownString(pkg: Package): string {
+    return `
+### ${pkg.name}
+[${pkg.url}](https://${pkg.url})
+
+--------------------------------
+#### Description
+
+${pkg.desc}
+
+--------------------------------
+#### License
+
+${pkg.license}
+`;
   }
 }
 
