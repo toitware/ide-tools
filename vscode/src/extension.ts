@@ -4,7 +4,7 @@
 
 import { clean, gt } from "semver";
 import { commands as Commands, env, ExtensionContext, Uri, window as Window } from "vscode";
-import { activateTreeView, deactivateTreeView } from "./deviceView";
+import { activateDeviceView, deactivateDeviceView } from "./deviceView";
 import { activateLsp, deactivateLsp } from "./lspClient";
 import { activateToitStatusBar, createSetOrgCommand } from "./organization";
 import { activatePackageView } from "./packageView";
@@ -60,7 +60,7 @@ export async function activate(extContext: ExtensionContext): Promise<void> {
   if (await checkToitCLI(ctx)) {
     Commands.executeCommand("setContext", "toit.extensionActive", true);
 
-    activateTreeView(ctx);
+    activateDeviceView(ctx);
     activateSerialView(ctx);
     activatePackageView(ctx);
 
@@ -85,6 +85,6 @@ export async function activate(extContext: ExtensionContext): Promise<void> {
 
 export function deactivate(): Thenable<void> {
   Commands.executeCommand("setContext", "toit.extensionActive", false);
-  deactivateTreeView();
+  deactivateDeviceView();
   return deactivateLsp();
 }
