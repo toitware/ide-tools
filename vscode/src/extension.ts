@@ -8,6 +8,7 @@ import { activateDeviceView, deactivateDeviceView } from "./deviceView";
 import { activateLsp, deactivateLsp } from "./lspClient";
 import { activateToitStatusBar, createSetOrgCommand } from "./organization";
 import { activatePackageView } from "./packageView";
+import { createInstallPkgCommand } from "./pkgManager";
 import { activateSerialView } from "./serialView";
 import { createEnsureAuth } from "./toitAuth";
 import { createDeployCommand, createRunCommand } from "./toitExec";
@@ -77,6 +78,7 @@ export async function activate(extContext: ExtensionContext): Promise<void> {
     extContext.subscriptions.push(Commands.registerCommand("toit.stopSimulator", createStopSimCommand(ctx)));
     extContext.subscriptions.push(Commands.registerCommand("toit.startSimulator", createStartSimCommand(ctx)));
     extContext.subscriptions.push(Commands.registerCommand("toit.revealDevice", async(hwID) => await revealDevice(ctx, hwID)));
+    extContext.subscriptions.push(Commands.registerCommand("toit.installPackage", createInstallPkgCommand(ctx)));
 
     activateToitStatusBar(ctx, extContext);
   }

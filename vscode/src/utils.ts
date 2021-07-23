@@ -437,3 +437,22 @@ export async function listPackages(ctx: Context): Promise<Package[]> {
     map(json => JSON.parse(json) as ConsolePackage).
     map(pkg => new Package(pkg));
 }
+
+export async function installPackage(ctx: Context, pkg: Package): Promise<void> {
+  const prefix = await Window.showInputBox({"prompt": "Enter prefix"});
+  const args = [];
+  if (prefix) {
+    ctx.toitOutput("add prefix\n");
+    args.push("--prefix");
+    args.push(prefix);
+  }
+  ctx.toitOutput(`call command '${pkg.url}'\n`);
+  const {stdout, stderr} = await toitExecFilePromise(ctx, "pkg", "install", pkg.url, ...args);
+  ctx.toitOutput("done\n");
+  if (stderr !== "") {
+    ctx.toitOutput("fail\n");
+    Window.showErrorMessage(`Failed to install toit package: ${stderr}.`);
+    return;
+  }
+  ctx.toitOutput(stdout);
+}

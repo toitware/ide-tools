@@ -84,6 +84,12 @@
                 "icon": "$(trash)"
             },
             {
+                "command": "toit.installPackage",
+                "title": "Install package",
+                "category": "Toit",
+                "icon": "$(plus)"
+            },
+            {
                 "command": "toit.refreshDeviceView",
                 "title": "Refresh device view",
                 "category": "Toit",
@@ -191,6 +197,11 @@
                 {
                     "command": "toit.stopSimulator",
                     "when": "view == toitDeviceView && viewItem == device-simulator",
+                    "group": "inline@0"
+                },
+                {
+                    "command": "toit.installPackage",
+                    "when": "view == toitPackageView && viewItem == package",
                     "group": "inline@0"
                 }
             ],
