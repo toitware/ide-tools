@@ -22,7 +22,7 @@ export class Context {
   toitExec : string = getToitPath();
   toitOut?: OutputChannel;
   lastFiles: Map<string, string> = new Map();
-  outputs: Map<string, DeviceOutput> = new Map();
+  logs: Map<string, DeviceLog> = new Map();
   serials: Map<string, Terminal> = new Map();
 
   getDeviceView(): TreeView<TreeItem> | undefined {
@@ -103,8 +103,8 @@ export class Context {
   }
 
   startDeviceOutput(device: Device): void {
-    if (!this.outputs.has(device.deviceID)) this.outputs.set(device.deviceID, new DeviceOutput(this, device));
-    const out = this.outputs.get(device.deviceID);
+    if (!this.logs.has(device.deviceID)) this.logs.set(device.deviceID, new DeviceLog(this, device));
+    const out = this.logs.get(device.deviceID);
     out?.start();
   }
 
@@ -118,7 +118,7 @@ export class Context {
   }
 }
 
-class DeviceOutput {
+class DeviceLog {
   context: Context;
   device: Device;
   childProcess?: cp.ChildProcess;
@@ -135,7 +135,7 @@ class DeviceOutput {
       return;
     }
 
-    this.output = Window.createOutputChannel(`Toit (${this.device.name})`);
+    this.output = Window.createOutputChannel(`Toit logs (${this.device.name})`);
     this.output.show(true);
     this.childProcess = toitExecFile(this.context, "dev", "-d", this.device.deviceID, "logs" );
     this.childProcess.stdout?.on("data", data => this.output?.append(data));

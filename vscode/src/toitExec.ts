@@ -38,7 +38,7 @@ async function executeRunCommand(ctx: Context, device?: Device) {
 
   try {
     ctx.startDeviceOutput(device);
-    toitSpawn(ctx, "dev", "-d", device.name, "run", filePath );
+    toitSpawn(ctx, "dev", "-d", device.name, "run", filePath);
     ctx.setLastFile(".toit", filePath);
   } catch (e) {
     Window.showErrorMessage(`Run app failed: ${e.message}`);
