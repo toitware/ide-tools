@@ -2,39 +2,29 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file.
 
-import { InputBoxOptions, QuickPickItem, StatusBarItem, TreeItem, TreeView, window as Window, workspace as Workspace } from "vscode";
+import { InputBoxOptions, QuickPickItem, StatusBarItem, window as Window, workspace as Workspace } from "vscode";
 import { App, ConsoleApp } from "./app";
 import { toitExecFilePromise } from "./cli";
 import { ConsoleDevice, ConsoleDeviceInfo, Device, DeviceInfo, RelatedDevice } from "./device";
-import { DeviceProvider } from "./deviceView";
 import { ConsoleOrganization, Organization } from "./org";
 import { updateStatus } from "./organization";
 import { Output } from "./output";
 import { ConsoleSerialInfo, SerialInfo, SerialPort } from "./serialPort";
-import { SerialProvider } from "./serialView";
+import { Views } from "./views";
 import cp = require("child_process");
+
 export class Context {
   statusBar?: StatusBarItem;
-  deviceProvider?: DeviceProvider;
-  deviceView?: TreeView<TreeItem>;
-  serialProvider?: SerialProvider;
   lastSelectedDevice?: RelatedDevice;
   lastSelectedPort?: string;
   toitExec : string = getToitPath();
   lastFiles: Map<string, string> = new Map();
   output: Output;
+  views: Views;
 
   constructor() {
     this.output = new Output(this);
-  }
-
-
-  getDeviceView(): TreeView<TreeItem> | undefined {
-    return this.deviceView;
-  }
-
-  setDeviceView(deviceView: TreeView<TreeItem>): void {
-    this.deviceView = deviceView;
+    this.views = new Views();
   }
 
   setStatusBar(sb: StatusBarItem): void {
@@ -51,31 +41,6 @@ export class Context {
 
   getLastFile(extension: string): string | undefined {
     return this.lastFiles.get(extension);
-  }
-
-  getDeviceProvider(): DeviceProvider | undefined {
-    return this.deviceProvider;
-  }
-
-  setDeviceProvider(provider: DeviceProvider) : void {
-    this.deviceProvider = provider;
-  }
-
-  setSerialProvider(provider: SerialProvider) : void {
-    this.serialProvider = provider;
-  }
-
-  refreshViews(): void {
-    this.refreshSerialView();
-    this.refreshDeviceView();
-  }
-
-  refreshDeviceView(data?: TreeItem) : void {
-    this.deviceProvider?.refresh(data);
-  }
-
-  refreshSerialView(data?: TreeItem) : void {
-    this.serialProvider?.refresh(data);
   }
 
   lastDevice(): Device | undefined {
@@ -156,7 +121,7 @@ export async function login(ctx: Context): Promise<boolean> {
   // TODO add timeout.
   await toitExecFilePromise(ctx, "auth", "login" );
   if (await isAuthenticated(ctx)) {
-    ctx.refreshViews();
+    ctx.views.refreshViews();
     updateStatus(ctx);
     return true;
   }
@@ -343,9 +308,9 @@ export async function revealDevice(ctx: Context, hwid: string): Promise<void> {
   const deviceInfo = await getDeviceInfo(ctx, hwid);
   if (!deviceInfo) return; // TODO Add warning or error message?
 
-  const device = await ctx.getDeviceProvider()?.getDevice(deviceInfo.deviceID);
+  const device = await ctx.views.getDeviceProvider()?.getDevice(deviceInfo.deviceID);
   if (!device) {
     return; // TODO(Lau): Add warning or error message? Make sure to differentiate between hidden view and wrong org.
   }
-  await ctx.getDeviceView()?.reveal(device, { "focus": true, "select": false, "expand": true });
+  await ctx.views.getDeviceView()?.reveal(device, { "focus": true, "select": false, "expand": true });
 }

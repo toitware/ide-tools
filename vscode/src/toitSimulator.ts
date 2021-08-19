@@ -17,7 +17,7 @@ async function executeStopCommand(ctx: Context, device?: Device) {
 
   try {
     await toitExecFilePromise(ctx, "simulator", "stop", device.deviceID);
-    ctx.refreshDeviceView(device);
+    ctx.views.refreshDeviceView(device);
   } catch (e) {
     Window.showErrorMessage(`Stop simulator failed: ${e.message}`);
   }
@@ -43,7 +43,7 @@ async function executeStartCommand(ctx: Context) {
     const { stdout, stderr } = await toitExecFilePromise(ctx, ...args);
     ctx.output.toitOutput(stdout, stderr);
 
-    ctx.refreshDeviceView();
+    ctx.views.refreshDeviceView();
   } catch (e) {
     Window.showErrorMessage(`Start simulator failed: ${e.message}`);
   }

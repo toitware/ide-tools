@@ -32,7 +32,7 @@ async function executeCommand(ctx: Context) {
   try {
     await setOrganization(ctx, org);
     await updateStatus(ctx);
-    ctx.refreshViews();
+    ctx.views.refreshViews();
   } catch (e) {
     return Window.showErrorMessage(`Unable to change organization: ${e.message}.`);
   }

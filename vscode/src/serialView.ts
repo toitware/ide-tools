@@ -9,7 +9,7 @@ import { Context, getSerialInfo, isAuthenticated, listPorts } from "./utils";
 export function activateSerialView(ctx: Context): void {
   const provider = new SerialProvider(ctx);
   Window.createTreeView("toitSerialView", { "treeDataProvider": provider } );
-  ctx.setSerialProvider(provider);
+  ctx.views.setSerialProvider(provider);
 }
 export class SerialProvider implements TreeDataProvider<TreeItem> {
   private _onDidChangeTreeData: EventEmitter<TreeItem | undefined | null> = new EventEmitter<TreeItem | undefined | null>();

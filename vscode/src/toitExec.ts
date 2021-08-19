@@ -62,7 +62,7 @@ async function executeDeployCommand(ctx: Context, device?: Device) {
   try {
     ctx.output.startDeviceOutput(device);
     await toitExecFilePromise(ctx, "dev", "-d", device.name, "deploy", filePath );
-    ctx.refreshDeviceView(device);
+    ctx.views.refreshDeviceView(device);
     ctx.setLastFile(".yaml", filePath);
   } catch (e) {
     Window.showErrorMessage(`Deploy app failed: ${e.message}`);

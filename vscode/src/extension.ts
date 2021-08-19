@@ -65,8 +65,8 @@ export async function activate(extContext: ExtensionContext): Promise<void> {
     extContext.subscriptions.push(Commands.registerCommand("toit.serialProvision", createSerialProvision(ctx)));
     extContext.subscriptions.push(Commands.registerCommand("toit.serialMonitor", createSerialMonitor(ctx)));
     extContext.subscriptions.push(Commands.registerCommand("toit.ensureAuth", createEnsureAuth(ctx)));
-    extContext.subscriptions.push(Commands.registerCommand("toit.refreshDeviceView", () => ctx.refreshDeviceView()));
-    extContext.subscriptions.push(Commands.registerCommand("toit.refreshSerialView", () => ctx.refreshSerialView()));
+    extContext.subscriptions.push(Commands.registerCommand("toit.refreshDeviceView", () => ctx.views.refreshDeviceView()));
+    extContext.subscriptions.push(Commands.registerCommand("toit.refreshSerialView", () => ctx.views.refreshSerialView()));
     extContext.subscriptions.push(Commands.registerCommand("toit.uninstallApp", createUninstallCommand(ctx)));
     extContext.subscriptions.push(Commands.registerCommand("toit.devRun", createRunCommand(ctx)));
     extContext.subscriptions.push(Commands.registerCommand("toit.devDeploy", createDeployCommand(ctx)));

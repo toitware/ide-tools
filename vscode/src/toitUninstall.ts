@@ -9,6 +9,6 @@ export function createUninstallCommand(ctx: Context): (app: App) => void {
   return async(app: RelatedApp) => {
     if (!await ensureAuth(ctx)) return;
     await uninstallApp(ctx, app.app());
-    ctx.refreshDeviceView();
+    ctx.views.refreshDeviceView();
   };
 }
