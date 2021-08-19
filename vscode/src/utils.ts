@@ -21,10 +21,12 @@ export class Context {
   lastFiles: Map<string, string> = new Map();
   output: Output;
   views: Views;
+  cache: Cache;
 
   constructor() {
     this.output = new Output(this);
     this.views = new Views();
+    this.cache = new Cache();
   }
 
   setStatusBar(sb: StatusBarItem): void {
@@ -34,6 +36,12 @@ export class Context {
   getStatusBar(): StatusBarItem | undefined {
     return this.statusBar;
   }
+
+}
+class Cache {
+  lastSelectedDevice?: RelatedDevice;
+  lastSelectedPort?: string;
+  lastFiles: Map<string, string> = new Map();
 
   setLastFile(extension: string, path: string): void {
     this.lastFiles.set(extension, path);
@@ -58,7 +66,6 @@ export class Context {
   setLastPort(port: string): void {
     this.lastSelectedPort = port;
   }
-
 }
 
 
@@ -93,7 +100,7 @@ export async function listDevices(ctx: Context): Promise<DeviceItem[]> {
 }
 
 function preferLastPicked(ctx: Context, devices: DeviceItem[]) {
-  const lastDevice = ctx.lastDevice();
+  const lastDevice = ctx.cache.lastDevice();
   if (!lastDevice) return;
 
   const i = devices.findIndex(item => item.device().deviceID === lastDevice.deviceID);
@@ -113,7 +120,7 @@ export async function selectDevice(ctx: Context, config: SelectOptions): Promise
   const device = await Window.showQuickPick(deviceItems, { "placeHolder": "Pick a device" });
   if (!device) return undefined; // Device selection dismissed.
 
-  ctx.setLastDevice(device);
+  ctx.cache.setLastDevice(device);
   return device.device();
 }
 
@@ -213,7 +220,7 @@ export async function selectPort(ctx: Context): Promise<string | undefined> {
   const ports = await listPorts(ctx);
   ports.reverse();
 
-  const lastPort = ctx.lastPort();
+  const lastPort = ctx.cache.lastPort();
   if (lastPort) {
     const i = ports.findIndex(port => port === lastPort);
     if (i > 0) preferElement(i, ports);
@@ -222,7 +229,7 @@ export async function selectPort(ctx: Context): Promise<string | undefined> {
   const port = await Window.showQuickPick(ports, { "placeHolder": "Pick a port" });
   if (!port) return undefined;
 
-  ctx.setLastPort(port);
+  ctx.cache.setLastPort(port);
   return port;
 }
 
