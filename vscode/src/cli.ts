@@ -12,8 +12,9 @@ export function toitExecFilePromise(ctx: Context, ...args: string[]): Promise<{s
   return execFile(ctx.toitExec, args);
 }
 
-export function toitExecFile(ctx: Context, ...args: string[]): cp.ChildProcess {
-  return cp.execFile(ctx.toitExec, args);
+type Callback = (error: cp.ExecFileException | null, stdout: string | Buffer, stderr: string | Buffer) => void
+export function toitExecFile(ctx: Context, cb: Callback, ...args: string[]): cp.ChildProcess {
+  return cp.execFile(ctx.toitExec, args, cb);
 }
 
 export function toitSpawn(ctx: Context, ...args: string[]): void {
