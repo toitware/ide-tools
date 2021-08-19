@@ -37,7 +37,7 @@ async function executeRunCommand(ctx: Context, device?: Device) {
   if (!device) return;  // Device selection prompt dismissed.
 
   try {
-    ctx.startDeviceOutput(device);
+    ctx.output.startDeviceOutput(device);
     toitSpawn(ctx, "dev", "-d", device.name, "run", filePath);
     ctx.setLastFile(".toit", filePath);
   } catch (e) {
@@ -60,7 +60,7 @@ async function executeDeployCommand(ctx: Context, device?: Device) {
   if (!device) return;  // Device selection prompt dismissed.
 
   try {
-    ctx.startDeviceOutput(device);
+    ctx.output.startDeviceOutput(device);
     await toitExecFilePromise(ctx, "dev", "-d", device.name, "deploy", filePath );
     ctx.refreshDeviceView(device);
     ctx.setLastFile(".yaml", filePath);

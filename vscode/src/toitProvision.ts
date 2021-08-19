@@ -16,7 +16,7 @@ async function serialMonitor(ctx: Context, serialPort?: SerialPort) {
   if (!wifiInfo) return;  // WiFi dialog dismissed.
 
   try {
-    const terminal = ctx.serialTerminal(port);
+    const terminal = ctx.output.serialTerminal(port);
     terminal.show(true);
     const provisionCmd = `${ctx.toitExec} serial provision --port ${port} --model esp32-4mb -p wifi.ssid='${wifiInfo.ssid}' -p wifi.password='${wifiInfo.password}'`;
     terminal.sendText(provisionCmd);

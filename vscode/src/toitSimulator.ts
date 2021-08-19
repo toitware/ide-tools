@@ -41,7 +41,7 @@ async function executeStartCommand(ctx: Context) {
       args.push(name);
     }
     const { stdout, stderr } = await toitExecFilePromise(ctx, ...args);
-    ctx.toitOutput(stdout, stderr);
+    ctx.output.toitOutput(stdout, stderr);
 
     ctx.refreshDeviceView();
   } catch (e) {
