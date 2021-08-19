@@ -8,6 +8,7 @@ import cp = require("child_process");
 export class Output {
   toitOut?: OutputChannel;
   logs: Map<string, DeviceLog> = new Map();
+  outputs: Map<string, DeviceOutput> = new Map();
   serials: Map<string, Terminal> = new Map();
   context: Context;
 
@@ -27,6 +28,16 @@ export class Output {
     lines.forEach(line => out.append(line));
   }
 
+  deviceOutput(device: Device): DeviceOutput {
+    let out = this.outputs.get(device.deviceID);
+    if (out) return out
+    
+    const outChannel = Window.createOutputChannel(`Toit output (${device.name})`);
+    out = new DeviceOutput(outChannel);
+    this.outputs.set(device.deviceID, out);
+    return out;
+  }
+
   startDeviceOutput(device: Device): void {
     if (!this.logs.has(device.deviceID)) this.logs.set(device.deviceID, new DeviceLog(this.context, device));
     const out = this.logs.get(device.deviceID);
@@ -41,6 +52,26 @@ export class Output {
     this.serials.set(port, serial);
     return serial;
   }
+}
+
+export class DeviceOutput {
+  output: OutputChannel;
+
+  constructor(output: OutputChannel) {
+    this.output = output;
+  }
+
+  show() {
+    this.output.show();
+  }
+
+  appendLine(sender: string, message: string) {
+    const lines = message.split("\n");
+    if (message.endsWith("")) lines.pop();
+    for (const line of lines) {
+      this.output.appendLine(`[${sender}] ${line}`);
+    }
+  }  
 }
 
 export class DeviceLog {

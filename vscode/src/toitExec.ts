@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 import { window as Window } from "vscode";
-import { toitExecFilePromise, toitSpawn } from "./cli";
+import { toitExecFile, toitExecFilePromise, toitSpawn } from "./cli";
 import { Device } from "./device";
+import { basename } from "path";
 import { } from "./deviceView";
 import { Context, ensureAuth, selectDevice } from "./utils";
+import { isError } from "util";
+import { util } from "webpack";
 
 
 function currentFilePath(ctx: Context, suffix: string): string {
@@ -27,7 +30,8 @@ async function executeRunCommand(ctx: Context, device?: Device) {
   try {
     filePath = currentFilePath(ctx, ".toit");
   } catch (e) {
-    return Window.showErrorMessage(`Unable to run file: ${e.message}`);
+    Window.showErrorMessage(`Unable to run file: ${e}`);
+    return;
   }
 
   if (!await ensureAuth(ctx)) return;
@@ -36,12 +40,20 @@ async function executeRunCommand(ctx: Context, device?: Device) {
 
   if (!device) return;  // Device selection prompt dismissed.
 
-  try {
-    ctx.output.startDeviceOutput(device);
-    toitSpawn(ctx, "dev", "-d", device.name, "run", filePath);
+  try {    
+    const fileName = basename(filePath);
+    const out = ctx.output.deviceOutput(device);
+    out.show();
+    const cp = toitExecFile(ctx, "dev", "-d", device.name, "run", filePath);
+    cp.stderr?.on("data", (message: any) => {
+      out.appendLine(fileName, message);
+    })
+    cp.stdout?.on("data", (message: any) => {
+      out.appendLine(fileName, message);
+    })
     ctx.cache.setLastFile(".toit", filePath);
   } catch (e) {
-    Window.showErrorMessage(`Run app failed: ${e.message}`);
+    Window.showErrorMessage(`Run app failed: ${e}`);
   }
 }
 
@@ -50,7 +62,8 @@ async function executeDeployCommand(ctx: Context, device?: Device) {
   try {
     filePath = currentFilePath(ctx, ".yaml");
   } catch (e) {
-    return Window.showErrorMessage(`Unable to deploy file: ${e.message}`);
+    Window.showErrorMessage(`Unable to deploy file: ${e}`)
+    return;
   }
 
   if (!await ensureAuth(ctx)) return;
@@ -65,7 +78,7 @@ async function executeDeployCommand(ctx: Context, device?: Device) {
     ctx.views.refreshDeviceView(device);
     ctx.cache.setLastFile(".yaml", filePath);
   } catch (e) {
-    Window.showErrorMessage(`Deploy app failed: ${e.message}`);
+    Window.showErrorMessage(`Deploy app failed: ${e}`);
   }
 }
 
