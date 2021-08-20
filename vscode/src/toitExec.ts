@@ -47,10 +47,10 @@ async function executeRunCommand(ctx: Context, device?: Device) {
     const cp = toitExecFile(ctx, "dev", "-d", device.name, "run", filePath);
     cp.stderr?.on("data", (message: any) => {
       out.appendLine(fileName, message);
-    })
+    });
     cp.stdout?.on("data", (message: any) => {
       out.appendLine(fileName, message);
-    })
+    });
     ctx.cache.setLastFile(".toit", filePath);
   } catch (e) {
     Window.showErrorMessage(`Run app failed: ${e}`);
