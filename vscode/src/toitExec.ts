@@ -39,11 +39,11 @@ async function executeRunCommand(ctx: Context, device?: Device) {
   if (!device) return;  // Device selection prompt dismissed.
 
   try {
-    const fileName = basename(filePath);
     const out = ctx.output.deviceOutput(device);
     out.show();
     const cp = toitExecFile(ctx, "dev", "-d", device.name, "run", filePath);
-    cp.stderr?.on("data", (message) => {
+    const fileName = basename(filePath);
+    cp.stderr?.on("data", (message: any) => {
       out.send(fileName, message);
     });
     cp.stdout?.on("data", (message) => {
@@ -76,11 +76,13 @@ async function executeDeployCommand(ctx: Context, device?: Device) {
     out.show();
     ctx.output.startDeviceOutput(device);
     const {stdout, stderr} = await toitExecFilePromise(ctx, "dev", "-d", device.name, "deploy", filePath );
+    // We would like to only show out when there is an error and the device output otherwise.
+    // However, with the current CLI (v.1.8.0) everything is dumped on stdout - even when things fail.
     if (stdout !== "") {
       out.send(fileName, stdout);
     }
     if (stderr !== "") {
-      out.send(fileName, "err" + stderr);
+      out.send(fileName, stderr);
     }
     ctx.views.refreshDeviceView(device);
     ctx.cache.setLastFile(".yaml", filePath);
