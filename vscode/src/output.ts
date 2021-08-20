@@ -65,7 +65,7 @@ export class DeviceOutput {
   constructor(output: OutputChannel) {
     this.output = output;
   }
-
+  
   show(): void {
     this.output.show(true);
   }
