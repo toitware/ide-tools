@@ -113,7 +113,7 @@
             },
             {
                 "command": "toit.devLogs",
-                "title": "Output",
+                "title": "Logs",
                 "category": "Toit",
                 "icon": "$(output)",
                 "enablement": "toit.extensionActive"
