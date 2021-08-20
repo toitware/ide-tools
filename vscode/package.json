@@ -179,7 +179,8 @@
                 },
                 {
                     "command": "toit.devLogs",
-                    "when": "view == toitDeviceView && viewItem =~ /device.*/"
+                    "when": "view == toitDeviceView && viewItem =~ /device.*/",
+                    "group": "inline@0"
                 },
                 {
                     "command": "toit.stopSimulator",
