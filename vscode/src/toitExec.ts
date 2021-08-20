@@ -77,7 +77,7 @@ async function executeDeployCommand(ctx: Context, device?: Device) {
     ctx.output.startDeviceOutput(device);
     const {stdout, stderr} = await toitExecFilePromise(ctx, "dev", "-d", device.name, "deploy", filePath );
     // We would like to only show out when there is an error and the device output otherwise.
-    // However, with the current CLI everything is dumped on stdout - even when things fail.
+    // However, with the current CLI (v.1.8.0) everything is dumped on stdout - even when things fail.
     if (stdout !== "") {
       out.send(fileName, stdout);
     }
