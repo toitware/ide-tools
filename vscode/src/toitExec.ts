@@ -15,7 +15,7 @@ function currentFilePath(ctx: Context, suffix: string): string {
 
   const filePath = editor.document.fileName;
   if (!filePath.endsWith(suffix)) {
-    const lastFile = ctx.getLastFile(suffix);
+    const lastFile = ctx.cache.getLastFile(suffix);
     if (lastFile) return lastFile;
     throw new Error(`Non-'${suffix}'-file: ${filePath}.`);
   }
@@ -39,7 +39,7 @@ async function executeRunCommand(ctx: Context, device?: Device) {
   try {
     ctx.output.startDeviceOutput(device);
     toitSpawn(ctx, "dev", "-d", device.name, "run", filePath);
-    ctx.setLastFile(".toit", filePath);
+    ctx.cache.setLastFile(".toit", filePath);
   } catch (e) {
     Window.showErrorMessage(`Run app failed: ${e.message}`);
   }
@@ -63,7 +63,7 @@ async function executeDeployCommand(ctx: Context, device?: Device) {
     ctx.output.startDeviceOutput(device);
     await toitExecFilePromise(ctx, "dev", "-d", device.name, "deploy", filePath );
     ctx.views.refreshDeviceView(device);
-    ctx.setLastFile(".yaml", filePath);
+    ctx.cache.setLastFile(".yaml", filePath);
   } catch (e) {
     Window.showErrorMessage(`Deploy app failed: ${e.message}`);
   }
