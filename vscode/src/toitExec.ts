@@ -2,14 +2,12 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file.
 
-import { window as Window } from "vscode";
-import { toitExecFile, toitExecFilePromise, toitSpawn } from "./cli";
-import { Device } from "./device";
 import { basename } from "path";
+import { window as Window } from "vscode";
+import { toitExecFile, toitExecFilePromise } from "./cli";
+import { Device } from "./device";
 import { } from "./deviceView";
 import { Context, ensureAuth, selectDevice } from "./utils";
-import { isError } from "util";
-import { util } from "webpack";
 
 
 function currentFilePath(ctx: Context, suffix: string): string {
@@ -40,15 +38,15 @@ async function executeRunCommand(ctx: Context, device?: Device) {
 
   if (!device) return;  // Device selection prompt dismissed.
 
-  try {    
+  try {
     const fileName = basename(filePath);
     const out = ctx.output.deviceOutput(device);
     out.show();
     const cp = toitExecFile(ctx, "dev", "-d", device.name, "run", filePath);
-    cp.stderr?.on("data", (message: any) => {
+    cp.stderr?.on("data", (message) => {
       out.send(fileName, message);
     });
-    cp.stdout?.on("data", (message: any) => {
+    cp.stdout?.on("data", (message) => {
       out.send(fileName, message);
     });
     ctx.cache.setLastFile(".toit", filePath);
@@ -62,7 +60,7 @@ async function executeDeployCommand(ctx: Context, device?: Device) {
   try {
     filePath = currentFilePath(ctx, ".yaml");
   } catch (e) {
-    Window.showErrorMessage(`Unable to deploy file: ${e}`)
+    Window.showErrorMessage(`Unable to deploy file: ${e}`);
     return;
   }
 
@@ -73,8 +71,17 @@ async function executeDeployCommand(ctx: Context, device?: Device) {
   if (!device) return;  // Device selection prompt dismissed.
 
   try {
+    const fileName = basename(filePath);
+    const out = ctx.output.deviceOutput(device);
+    out.show();
     ctx.output.startDeviceOutput(device);
-    await toitExecFilePromise(ctx, "dev", "-d", device.name, "deploy", filePath );
+    const {stdout, stderr} = await toitExecFilePromise(ctx, "dev", "-d", device.name, "deploy", filePath );
+    if (stdout !== "") {
+      out.send(fileName, stdout);
+    }
+    if (stderr !== "") {
+      out.send(fileName, "err" + stderr);
+    }
     ctx.views.refreshDeviceView(device);
     ctx.cache.setLastFile(".yaml", filePath);
   } catch (e) {
