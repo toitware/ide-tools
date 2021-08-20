@@ -46,7 +46,7 @@ async function executeRunCommand(ctx: Context, device?: Device) {
     cp.stderr?.on("data", (message: any) => {
       out.send(fileName, message);
     });
-    cp.stdout?.on("data", (message) => {
+    cp.stdout?.on("data", (message: any) => {
       out.send(fileName, message);
     });
     ctx.cache.setLastFile(".toit", filePath);
