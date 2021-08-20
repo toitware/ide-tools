@@ -65,7 +65,7 @@ export class DeviceOutput {
     this.output.show();
   }
 
-  appendLine(sender: string, message: string) {
+  send(sender: string, message: string) {
     const lines = message.split("\n");
     if (message.endsWith("")) lines.pop();
     for (const line of lines) {
