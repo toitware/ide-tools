@@ -1,7 +1,7 @@
 import { OutputChannel, Terminal, window as Window } from "vscode";
 import { toitExecFile } from "./cli";
 import { Device } from "./device";
-import { Context } from "./utils";
+import { Context, ensureAuth, selectDevice } from "./utils";
 import cp = require("child_process");
 
 
@@ -30,8 +30,8 @@ export class Output {
 
   deviceOutput(device: Device): DeviceOutput {
     let out = this.outputs.get(device.deviceID);
-    if (out) return out
-    
+    if (out) return out;
+
     const outChannel = Window.createOutputChannel(`Toit output (${device.name})`);
     out = new DeviceOutput(outChannel);
     this.outputs.set(device.deviceID, out);
@@ -76,7 +76,7 @@ export class DeviceOutput {
     for (const line of lines) {
       this.output.appendLine(`[${sender}] ${line}`);
     }
-  }  
+  }
 }
 
 export class DeviceLog {
@@ -114,4 +114,23 @@ export class DeviceLog {
     this.output?.dispose();
     this.output = undefined;
   }
+}
+
+async function executeOutputCommand(ctx: Context, device?: Device) {
+
+  if (!await ensureAuth(ctx)) return;
+
+  if (!device) device = await selectDevice(ctx, { "activeOnly": false, "simulatorOnly": false });
+
+  if (!device) return;  // Device selection prompt dismissed.
+
+  ctx.output.startDeviceOutput(device);
+  ctx.output.showDeviceOutput(device);
+
+}
+
+export function createOutputCommand(ctx: Context): () => void {
+  return (device?: Device) => {
+    executeOutputCommand(ctx, device);
+  };
 }

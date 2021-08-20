@@ -112,6 +112,13 @@
                 "enablement": "toit.extensionActive"
             },
             {
+                "command": "toit.devLogs",
+                "title": "Output",
+                "category": "Toit",
+                "icon": "$(output)",
+                "enablement": "toit.extensionActive"
+            },
+            {
                 "command": "toit.serialProvision",
                 "title": "Provision device",
                 "category": "Toit",
@@ -169,6 +176,10 @@
                     "command": "toit.devDeploy",
                     "when": "view == toitDeviceView && viewItem =~ /device.*/",
                     "group": "inline@1"
+                },
+                {
+                    "command": "toit.devLogs",
+                    "when": "view == toitDeviceView && viewItem =~ /device.*/"
                 },
                 {
                     "command": "toit.stopSimulator",
