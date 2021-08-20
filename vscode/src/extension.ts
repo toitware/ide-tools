@@ -7,6 +7,7 @@ import { commands as Commands, env, ExtensionContext, Uri, window as Window } fr
 import { activateTreeView, deactivateTreeView } from "./deviceView";
 import { activateLsp, deactivateLsp } from "./lspClient";
 import { activateToitStatusBar, createSetOrgCommand } from "./organization";
+import { createOutputCommand } from "./output";
 import { activateSerialView } from "./serialView";
 import { createEnsureAuth } from "./toitAuth";
 import { createDeployCommand, createRunCommand } from "./toitExec";
@@ -70,6 +71,7 @@ export async function activate(extContext: ExtensionContext): Promise<void> {
     extContext.subscriptions.push(Commands.registerCommand("toit.uninstallApp", createUninstallCommand(ctx)));
     extContext.subscriptions.push(Commands.registerCommand("toit.devRun", createRunCommand(ctx)));
     extContext.subscriptions.push(Commands.registerCommand("toit.devDeploy", createDeployCommand(ctx)));
+    extContext.subscriptions.push(Commands.registerCommand("toit.devLogs", createOutputCommand(ctx)));
     extContext.subscriptions.push(Commands.registerCommand("toit.setOrganization", createSetOrgCommand(ctx)));
     extContext.subscriptions.push(Commands.registerCommand("toit.stopSimulator", createStopSimCommand(ctx)));
     extContext.subscriptions.push(Commands.registerCommand("toit.startSimulator", createStartSimCommand(ctx)));
