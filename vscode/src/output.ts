@@ -44,6 +44,11 @@ export class Output {
     out?.start();
   }
 
+  showDeviceOutput(device: Device): void {
+    const out = this.logs.get(device.deviceID);
+    out?.show();
+  }
+
   serialTerminal(port: string): Terminal {
     let serial = this.serials.get(port);
     if (serial && !serial.exitStatus) return serial;
@@ -62,7 +67,7 @@ export class DeviceOutput {
   }
 
   show() {
-    this.output.show();
+    this.output.show(true);
   }
 
   send(sender: string, message: string) {
@@ -85,14 +90,16 @@ export class DeviceLog {
     this.device = device;
   }
 
+  show() {
+    if (this.output) this.output.show(true);
+  }
+
   start() {
     if (this.childProcess) {
-      if (this.output) this.output.show(true);
       return;
     }
 
     this.output = Window.createOutputChannel(`Toit logs (${this.device.name})`);
-    this.output.show(true);
     this.childProcess = toitExecFile(this.context, "dev", "-d", this.device.deviceID, "logs" );
     this.childProcess.stdout?.on("data", data => this.output?.append(data));
     this.childProcess.stderr?.on("data", data => this.output?.append(data));
