@@ -13,7 +13,7 @@ async function serialMonitor(ctx: Context, serialPort?: SerialPort) {
   if (port === undefined) return;  // Port selection prompt dismissed.
 
   try {
-    const terminal = ctx.serialTerminal(port);
+    const terminal = ctx.output.serialTerminal(port);
     terminal.show(true);
     terminal.sendText(`${ctx.toitExec} serial monitor --port '${port}'`);
   } catch (e) {

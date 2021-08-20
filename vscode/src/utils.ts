@@ -2,13 +2,14 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file.
 
-import { InputBoxOptions, OutputChannel, QuickPickItem, StatusBarItem, Terminal, TreeItem, TreeView, window as Window, workspace as Workspace } from "vscode";
+import { InputBoxOptions, QuickPickItem, StatusBarItem, TreeItem, TreeView, window as Window, workspace as Workspace } from "vscode";
 import { App, ConsoleApp } from "./app";
-import { toitExecFile, toitExecFilePromise } from "./cli";
+import { toitExecFilePromise } from "./cli";
 import { ConsoleDevice, ConsoleDeviceInfo, Device, DeviceInfo, RelatedDevice } from "./device";
 import { DeviceProvider } from "./deviceView";
 import { ConsoleOrganization, Organization } from "./org";
 import { updateStatus } from "./organization";
+import { Output } from "./output";
 import { ConsoleSerialInfo, SerialInfo, SerialPort } from "./serialPort";
 import { SerialProvider } from "./serialView";
 import cp = require("child_process");
@@ -20,10 +21,13 @@ export class Context {
   lastSelectedDevice?: RelatedDevice;
   lastSelectedPort?: string;
   toitExec : string = getToitPath();
-  toitOut?: OutputChannel;
   lastFiles: Map<string, string> = new Map();
-  logs: Map<string, DeviceLog> = new Map();
-  serials: Map<string, Terminal> = new Map();
+  output: Output;
+
+  constructor() {
+    this.output = new Output(this);
+  }
+
 
   getDeviceView(): TreeView<TreeItem> | undefined {
     return this.deviceView;
@@ -90,68 +94,8 @@ export class Context {
     this.lastSelectedPort = port;
   }
 
-  toitOutputChannel(): OutputChannel {
-    if (!this.toitOut) this.toitOut = Window.createOutputChannel("Toit");
-
-    return this.toitOut as OutputChannel;
-  }
-
-  toitOutput(...lines: string[]): void {
-    const out = this.toitOutputChannel();
-    out.show(true);
-    lines.forEach(line => out.append(line));
-  }
-
-  startDeviceOutput(device: Device): void {
-    if (!this.logs.has(device.deviceID)) this.logs.set(device.deviceID, new DeviceLog(this, device));
-    const out = this.logs.get(device.deviceID);
-    out?.start();
-  }
-
-  serialTerminal(port: string): Terminal {
-    let serial = this.serials.get(port);
-    if (serial && !serial.exitStatus) return serial;
-
-    serial = Window.createTerminal(`Toit serial (${port})`);
-    this.serials.set(port, serial);
-    return serial;
-  }
 }
 
-class DeviceLog {
-  context: Context;
-  device: Device;
-  childProcess?: cp.ChildProcess;
-  output?: OutputChannel;
-
-  constructor(ctx: Context, device: Device) {
-    this.context = ctx;
-    this.device = device;
-  }
-
-  start() {
-    if (this.childProcess) {
-      if (this.output) this.output.show(true);
-      return;
-    }
-
-    this.output = Window.createOutputChannel(`Toit logs (${this.device.name})`);
-    this.output.show(true);
-    this.childProcess = toitExecFile(this.context, "dev", "-d", this.device.deviceID, "logs" );
-    this.childProcess.stdout?.on("data", data => this.output?.append(data));
-    this.childProcess.stderr?.on("data", data => this.output?.append(data));
-  }
-
-  stop() {
-    if (this.childProcess?.kill()) this.childProcess = undefined;
-  }
-
-  dispose() {
-    this.stop();
-    this.output?.dispose();
-    this.output = undefined;
-  }
-}
 
 export async function listApps(ctx: Context, device: Device): Promise<App[]> {
   const { stdout } = await toitExecFilePromise(ctx, "dev", "-d", device.deviceID, "ps", "-o", "json");
