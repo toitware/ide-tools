@@ -11,7 +11,6 @@ import { updateStatus } from "./organization";
 import { Output } from "./output";
 import { ConsoleSerialInfo, SerialInfo, SerialPort } from "./serialPort";
 import { Views } from "./views";
-import cp = require("child_process");
 
 export class Context {
   statusBar?: StatusBarItem;

@@ -43,10 +43,10 @@ async function executeRunCommand(ctx: Context, device?: Device) {
     out.show();
     const cp = toitExecFile(ctx, "dev", "-d", device.name, "run", filePath);
     const fileName = basename(filePath);
-    cp.stderr?.on("data", (message: any) => {
+    cp.stderr?.on("data", (message) => {
       out.send(fileName, message);
     });
-    cp.stdout?.on("data", (message: any) => {
+    cp.stdout?.on("data", (message) => {
       out.send(fileName, message);
     });
     ctx.cache.setLastFile(".toit", filePath);
