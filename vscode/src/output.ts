@@ -66,11 +66,11 @@ export class DeviceOutput {
     this.output = output;
   }
 
-  show() {
+  show(): void {
     this.output.show(true);
   }
 
-  send(sender: string, message: string) {
+  send(sender: string, message: string): void {
     const lines = message.split("\n");
     if (message.endsWith("")) lines.pop();
     for (const line of lines) {
@@ -90,11 +90,11 @@ export class DeviceLog {
     this.device = device;
   }
 
-  show() {
+  show(): void {
     if (this.output) this.output.show(true);
   }
 
-  start() {
+  start(): void {
     if (this.childProcess) {
       return;
     }
@@ -105,11 +105,11 @@ export class DeviceLog {
     this.childProcess.stderr?.on("data", data => this.output?.append(data));
   }
 
-  stop() {
+  stop(): void {
     if (this.childProcess?.kill()) this.childProcess = undefined;
   }
 
-  dispose() {
+  dispose(): void {
     this.stop();
     this.output?.dispose();
     this.output = undefined;
