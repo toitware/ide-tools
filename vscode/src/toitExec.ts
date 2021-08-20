@@ -2,14 +2,12 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file.
 
-import { window as Window } from "vscode";
-import { toitExecFile, toitExecFilePromise, toitSpawn } from "./cli";
-import { Device } from "./device";
 import { basename } from "path";
+import { window as Window } from "vscode";
+import { toitExecFile, toitExecFilePromise } from "./cli";
+import { Device } from "./device";
 import { } from "./deviceView";
 import { Context, ensureAuth, selectDevice } from "./utils";
-import { isError } from "util";
-import { util } from "webpack";
 
 
 function currentFilePath(ctx: Context, suffix: string): string {
@@ -40,11 +38,11 @@ async function executeRunCommand(ctx: Context, device?: Device) {
 
   if (!device) return;  // Device selection prompt dismissed.
 
-  try {    
-    const fileName = basename(filePath);
+  try {
     const out = ctx.output.deviceOutput(device);
     out.show();
     const cp = toitExecFile(ctx, "dev", "-d", device.name, "run", filePath);
+    const fileName = basename(filePath);
     cp.stderr?.on("data", (message: any) => {
       out.send(fileName, message);
     });
@@ -62,7 +60,7 @@ async function executeDeployCommand(ctx: Context, device?: Device) {
   try {
     filePath = currentFilePath(ctx, ".yaml");
   } catch (e) {
-    Window.showErrorMessage(`Unable to deploy file: ${e}`)
+    Window.showErrorMessage(`Unable to deploy file: ${e}`);
     return;
   }
 
