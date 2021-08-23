@@ -85,11 +85,11 @@ pipeline {
           steps {
             dir('vscode') {
               withCredentials([string(credentialsId: 'leon-azure-access-token', variable: 'AZURE_TOKEN')]) {
-                sh 'npm run vsce publish --baseImagesUrl https://github.com/toitware/ide-tools/raw/master/vscode/ -p $AZURE_TOKEN $BUILD_VERSION'
+                sh 'npm run vsce-publish'
               }
 
               withCredentials([string(credentialsId: 'leon-open-vsx-access-token', variable: 'OPEN_VSX_TOKEN')]) {
-                sh 'npm run ovsx publish --baseImagesUrl https://github.com/toitware/ide-tools/raw/master/vscode/ -p $OPEN_VSX_TOKEN'
+                sh 'npm run ovsx-publish'
               }
             }
           }
