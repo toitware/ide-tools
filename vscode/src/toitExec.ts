@@ -17,7 +17,7 @@ async function pickFile(dialogOptions: OpenDialogOptions): Promise<string | unde
   return fileURI[0].path;
 }
 
-async function executeFilePath(suffix: string, dialogOptions: OpenDialogOptions): Promise<string | undefined> {
+async function getExecuteFilePath(suffix: string, dialogOptions: OpenDialogOptions): Promise<string | undefined> {
   const editor = Window.activeTextEditor;
   if (!editor) return await pickFile(dialogOptions);
 
@@ -28,7 +28,7 @@ async function executeFilePath(suffix: string, dialogOptions: OpenDialogOptions)
 }
 
 async function executeRunCommand(ctx: Context, device?: Device) {
-  const filePath = await executeFilePath(".toit", {
+  const filePath = await getExecuteFilePath(".toit", {
     "canSelectMany": false,
     "filters": {"Toit": ["toit"]},
     "title": "Select Toit-file to run"
@@ -59,7 +59,7 @@ async function executeRunCommand(ctx: Context, device?: Device) {
 }
 
 async function executeDeployCommand(ctx: Context, device?: Device) {
-  const filePath = await executeFilePath(".yaml", {
+  const filePath = await getExecuteFilePath(".yaml", {
     "canSelectMany": false,
     "filters": {"YAML": ["yaml"]},
     "title": "Select YAML-file to deploy"
