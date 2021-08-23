@@ -10,12 +10,12 @@ import { } from "./deviceView";
 import { Context, ensureAuth, selectDevice } from "./utils";
 
 
-function currentFilePath(): string {
+function currentFilePath(suffix: string): string {
   const editor = Window.activeTextEditor;
   if (!editor) throw new Error("No active file.");
 
   const filePath = editor.document.fileName;
-  if (!(filePath.endsWith(".toit") || filePath.endsWith(".yaml"))) {
+  if (!(filePath.endsWith(suffix))) {
     throw new Error(`In valid extension: ${filePath}.`);
   }
   return filePath;
@@ -24,7 +24,7 @@ function currentFilePath(): string {
 async function executeRunCommand(ctx: Context, device?: Device) {
   let filePath: string;
   try {
-    filePath = currentFilePath();
+    filePath = currentFilePath(".toit");
   } catch (e) {
     Window.showErrorMessage(`Unable to run or deploy: ${e}`);
     return;
@@ -55,7 +55,7 @@ async function executeRunCommand(ctx: Context, device?: Device) {
 async function executeDeployCommand(ctx: Context, device?: Device) {
   let filePath: string;
   try {
-    filePath = currentFilePath();
+    filePath = currentFilePath(".yaml");
   } catch (e) {
     Window.showErrorMessage(`Unable to deploy file: ${e}`);
     return;
