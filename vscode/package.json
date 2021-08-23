@@ -277,6 +277,8 @@
         "lint": "eslint src --ext ts",
         "lint-fix": "eslint src --ext ts --fix",
         "package": "vsce package --yarn",
+        "vsce-publish": "vsce publish --yarn --baseImagesUrl https://github.com/toitware/ide-tools/raw/master/vscode/ -p $AZURE_TOKEN $BUILD_VERSION",
+        "osvx-publish": "ovsx publish --yarn --baseImagesUrl https://github.com/toitware/ide-tools/raw/master/vscode/ -p $OPEN_VSX_TOKEN",
         "clean": "rm -rf ./out ./dist ./node_modules"
     },
     "devDependencies": {
