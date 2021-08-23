@@ -3,32 +3,38 @@
 // found in the LICENSE file.
 
 import { basename } from "path";
-import { window as Window } from "vscode";
+import { OpenDialogOptions, window as Window } from "vscode";
 import { toitExecFile, toitExecFilePromise } from "./cli";
 import { Device } from "./device";
 import { } from "./deviceView";
 import { Context, ensureAuth, selectDevice } from "./utils";
 
 
-function currentFilePath(suffix: string): string {
+async function pickFile(dialogOptions: OpenDialogOptions): Promise<string | undefined> {
+  const fileURI = await Window.showOpenDialog(dialogOptions);
+  if (!fileURI) return;  // File selection prompt dismissed.
+
+  return fileURI[0].path;
+}
+
+async function getExecuteFilePath(suffix: string, dialogOptions: OpenDialogOptions): Promise<string | undefined> {
   const editor = Window.activeTextEditor;
-  if (!editor) throw new Error("No active file.");
+  if (!editor) return await pickFile(dialogOptions);
 
   const filePath = editor.document.fileName;
-  if (!(filePath.endsWith(suffix))) {
-    throw new Error(`In valid extension: ${filePath}.`);
-  }
+  if (!(filePath.endsWith(suffix))) return await pickFile(dialogOptions);
+
   return filePath;
 }
 
 async function executeRunCommand(ctx: Context, device?: Device) {
-  let filePath: string;
-  try {
-    filePath = currentFilePath(".toit");
-  } catch (e) {
-    Window.showErrorMessage(`Unable to run or deploy: ${e}`);
-    return;
-  }
+  const filePath = await getExecuteFilePath(".toit", {
+    "canSelectMany": false,
+    "filters": {"Toit": ["toit"]},
+    "title": "Select Toit-file to run"
+  });
+
+  if (!filePath) return;
 
   if (!await ensureAuth(ctx)) return;
 
@@ -53,13 +59,12 @@ async function executeRunCommand(ctx: Context, device?: Device) {
 }
 
 async function executeDeployCommand(ctx: Context, device?: Device) {
-  let filePath: string;
-  try {
-    filePath = currentFilePath(".yaml");
-  } catch (e) {
-    Window.showErrorMessage(`Unable to deploy file: ${e}`);
-    return;
-  }
+  const filePath = await getExecuteFilePath(".yaml", {
+    "canSelectMany": false,
+    "filters": {"YAML": ["yaml"]},
+    "title": "Select YAML-file to deploy"
+  });
+  if (!filePath) return;
 
   if (!await ensureAuth(ctx)) return;
 
