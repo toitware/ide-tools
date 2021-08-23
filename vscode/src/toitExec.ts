@@ -10,15 +10,13 @@ import { } from "./deviceView";
 import { Context, ensureAuth, selectDevice } from "./utils";
 
 
-function currentFilePath(ctx: Context, suffix: string): string {
+function currentFilePath(suffix: string): string {
   const editor = Window.activeTextEditor;
   if (!editor) throw new Error("No active file.");
 
   const filePath = editor.document.fileName;
-  if (!filePath.endsWith(suffix)) {
-    const lastFile = ctx.cache.getLastFile(suffix);
-    if (lastFile) return lastFile;
-    throw new Error(`Non-'${suffix}'-file: ${filePath}.`);
+  if (!(filePath.endsWith(suffix))) {
+    throw new Error(`In valid extension: ${filePath}.`);
   }
   return filePath;
 }
@@ -26,9 +24,9 @@ function currentFilePath(ctx: Context, suffix: string): string {
 async function executeRunCommand(ctx: Context, device?: Device) {
   let filePath: string;
   try {
-    filePath = currentFilePath(ctx, ".toit");
+    filePath = currentFilePath(".toit");
   } catch (e) {
-    Window.showErrorMessage(`Unable to run file: ${e}`);
+    Window.showErrorMessage(`Unable to run or deploy: ${e}`);
     return;
   }
 
@@ -49,7 +47,6 @@ async function executeRunCommand(ctx: Context, device?: Device) {
     cp.stdout?.on("data", (message) => {
       out.send(fileName, message);
     });
-    ctx.cache.setLastFile(".toit", filePath);
   } catch (e) {
     Window.showErrorMessage(`Run app failed: ${e}`);
   }
@@ -58,7 +55,7 @@ async function executeRunCommand(ctx: Context, device?: Device) {
 async function executeDeployCommand(ctx: Context, device?: Device) {
   let filePath: string;
   try {
-    filePath = currentFilePath(ctx, ".yaml");
+    filePath = currentFilePath(".yaml");
   } catch (e) {
     Window.showErrorMessage(`Unable to deploy file: ${e}`);
     return;
@@ -85,7 +82,6 @@ async function executeDeployCommand(ctx: Context, device?: Device) {
       out.send(fileName, stderr);
     }
     ctx.views.refreshDeviceView(device);
-    ctx.cache.setLastFile(".yaml", filePath);
   } catch (e) {
     Window.showErrorMessage(`Deploy app failed: ${e}`);
   }
