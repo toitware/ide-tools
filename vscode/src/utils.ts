@@ -40,15 +40,6 @@ export class Context {
 class Cache {
   lastSelectedDevice?: RelatedDevice;
   lastSelectedPort?: string;
-  lastFiles: Map<string, string> = new Map();
-
-  setLastFile(extension: string, path: string): void {
-    this.lastFiles.set(extension, path);
-  }
-
-  getLastFile(extension: string): string | undefined {
-    return this.lastFiles.get(extension);
-  }
 
   lastDevice(): Device | undefined {
     return this.lastSelectedDevice?.device();
