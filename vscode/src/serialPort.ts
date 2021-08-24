@@ -23,6 +23,12 @@ export interface ConsoleSerialInfo {
   /* eslint-enable @typescript-eslint/naming-convention */
 }
 
+export enum SerialStatus {
+  Connected = 1,
+  Busy,
+  Disconnected,
+}
+
 export class SerialInfo extends TreeItem {
   name: string;
   model: string;
