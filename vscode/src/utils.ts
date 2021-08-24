@@ -9,7 +9,7 @@ import { ConsoleDevice, ConsoleDeviceInfo, Device, DeviceInfo, RelatedDevice } f
 import { ConsoleOrganization, Organization } from "./org";
 import { updateStatus } from "./organization";
 import { Output } from "./output";
-import { ConsoleSerialInfo, SerialInfo, SerialPort } from "./serialPort";
+import { ConsoleSerialInfo, SerialInfo, SerialPort, SerialStatus } from "./serialPort";
 import { Views } from "./views";
 
 export class Context {
@@ -281,14 +281,14 @@ export async function getFirmwareVersion(ctx: Context): Promise<string | undefin
   return stdout.trimEnd();
 }
 
-export async function getSerialInfo(ctx: Context, port: SerialPort): Promise<SerialInfo | undefined> {
+export async function getSerialInfo(ctx: Context, port: SerialPort): Promise<SerialInfo | SerialStatus> {
   try {
     const { stdout } = await toitExecFilePromise(ctx, "serial", "info", "--port", port.name );
     const serialInfo = JSON.parse(stdout) as ConsoleSerialInfo;
     const deviceInfo = await getDeviceInfo(ctx, serialInfo.hardware_id);
     return new SerialInfo(serialInfo, deviceInfo);
   } catch(e) {
-    return undefined;
+    return e.message.endsWith("Is the hardware connected?") ? SerialStatus.disconnected : SerialStatus.busy;
   }
 }
 
