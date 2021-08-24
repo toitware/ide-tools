@@ -24,9 +24,9 @@ export interface ConsoleSerialInfo {
 }
 
 export enum SerialStatus {
-  Connected = 1,
-  Busy,
-  Disconnected,
+  connected = 1,
+  busy,
+  disconnected,
 }
 
 export class SerialInfo extends TreeItem {

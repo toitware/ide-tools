@@ -37,7 +37,7 @@ export class SerialProvider implements TreeDataProvider<TreeItem> {
     if (element) {
       if (element instanceof SerialPort) {
         const info = await getSerialInfo(this.context, element);
-        if (info === SerialStatus.Busy) {
+        if (info === SerialStatus.busy) {
           const cachedValue = this.infoCache.get(element.name);
           return cachedValue ? [cachedValue] : [];
         }
