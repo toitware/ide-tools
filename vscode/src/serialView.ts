@@ -46,6 +46,7 @@ export class SerialProvider implements TreeDataProvider<TreeItem> {
           this.infoCache.set(element.name, info);
           return [info];
         }
+        // info === SerialStatus.Disconnected
         this.infoCache.delete(element.name);
       }
       return [];
