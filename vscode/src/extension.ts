@@ -18,7 +18,7 @@ import { createUninstallCommand } from "./toitUninstall";
 import { Context, revealDevice } from "./utils";
 import cp = require("child_process");
 
-const MIN_TOIT_VERSION = "1.7.0";
+const MIN_TOIT_VERSION = "1.8.0";
 
 async function checkToitCLI(ctx: Context): Promise<boolean> {
   try {
