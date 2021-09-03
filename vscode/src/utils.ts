@@ -245,7 +245,7 @@ class OrganizationItem extends Organization implements QuickPickItem {
 
 export async function getOrganization(ctx: Context): Promise<string | undefined> {
   if (!await isAuthenticated(ctx)) return undefined;
-  const { stdout } = await toitExecFilePromise(ctx, "org", "get" );
+  const { stdout } = await toitExecFilePromise(ctx, "project", "get" );
   // The output of the command if of the form:
   // Logged in to Toitware
   // 01234567890123
@@ -255,7 +255,7 @@ export async function getOrganization(ctx: Context): Promise<string | undefined>
 
 
 async function listOrganizations(ctx: Context): Promise<OrganizationItem[]> {
-  const { stdout } = await toitExecFilePromise(ctx, "org", "list", "-o", "json");
+  const { stdout } = await toitExecFilePromise(ctx, "project", "list", "-o", "json");
   return stdout.split("\n").
     filter(str => str !== "").
     map(json => JSON.parse(json) as ConsoleOrganization).
@@ -268,7 +268,7 @@ export async function selectOrganization(ctx: Context): Promise<Organization | u
 }
 
 export async function setOrganization(ctx: Context, org: Organization): Promise<void> {
-  await toitExecFilePromise(ctx, "org", "use", org.organizationID);
+  await toitExecFilePromise(ctx, "project", "use", org.organizationID);
 }
 
 export function getToitPath(): string {
