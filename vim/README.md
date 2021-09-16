@@ -7,6 +7,10 @@ If you are using Pathogen to manage your vim plugins, it's enough to
 recursively copy this directory to a $HOME/.vim/bundle/toit directory, so
 that this file appears as $HOME/.vim/bundle/toit/README.md
 
+Alternatively, if you are using Vim 8 or newer you can recursively
+copy this directory to a $HOME/.vim/pack/toit/start/toit directory
+so that this file appears as $HOME/.vim/pack/toit/start/toit/README.md
+
 Language Server
 ===============
 
