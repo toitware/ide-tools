@@ -6,9 +6,9 @@ import { InputBoxOptions, QuickPickItem, StatusBarItem, window as Window, worksp
 import { App, ConsoleApp } from "./app";
 import { toitExecFilePromise } from "./cli";
 import { ConsoleDevice, ConsoleDeviceInfo, Device, DeviceInfo, RelatedDevice } from "./device";
-import { ConsoleOrganization, Organization } from "./org";
-import { updateStatus } from "./organization";
 import { Output } from "./output";
+import { ConsoleProject as ConsoleProject, Project as Project } from "./project";
+import { updateStatus } from "./projectCmd";
 import { ConsoleSerialInfo, SerialInfo, SerialPort, SerialStatus } from "./serialPort";
 import { Views } from "./views";
 
@@ -138,8 +138,8 @@ interface AuthInfo {
   email?: string;
   id?: string;
   name?: string;
-  organization_id?: string;
-  organization_name?: string;
+  project_id?: string;
+  project_name?: string;
   status: string;
   /* eslint-enable @typescript-eslint/naming-convention */
 }
@@ -234,41 +234,41 @@ export async function uninstallApp(ctx: Context, app: App): Promise<void> {
   await toitExecFilePromise(ctx, "dev", "-d", app.deviceID, "uninstall", app.jobID );
 }
 
-class OrganizationItem extends Organization implements QuickPickItem {
+class ProjectItem extends Project implements QuickPickItem {
   label: string;
 
-  constructor(org: ConsoleOrganization) {
-    super(org);
+  constructor(project: ConsoleProject) {
+    super(project);
     this.label = this.name;
   }
 }
 
-export async function getOrganization(ctx: Context): Promise<string | undefined> {
+export async function getProject(ctx: Context): Promise<string | undefined> {
   if (!await isAuthenticated(ctx)) return undefined;
   const { stdout } = await toitExecFilePromise(ctx, "project", "get" );
   // The output of the command if of the form:
   // Logged in to Toitware
   // 01234567890123
-  const orgStrOffset = 13;
-  return stdout.slice(orgStrOffset).trimEnd();
+  const projectStrOffset = 13;
+  return stdout.slice(projectStrOffset).trimEnd();
 }
 
 
-async function listOrganizations(ctx: Context): Promise<OrganizationItem[]> {
+async function listProjects(ctx: Context): Promise<ProjectItem[]> {
   const { stdout } = await toitExecFilePromise(ctx, "project", "list", "-o", "json");
   return stdout.split("\n").
     filter(str => str !== "").
-    map(json => JSON.parse(json) as ConsoleOrganization).
-    map(org => new OrganizationItem(org));
+    map(json => JSON.parse(json) as ConsoleProject).
+    map(project => new ProjectItem(project));
 }
 
-export async function selectOrganization(ctx: Context): Promise<Organization | undefined> {
-  const organizations = await listOrganizations(ctx);
-  return await Window.showQuickPick(organizations, { "placeHolder": "Pick an organization" });
+export async function selectProject(ctx: Context): Promise<Project | undefined> {
+  const projects = await listProjects(ctx);
+  return await Window.showQuickPick(projects, { "placeHolder": "Pick a project" });
 }
 
-export async function setOrganization(ctx: Context, org: Organization): Promise<void> {
-  await toitExecFilePromise(ctx, "project", "use", org.organizationID);
+export async function setProject(ctx: Context, project: Project): Promise<void> {
+  await toitExecFilePromise(ctx, "project", "use", project.projectID);
 }
 
 export function getToitPath(): string {
@@ -307,7 +307,7 @@ export async function revealDevice(ctx: Context, hwid: string): Promise<void> {
 
   const device = await ctx.views.getDeviceProvider()?.getDevice(deviceInfo.deviceID);
   if (!device) {
-    return; // TODO(Lau): Add warning or error message? Make sure to differentiate between hidden view and wrong org.
+    return; // TODO(Lau): Add warning or error message? Make sure to differentiate between hidden view and wrong project.
   }
   await ctx.views.getDeviceView()?.reveal(device, { "focus": true, "select": false, "expand": true });
 }

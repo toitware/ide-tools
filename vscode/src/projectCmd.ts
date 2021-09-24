@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 import { ExtensionContext, StatusBarAlignment, window as Window } from "vscode";
-import { Context, ensureAuth, getFirmwareVersion, getOrganization, isAuthenticated, selectOrganization, setOrganization } from "./utils";
+import { Context, ensureAuth, getFirmwareVersion, getProject, isAuthenticated, selectProject, setProject } from "./utils";
 
 export async function activateToitStatusBar(ctx: Context, extensionContext: ExtensionContext): Promise<void> {
   const toitStatus = Window.createStatusBarItem(StatusBarAlignment.Left, 100);
   extensionContext.subscriptions.push(toitStatus);
   ctx.setStatusBar(toitStatus);
   updateStatus(ctx);
-  toitStatus.command = "toit.setOrganization";
+  toitStatus.command = "toit.setProject";
   toitStatus.show();
 }
 
@@ -18,26 +18,26 @@ export async function updateStatus(ctx: Context): Promise<void> {
   if (!await isAuthenticated(ctx)) return;
   const toitStatus = ctx.getStatusBar();
   if (!toitStatus) return;
-  const org = await getOrganization(ctx);
+  const project = await getProject(ctx);
   const firmwareVersion = await getFirmwareVersion(ctx);
-  toitStatus.text = `Toit: ${org} (${firmwareVersion})`;
+  toitStatus.text = `Toit: ${project} (${firmwareVersion})`;
 }
 
 async function executeCommand(ctx: Context) {
   if (!await ensureAuth(ctx)) return;
 
-  const org = await selectOrganization(ctx);
-  if (org === undefined) return;
+  const project = await selectProject(ctx);
+  if (project === undefined) return;
 
   try {
-    await setOrganization(ctx, org);
+    await setProject(ctx, project);
     await updateStatus(ctx);
     ctx.views.refreshViews();
   } catch (e) {
-    return Window.showErrorMessage(`Unable to change organization: ${e.message}.`);
+    return Window.showErrorMessage(`Unable to change project: ${e.message}.`);
   }
 }
 
-export function createSetOrgCommand(ctx: Context): () => void {
+export function createSetProjectCommand(ctx: Context): () => void {
   return async() => executeCommand(ctx);
 }
