@@ -4,18 +4,18 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file.
 
-export interface ConsoleOrganization {
+export interface ConsoleProject {
   name: string;
-  organization_id: string;
+  project_id: string;
 }
 /* eslint-enable @typescript-eslint/naming-convention */
 
-export class Organization {
+export class Project {
   name: string;
-  organizationID: string;
+  projectID: string;
 
-  constructor(org: ConsoleOrganization) {
-    this.name = org.name;
-    this.organizationID = org.organization_id;
+  constructor(project: ConsoleProject) {
+    this.name = project.name;
+    this.projectID = project.project_id;
   }
 }
