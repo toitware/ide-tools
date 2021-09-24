@@ -3,34 +3,38 @@
 // found in the LICENSE file.
 
 import { basename } from "path";
-import { window as Window } from "vscode";
+import { OpenDialogOptions, window as Window } from "vscode";
 import { toitExecFile, toitExecFilePromise } from "./cli";
 import { Device } from "./device";
 import { } from "./deviceView";
 import { Context, ensureAuth, selectDevice } from "./utils";
 
 
-function currentFilePath(ctx: Context, suffix: string): string {
+async function pickFile(dialogOptions: OpenDialogOptions): Promise<string | undefined> {
+  const fileURI = await Window.showOpenDialog(dialogOptions);
+  if (!fileURI) return;  // File selection prompt dismissed.
+
+  return fileURI[0].path;
+}
+
+async function getExecuteFilePath(suffix: string, dialogOptions: OpenDialogOptions): Promise<string | undefined> {
   const editor = Window.activeTextEditor;
-  if (!editor) throw new Error("No active file.");
+  if (!editor) return await pickFile(dialogOptions);
 
   const filePath = editor.document.fileName;
-  if (!filePath.endsWith(suffix)) {
-    const lastFile = ctx.cache.getLastFile(suffix);
-    if (lastFile) return lastFile;
-    throw new Error(`Non-'${suffix}'-file: ${filePath}.`);
-  }
+  if (!(filePath.endsWith(suffix))) return await pickFile(dialogOptions);
+
   return filePath;
 }
 
 async function executeRunCommand(ctx: Context, device?: Device) {
-  let filePath: string;
-  try {
-    filePath = currentFilePath(ctx, ".toit");
-  } catch (e) {
-    Window.showErrorMessage(`Unable to run file: ${e}`);
-    return;
-  }
+  const filePath = await getExecuteFilePath(".toit", {
+    "canSelectMany": false,
+    "filters": {"Toit": ["toit"]},
+    "title": "Select Toit-file to run"
+  });
+
+  if (!filePath) return;
 
   if (!await ensureAuth(ctx)) return;
 
@@ -49,20 +53,18 @@ async function executeRunCommand(ctx: Context, device?: Device) {
     cp.stdout?.on("data", (message) => {
       out.send(fileName, message);
     });
-    ctx.cache.setLastFile(".toit", filePath);
   } catch (e) {
     Window.showErrorMessage(`Run app failed: ${e}`);
   }
 }
 
 async function executeDeployCommand(ctx: Context, device?: Device) {
-  let filePath: string;
-  try {
-    filePath = currentFilePath(ctx, ".yaml");
-  } catch (e) {
-    Window.showErrorMessage(`Unable to deploy file: ${e}`);
-    return;
-  }
+  const filePath = await getExecuteFilePath(".yaml", {
+    "canSelectMany": false,
+    "filters": {"YAML": ["yaml"]},
+    "title": "Select YAML-file to deploy"
+  });
+  if (!filePath) return;
 
   if (!await ensureAuth(ctx)) return;
 
@@ -85,7 +87,6 @@ async function executeDeployCommand(ctx: Context, device?: Device) {
       out.send(fileName, stderr);
     }
     ctx.views.refreshDeviceView(device);
-    ctx.cache.setLastFile(".yaml", filePath);
   } catch (e) {
     Window.showErrorMessage(`Deploy app failed: ${e}`);
   }

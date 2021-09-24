@@ -9,7 +9,7 @@ import { ConsoleDevice, ConsoleDeviceInfo, Device, DeviceInfo, RelatedDevice } f
 import { Output } from "./output";
 import { ConsoleProject as ConsoleProject, Project as Project } from "./project";
 import { updateStatus } from "./projectCmd";
-import { ConsoleSerialInfo, SerialInfo, SerialPort } from "./serialPort";
+import { ConsoleSerialInfo, SerialInfo, SerialPort, SerialStatus } from "./serialPort";
 import { Views } from "./views";
 
 export class Context {
@@ -40,15 +40,6 @@ export class Context {
 class Cache {
   lastSelectedDevice?: RelatedDevice;
   lastSelectedPort?: string;
-  lastFiles: Map<string, string> = new Map();
-
-  setLastFile(extension: string, path: string): void {
-    this.lastFiles.set(extension, path);
-  }
-
-  getLastFile(extension: string): string | undefined {
-    return this.lastFiles.get(extension);
-  }
 
   lastDevice(): Device | undefined {
     return this.lastSelectedDevice?.device();
@@ -290,14 +281,14 @@ export async function getFirmwareVersion(ctx: Context): Promise<string | undefin
   return stdout.trimEnd();
 }
 
-export async function getSerialInfo(ctx: Context, port: SerialPort): Promise<SerialInfo | undefined> {
+export async function getSerialInfo(ctx: Context, port: SerialPort): Promise<SerialInfo | SerialStatus> {
   try {
     const { stdout } = await toitExecFilePromise(ctx, "serial", "info", "--port", port.name );
     const serialInfo = JSON.parse(stdout) as ConsoleSerialInfo;
     const deviceInfo = await getDeviceInfo(ctx, serialInfo.hardware_id);
     return new SerialInfo(serialInfo, deviceInfo);
   } catch(e) {
-    return undefined;
+    return e.message.endsWith("Is the hardware connected?") ? SerialStatus.disconnected : SerialStatus.busy;
   }
 }
 

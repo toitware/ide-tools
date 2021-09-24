@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import { Event, EventEmitter, TreeDataProvider, TreeItem, window as Window } from "vscode";
-import { SerialPort } from "./serialPort";
+import { SerialInfo, SerialPort, SerialStatus } from "./serialPort";
 import { Context, getSerialInfo, isAuthenticated, listPorts } from "./utils";
 
 export function activateSerialView(ctx: Context): void {
@@ -14,6 +14,8 @@ export function activateSerialView(ctx: Context): void {
 export class SerialProvider implements TreeDataProvider<TreeItem> {
   private _onDidChangeTreeData: EventEmitter<TreeItem | undefined | null> = new EventEmitter<TreeItem | undefined | null>();
   readonly onDidChangeTreeData: Event<TreeItem | undefined | null> = this._onDidChangeTreeData.event;
+
+  infoCache: Map<string, SerialInfo> = new Map();
 
   refresh(item?: TreeItem): void {
     this._onDidChangeTreeData.fire(item);
@@ -35,9 +37,18 @@ export class SerialProvider implements TreeDataProvider<TreeItem> {
     if (element) {
       if (element instanceof SerialPort) {
         const info = await getSerialInfo(this.context, element);
-        if (info) return [info];
-      }
+        if (info === SerialStatus.busy) {
+          const cachedValue = this.infoCache.get(element.name);
+          return cachedValue ? [cachedValue] : [];
+        }
 
+        if (info instanceof SerialInfo) {
+          this.infoCache.set(element.name, info);
+          return [info];
+        }
+        // info === SerialStatus.Disconnected
+        this.infoCache.delete(element.name);
+      }
       return [];
     }
     const ports = await listPorts(this.context);

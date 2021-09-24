@@ -6,10 +6,10 @@ import { window as Window } from "vscode";
 import { SerialPort } from "./serialPort";
 import { Context, ensureAuth, promptForWiFiInfo, selectPort } from "./utils";
 
-async function serialMonitor(ctx: Context, serialPort?: SerialPort) {
+async function serialProvision(ctx: Context, serialPort?: SerialPort) {
   if (!await ensureAuth(ctx)) return;
 
-  const port = serialPort ? SerialPort.name : await selectPort(ctx);
+  const port = serialPort ? serialPort.name : await selectPort(ctx);
   if (port === undefined) return;  // Port selection prompt dismissed.
 
   const wifiInfo = await promptForWiFiInfo();
@@ -26,5 +26,5 @@ async function serialMonitor(ctx: Context, serialPort?: SerialPort) {
 }
 
 export function createSerialProvision(ctx: Context): () => void {
-  return (port?: SerialPort) => serialMonitor(ctx, port);
+  return (port?: SerialPort) => serialProvision(ctx, port);
 }
