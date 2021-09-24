@@ -23,7 +23,7 @@ Get an overview of your devices and running apps in the Toit sidebar.
 </p>
 
 ### Deploy and run apps
-[Run and deploy](https://docs.toit.io/deploy/runordeploy/) the app you are developing from the device view or from the command palette.
+[Run and deploy](https://docs.toit.io/platform/deploy/runordeploy) the app you are developing from the device view or from the command palette.
 
 <p align=center>
 <img src="images/readme/demo-run.gif" width=75%>
