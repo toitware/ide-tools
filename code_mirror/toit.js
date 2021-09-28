@@ -885,6 +885,19 @@
       return null;
     }
 
+    // For code snippets that have an indent on the very first
+    // line we assume that we are implicitly inside a function
+    // like "main".
+    function tryImpliedTopLevelFunction(stream, state) {
+      if (state.startOfLine && stream.indentation() == 2) {
+        state.context.push([tokenizeFunctionBody, 2]);
+        state.subState.push(null);
+        return "null";
+      }
+      return null;
+    }
+
+
     function tokenizeError(stream, state) {
       // We could try to be more aggressive (like trying to highlight numbers,
       // strings, ...), but the most important thing is that we make progress.
@@ -911,6 +924,7 @@
         tryImport(stream, state) ||
         tryExport(stream, state) ||
         tryClass(stream, state) ||
+        tryImpliedTopLevelFunction(stream, state) ||
         tryToplevelDeclaration(stream, state) ||
         tokenizeError(stream, state);
     }
