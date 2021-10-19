@@ -8,21 +8,24 @@ The Toit extension adds language support for the Toit programming language, incl
 
 ## Quick start
 
-- *Step 1:* Install [Toit](https://docs.toit.io/getstarted/installation) and the [Toit Visual Studio Code extension](https://marketplace.visualstudio.com/items?itemName=toit.toit).
-- *Step 2:* Either place `toit` in your path or set `toit.Path` to the location of `toit`.
-- *Step 3:* The extension is activated when you open a `.toit` file.
+- _Step 1:_ Install [Toit](https://docs.toit.io/getstarted/install) and the [Toit Visual Studio Code extension](https://marketplace.visualstudio.com/items?itemName=toit.toit).
+- _Step 2:_ Either place `toit` in your path or set `toit.Path` to the location of `toit`.
+- _Step 3:_ The extension is activated when you open a `.toit` file.
 
 The extension is now set up and ready to use. Visit the [Toit docs](https://docs.toit.io/) for more information about Toit.
 
 ## Extension tour
 
 ### See devices and applications
+
 Get an overview of your devices and running apps in the Toit sidebar.
+
 <p align=center>
 <img src="images/readme/demo-device-view.gif" width=75%>
 </p>
 
 ### Deploy and run apps
+
 [Run and deploy](https://docs.toit.io/platform/deploy/runordeploy) the app you are developing from the device view or from the command palette.
 
 <p align=center>
@@ -38,7 +41,9 @@ Get an overview of your devices and running apps in the Toit sidebar.
 </p>
 
 ### Provision and monitor
-[Provision](https://docs.toit.io/getstarted/details/provision/) new devices and monitor serial output from the command palette.
+
+[Provision](https://docs.toit.io/platform/concepts/provision) new devices and monitor serial output from the command palette.
+
 <p align=center>
 <img src="images/readme/demo-provision.gif" width=75%>
 <br />
@@ -52,13 +57,17 @@ Get an overview of your devices and running apps in the Toit sidebar.
 </p>
 
 ### Switch organizations
+
 Switch between organizations from the status bar.
+
 <p align=center>
 <img src="images/readme/demo-org.gif" width=75%>
 </p>
 
 ### Simulators
+
 Start and stop simulators from the device view or the command palette.
+
 <p align=center>
 <img src="images/readme/demo-simulator.gif" width=75%>
 </p>
