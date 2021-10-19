@@ -14,7 +14,7 @@ async function pickFile(dialogOptions: OpenDialogOptions): Promise<string | unde
   const fileURI = await Window.showOpenDialog(dialogOptions);
   if (!fileURI) return;  // File selection prompt dismissed.
 
-  return fileURI[0].path;
+  return fileURI[0].fsPath;
 }
 
 async function getExecuteFilePath(suffix: string, dialogOptions: OpenDialogOptions): Promise<string | undefined> {
