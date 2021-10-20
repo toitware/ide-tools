@@ -8,7 +8,7 @@ The Toit extension adds language support for the Toit programming language, incl
 
 ## Quick start
 
-- _Step 1:_ Install [Toit](https://docs.toit.io/getstarted/install) and the [Toit Visual Studio Code extension](https://marketplace.visualstudio.com/items?itemName=toit.toit).
+- _Step 1:_ Install [Toit](https://docs.toit.io/getstarted/installation) and the [Toit Visual Studio Code extension](https://marketplace.visualstudio.com/items?itemName=toit.toit).
 - _Step 2:_ Either place `toit` in your path or set `toit.Path` to the location of `toit`.
 - _Step 3:_ The extension is activated when you open a `.toit` file.
 
