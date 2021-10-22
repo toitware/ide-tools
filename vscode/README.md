@@ -56,9 +56,9 @@ Get an overview of your devices and running apps in the Toit sidebar.
 <em>Monitor output.</em>
 </p>
 
-### Switch organizations
+### Switch project
 
-Switch between organizations from the status bar.
+Switch between Toit projects from the status bar.
 
 <p align=center>
 <img src="images/readme/demo-org.gif" width=75%>
