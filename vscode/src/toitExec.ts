@@ -30,6 +30,7 @@ async function getExecuteFilePath(suffix: string, dialogOptions: OpenDialogOptio
 async function executeRunCommand(ctx: Context, device?: Device) {
   const filePath = await getExecuteFilePath(".toit", {
     "canSelectMany": false,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     "filters": {"Toit": ["toit"]},
     "title": "Select Toit-file to run"
   });
@@ -61,6 +62,7 @@ async function executeRunCommand(ctx: Context, device?: Device) {
 async function executeDeployCommand(ctx: Context, device?: Device) {
   const filePath = await getExecuteFilePath(".yaml", {
     "canSelectMany": false,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     "filters": {"YAML": ["yaml"]},
     "title": "Select YAML-file to deploy"
   });
