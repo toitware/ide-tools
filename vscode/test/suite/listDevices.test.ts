@@ -24,7 +24,7 @@ describe("Device list", () => {
     "stdout": `${strDevice1}\n${strDevice2}\n`,
     "stderr": ""
   });
-  const context = new Context();
+  const context = new Context("toit");
   it("List no device", () => expect(listDevices(context)).resolves.toStrictEqual([]));
 
   it("List one device", () => expect(listDevices(context)).resolves.toStrictEqual([new DeviceItem(device1)]));

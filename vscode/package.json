@@ -1,314 +1,321 @@
 {
-    "name": "toit",
-    "displayName": "Toit",
-    "description": "Toit Programming Language Support",
-    "publisher": "toit",
-    "version": "1.3.6",
-    "license": "MIT",
-    "type": "commonjs",
-    "engines": {
-        "vscode": "^1.55.0"
-    },
-    "categories": [
-        "Programming Languages"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/toitware/ide-tools.git"
-    },
-    "activationEvents": [
-        "onLanguage:toit",
-        "workspaceContains:**/*.toit",
-        "onView:toitView",
-        "onCommand:toit.ensureAuth",
-        "onCommand:toit.refreshView"
-    ],
-    "icon": "images/toitware_logo.png",
-    "main": "./dist/extension.js",
-    "contributes": {
-        "viewsContainers": {
-            "activitybar": [
-                {
-                    "id": "toitView",
-                    "title": "Toit",
-                    "icon": "./resources/logo.svg",
-                    "when": "toit.extensionActive"
-                }
-            ]
-        },
-        "views": {
-            "toitView": [
-                {
-                    "id": "toitDeviceView",
-                    "name": "Devices",
-                    "when": "toit.extensionActive"
-                },
-                {
-                    "id": "toitSerialView",
-                    "name": "Serial Ports",
-                    "when": "toit.extensionActive",
-                    "visibility": "collapsed"
-                }
-            ]
-        },
-        "viewsWelcome": [
-            {
-                "view": "toitDeviceView",
-                "contents": "No devices found.\n\nTry to log in\n[Log in](command:toit.ensureAuth)",
-                "when": "toit.extensionActive"
-            }
-        ],
-        "commands": [
-            {
-                "command": "toit.stopSimulator",
-                "title": "Stop simulator",
-                "category": "Toit",
-                "icon": "$(circle-slash)"
-            },
-            {
-                "command": "toit.startSimulator",
-                "title": "Start simulator",
-                "category": "Toit",
-                "icon": "$(rocket)"
-            },
-            {
-                "command": "toit.uninstallApp",
-                "title": "Uninstall",
-                "category": "Toit",
-                "icon": "$(trash)"
-            },
-            {
-                "command": "toit.refreshDeviceView",
-                "title": "Refresh",
-                "category": "Toit",
-                "icon": "$(refresh)",
-                "enablement": "toit.extensionActive"
-            },
-            {
-                "command": "toit.refreshSerialView",
-                "title": "Refresh",
-                "category": "Toit",
-                "icon": "$(refresh)",
-                "enablement": "toit.extensionActive"
-            },
-            {
-                "command": "toit.ensureAuth",
-                "title": "Log in to toit.io",
-                "category": "Toit",
-                "enablement": "toit.extensionActive"
-            },
-            {
-                "command": "toit.devRun",
-                "title": "Run",
-                "category": "Toit",
-                "icon": "$(run)",
-                "enablement": "toit.extensionActive"
-            },
-            {
-                "command": "toit.devDeploy",
-                "title": "Deploy",
-                "category": "Toit",
-                "icon": "$(run-all)",
-                "enablement": "toit.extensionActive"
-            },
-            {
-                "command": "toit.devLogs",
-                "title": "Logs",
-                "category": "Toit",
-                "icon": "$(output)",
-                "enablement": "toit.extensionActive"
-            },
-            {
-                "command": "toit.serialProvision",
-                "title": "Provision device",
-                "category": "Toit",
-                "icon": "$(add)",
-                "enablement": "toit.extensionActive"
-            },
-            {
-                "command": "toit.serialMonitor",
-                "title": "Monitor serial output",
-                "category": "Toit",
-                "icon": "$(selection)",
-                "enablement": "toit.extensionActive"
-            }
-        ],
-        "menus": {
-            "view/title": [
-                {
-                    "command": "toit.startSimulator",
-                    "when": "view == toitDeviceView",
-                    "group": "navigation@0"
-                },
-                {
-                    "command": "toit.refreshDeviceView",
-                    "when": "view == toitDeviceView",
-                    "group": "navigation@1"
-                },
-                {
-                    "command": "toit.refreshSerialView",
-                    "when": "view == toitSerialView",
-                    "group": "navigation@1"
-                }
-            ],
-            "view/item/context": [
-                {
-                    "command": "toit.serialProvision",
-                    "when": "view == toitSerialView && viewItem == serial-port",
-                    "group": "inline@0"
-                },
-                {
-                    "command": "toit.serialMonitor",
-                    "when": "view == toitSerialView && viewItem == serial-port",
-                    "group": "inline@1"
-                },
-                {
-                    "command": "toit.uninstallApp",
-                    "when": "view == toitDeviceView && viewItem == application",
-                    "group": "inline"
-                },
-                {
-                    "command": "toit.devRun",
-                    "when": "view == toitDeviceView && viewItem =~ /device.*/",
-                    "group": "inline@2"
-                },
-                {
-                    "command": "toit.devDeploy",
-                    "when": "view == toitDeviceView && viewItem =~ /device.*/",
-                    "group": "inline@1"
-                },
-                {
-                    "command": "toit.devLogs",
-                    "when": "view == toitDeviceView && viewItem =~ /device.*/",
-                    "group": "inline@0"
-                },
-                {
-                    "command": "toit.stopSimulator",
-                    "when": "view == toitDeviceView && viewItem == device-simulator",
-                    "group": "inline@0"
-                }
-            ],
-            "commandPalette": [
-                {
-                    "command": "toit.uninstallApp",
-                    "when": "false"
-                }
-            ]
-        },
-        "languages": [
-            {
-                "id": "toit",
-                "aliases": [
-                    "Toit",
-                    "toit"
-                ],
-                "extensions": [
-                    ".toit"
-                ],
-                "configuration": "./language-configuration.json"
-            }
-        ],
-        "grammars": [
-            {
-                "language": "toit",
-                "scopeName": "source.toit",
-                "path": "./syntaxes/toit.tmLanguage.json"
-            }
-        ],
-        "configuration": {
-            "type": "object",
-            "title": "Toit",
-            "properties": {
-                "toit.Path": {
-                    "type": "string",
-                    "default": "toit",
-                    "description": "The path to 'toit' executable, e.g. `/usr/bin/toit`."
-                },
-                "toitLanguageServer.toitPath": {
-                    "type": [
-                        "string",
-                        "null"
-                    ],
-                    "description": "The path to the 'toit' command line tool.",
-                    "deprecationMessage": "Deprecated: Use toit.Path instead."
-                },
-                "toitLanguageServer.arguments": {
-                    "type": [
-                        "string",
-                        "null",
-                        "array"
-                    ],
-                    "default": [
-                        "tool",
-                        "lsp"
-                    ],
-                    "description": "The arguments used to start the LSP server."
-                },
-                "toitLanguageServer.debug.clientToServer": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Write all messages from the client to the server into a `/tmp/debug_client_to_server-{date}.log` file."
-                },
-                "toitLanguageServer.shouldWriteReproOnCrash": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Generates a repro when the compiler crashes."
-                },
-                "toitLanguageServer.trace.server": {
-                    "type": "string",
-                    "enum": [
-                        "off",
-                        "messages",
-                        "verbose"
-                    ],
-                    "default": "off",
-                    "description": "Traces the communication between VSCode and the ToitLanguageServer service."
-                }
-            }
-        }
-    },
-    "scripts": {
-        "compile-prod": "webpack --mode production",
-        "compile": "webpack --mode development",
-        "watch": "webpack --mode development --watch",
-        "test-watch": "tsc -p ./ -watch",
-        "test-compile": "tsc -p ./",
-        "jenkins-test": "tsc -p ./ && ts-node ./test/runTest.ts",
-        "lint": "eslint src --ext ts",
-        "lint-fix": "eslint src --ext ts --fix",
-        "package": "vsce package --yarn",
-        "vsce-publish": "vsce publish --yarn --baseImagesUrl https://github.com/toitware/ide-tools/raw/master/vscode/ -p $AZURE_TOKEN $BUILD_VERSION",
-        "ovsx-publish": "ovsx publish --yarn --baseImagesUrl https://github.com/toitware/ide-tools/raw/master/vscode/ -p $OPEN_VSX_TOKEN",
-        "clean": "rm -rf ./out ./dist ./node_modules"
-    },
-    "devDependencies": {
-        "@babel/core": "^7.14.6",
-        "@types/glob": "^7.1.1",
-        "@types/jest": "^26.0.23",
-        "@types/node": "^14.17.1",
-        "@types/semver": "^7.3.5",
-        "@types/vscode": "^1.55.0",
-        "@typescript-eslint/eslint-plugin": "^4.24.0",
-        "@typescript-eslint/parser": "^4.24.0",
-        "eslint": "^7.26.0",
-        "glob": "^7.1.4",
-        "jest": "^27.0.6",
-        "jest-junit": "^12.2.0",
-        "jest-mock": "27.0.6",
-        "js-yaml": "^3.14.0",
-        "ts-jest": "^27.0.3",
-        "ts-loader": "^6.2.2",
-        "ts-node": "^10.0.0",
-        "tslint": "^5.20.1",
-        "typescript": "^3.9.5",
-        "webpack": "^5.39.1",
-        "webpack-cli": "^4.7.2"
-    },
-    "dependencies": {
-        "ovsx": "^0.2.0",
-        "semver": "^7.3.5",
-        "vsce": "^1.77.0",
-        "vscode-languageclient": "^5.2.1",
-        "vscode-test": "^1.5.2"
-    }
+	"name": "toit",
+	"displayName": "Toit",
+	"description": "Toit Programming Language Support",
+	"publisher": "toit",
+	"version": "1.3.6",
+	"license": "MIT",
+	"type": "commonjs",
+	"engines": {
+		"vscode": "^1.55.0"
+	},
+	"categories": [
+		"Programming Languages"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/toitware/ide-tools.git"
+	},
+	"activationEvents": [
+		"onLanguage:toit",
+		"workspaceContains:**/*.toit",
+		"onView:toitView",
+		"onCommand:toit.ensureAuth",
+		"onCommand:toit.refreshView"
+	],
+	"icon": "images/toitware_logo.png",
+	"main": "./dist/extension.js",
+	"contributes": {
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "toitView",
+					"title": "Toit",
+					"icon": "./resources/logo.svg",
+					"when": "toit.extensionActive"
+				}
+			]
+		},
+		"views": {
+			"toitView": [
+				{
+					"id": "toitDeviceView",
+					"name": "Devices",
+					"when": "toit.extensionActive"
+				},
+				{
+					"id": "toitSerialView",
+					"name": "Serial Ports",
+					"when": "toit.extensionActive",
+					"visibility": "collapsed"
+				}
+			]
+		},
+		"viewsWelcome": [
+			{
+				"view": "toitDeviceView",
+				"contents": "No devices found.\n\nTry to log in\n[Log in](command:toit.ensureAuth)",
+				"when": "toit.extensionActive"
+			}
+		],
+		"commands": [
+			{
+				"command": "toit.stopSimulator",
+				"title": "Stop simulator",
+				"category": "Toit",
+				"icon": "$(circle-slash)"
+			},
+			{
+				"command": "toit.startSimulator",
+				"title": "Start simulator",
+				"category": "Toit",
+				"icon": "$(rocket)"
+			},
+			{
+				"command": "toit.uninstallApp",
+				"title": "Uninstall",
+				"category": "Toit",
+				"icon": "$(trash)"
+			},
+			{
+				"command": "toit.refreshDeviceView",
+				"title": "Refresh",
+				"category": "Toit",
+				"icon": "$(refresh)",
+				"enablement": "toit.extensionActive"
+			},
+			{
+				"command": "toit.refreshSerialView",
+				"title": "Refresh",
+				"category": "Toit",
+				"icon": "$(refresh)",
+				"enablement": "toit.extensionActive"
+			},
+			{
+				"command": "toit.ensureAuth",
+				"title": "Log in to toit.io",
+				"category": "Toit",
+				"enablement": "toit.extensionActive"
+			},
+			{
+				"command": "toit.devRun",
+				"title": "Run",
+				"category": "Toit",
+				"icon": "$(run)",
+				"enablement": "toit.extensionActive"
+			},
+			{
+				"command": "toit.devDeploy",
+				"title": "Deploy",
+				"category": "Toit",
+				"icon": "$(run-all)",
+				"enablement": "toit.extensionActive"
+			},
+			{
+				"command": "toit.devLogs",
+				"title": "Logs",
+				"category": "Toit",
+				"icon": "$(output)",
+				"enablement": "toit.extensionActive"
+			},
+			{
+				"command": "toit.serialProvision",
+				"title": "Provision device",
+				"category": "Toit",
+				"icon": "$(add)",
+				"enablement": "toit.extensionActive"
+			},
+			{
+				"command": "toit.serialMonitor",
+				"title": "Monitor serial output",
+				"category": "Toit",
+				"icon": "$(selection)",
+				"enablement": "toit.extensionActive"
+			}
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "toit.startSimulator",
+					"when": "view == toitDeviceView",
+					"group": "navigation@0"
+				},
+				{
+					"command": "toit.refreshDeviceView",
+					"when": "view == toitDeviceView",
+					"group": "navigation@1"
+				},
+				{
+					"command": "toit.refreshSerialView",
+					"when": "view == toitSerialView",
+					"group": "navigation@1"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "toit.serialProvision",
+					"when": "view == toitSerialView && viewItem == serial-port",
+					"group": "inline@0"
+				},
+				{
+					"command": "toit.serialMonitor",
+					"when": "view == toitSerialView && viewItem == serial-port",
+					"group": "inline@1"
+				},
+				{
+					"command": "toit.uninstallApp",
+					"when": "view == toitDeviceView && viewItem == application",
+					"group": "inline"
+				},
+				{
+					"command": "toit.devRun",
+					"when": "view == toitDeviceView && viewItem =~ /device.*/",
+					"group": "inline@2"
+				},
+				{
+					"command": "toit.devDeploy",
+					"when": "view == toitDeviceView && viewItem =~ /device.*/",
+					"group": "inline@1"
+				},
+				{
+					"command": "toit.devLogs",
+					"when": "view == toitDeviceView && viewItem =~ /device.*/",
+					"group": "inline@0"
+				},
+				{
+					"command": "toit.stopSimulator",
+					"when": "view == toitDeviceView && viewItem == device-simulator",
+					"group": "inline@0"
+				}
+			],
+			"commandPalette": [
+				{
+					"command": "toit.uninstallApp",
+					"when": "false"
+				}
+			]
+		},
+		"languages": [
+			{
+				"id": "toit",
+				"aliases": [
+					"Toit",
+					"toit"
+				],
+				"extensions": [
+					".toit"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "toit",
+				"scopeName": "source.toit",
+				"path": "./syntaxes/toit.tmLanguage.json"
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "Toit",
+			"properties": {
+				"toit.path": {
+					"type": [
+						"string",
+						"null"
+					],
+					"default": null,
+					"description": "The path to 'toit' executable, e.g. `/usr/bin/toit`. If left unset, the 'toit' executable in the path is used. If set to empty, then the extension only uses the language server.",
+					"scope": "machine-overridable"
+				},
+				"toit.Path": {
+					"type": [
+						"string",
+						"null"
+					],
+					"description": "The path to 'toit' executable, e.g. `/usr/bin/toit`.",
+					"deprecationMessage": "Deprecated: Use toit.path instead.",
+					"scope": "machine-overridable"
+				},
+				"toitLanguageServer.command": {
+					"type": [
+						"array",
+						"null"
+					],
+					"description": "The command (array of strings) to invoke the Toit language server. If not set, uses 'toit' (configuration toit.path) as language server. If that one is not set and no 'toit' is found in the path, then 'toitlsp' and 'toitc' are found in the path.",
+					"default": null,
+					"scope": "machine-overridable"
+				},
+				"toitLanguageServer.debug.clientToServer": {
+					"type": "boolean",
+					"default": false,
+					"description": "Write all messages from the client to the server into a `/tmp/debug_client_to_server-{date}.log` file."
+				},
+				"toitLanguageServer.shouldWriteReproOnCrash": {
+					"type": "boolean",
+					"default": false,
+					"description": "Generates a repro when the compiler crashes."
+				},
+				"toitLanguageServer.trace.server": {
+					"type": "string",
+					"enum": [
+						"off",
+						"messages",
+						"verbose"
+					],
+					"default": "off",
+					"description": "Traces the communication between VSCode and the ToitLanguageServer service."
+				}
+			}
+		}
+	},
+	"scripts": {
+		"compile-prod": "webpack --mode production",
+		"compile": "webpack --mode development",
+		"watch": "webpack --mode development --watch",
+		"test-watch": "tsc -p ./ -watch",
+		"test-compile": "tsc -p ./",
+		"jenkins-test": "tsc -p ./ && ts-node ./test/runTest.ts",
+		"lint": "eslint src --ext ts",
+		"lint-fix": "eslint src --ext ts --fix",
+		"package": "vsce package --yarn",
+		"vsce-publish": "vsce publish --yarn --baseImagesUrl https://github.com/toitware/ide-tools/raw/master/vscode/ -p $AZURE_TOKEN $BUILD_VERSION",
+		"ovsx-publish": "ovsx publish --yarn --baseImagesUrl https://github.com/toitware/ide-tools/raw/master/vscode/ -p $OPEN_VSX_TOKEN",
+		"clean": "rm -rf ./out ./dist ./node_modules"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.14.6",
+		"@types/glob": "^7.1.1",
+		"@types/jest": "^26.0.23",
+		"@types/node": "^14.17.1",
+		"@types/semver": "^7.3.5",
+		"@types/vscode": "^1.55.0",
+		"@typescript-eslint/eslint-plugin": "^4.24.0",
+		"@typescript-eslint/parser": "^4.24.0",
+		"eslint": "^7.26.0",
+		"glob": "^7.1.4",
+		"jest": "^27.0.6",
+		"jest-junit": "^12.2.0",
+		"jest-mock": "27.0.6",
+		"js-yaml": "^3.14.0",
+		"ts-jest": "^27.0.3",
+		"ts-loader": "^6.2.2",
+		"ts-node": "^10.0.0",
+		"tslint": "^5.20.1",
+		"typescript": "^3.9.5",
+		"webpack": "^5.39.1",
+		"webpack-cli": "^4.7.2"
+	},
+	"dependencies": {
+		"ovsx": "^0.2.0",
+		"semver": "^7.3.5",
+		"vsce": "^1.77.0",
+		"vscode-languageclient": "^5.2.1",
+		"vscode-test": "^1.5.2"
+	},
+	"__metadata": {
+		"id": "f78543a3-3f95-4cfc-9b62-50c5a948657f",
+		"publisherDisplayName": null,
+		"publisherId": "cc0933a9-8e93-4b38-a2df-865298913348"
+	}
 }
