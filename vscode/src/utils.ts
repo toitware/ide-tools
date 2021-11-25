@@ -2,7 +2,7 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file.
 
-import { InputBoxOptions, QuickPickItem, StatusBarItem, window as Window, workspace as Workspace } from "vscode";
+import { InputBoxOptions, QuickPickItem, StatusBarItem, window as Window } from "vscode";
 import { App, ConsoleApp } from "./app";
 import { toitExecFilePromise } from "./cli";
 import { ConsoleDevice, ConsoleDeviceInfo, Device, DeviceInfo, RelatedDevice } from "./device";
@@ -16,13 +16,14 @@ export class Context {
   statusBar?: StatusBarItem;
   lastSelectedDevice?: RelatedDevice;
   lastSelectedPort?: string;
-  toitExec : string = getToitPath();
+  toitExec : string;
   lastFiles: Map<string, string> = new Map();
   output: Output;
   views: Views;
   cache: Cache;
 
-  constructor() {
+  constructor(toitExec : string) {
+    this.toitExec = toitExec;
     this.output = new Output(this);
     this.views = new Views();
     this.cache = new Cache();
@@ -271,10 +272,6 @@ export async function setProject(ctx: Context, project: Project): Promise<void> 
   await toitExecFilePromise(ctx, "project", "use", project.projectID);
 }
 
-export function getToitPath(): string {
-  return Workspace.getConfiguration("toit").get("Path", "toit");
-}
-
 export async function getFirmwareVersion(ctx: Context): Promise<string | undefined> {
   if (!await isAuthenticated(ctx)) return undefined;
   const { stdout } = await toitExecFilePromise(ctx, "firmware", "version", "-o", "short" );
@@ -311,3 +308,7 @@ export async function revealDevice(ctx: Context, hwid: string): Promise<void> {
   }
   await ctx.views.getDeviceView()?.reveal(device, { "focus": true, "select": false, "expand": true });
 }
+
+export const TOIT_SHORT_VERSION_ARGS = [ "version", "-o", "short" ];
+
+export const TOIT_LSP_ARGS = [ "tool", "lsp" ];

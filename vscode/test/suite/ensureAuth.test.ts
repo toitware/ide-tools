@@ -14,7 +14,7 @@ jest.mock("../../src/utils");
 const mockedEnsureAuth = mocked(utils.ensureAuth);
 
 describe("Auth before uninstall", () => {
-  const context = new Context();
+  const context = new Context("toit");
   const uninstall = createUninstallCommand(context);
   uninstall(new App(app1, new Device(device1)));
   it("Uninstall should ensure auth", () => expect(mockedEnsureAuth.mock.calls.length).toBe(1));

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import { clean, gt } from "semver";
-import { commands as Commands, env, ExtensionContext, Uri, window as Window } from "vscode";
+import { commands as Commands, env, ExtensionContext, Uri, window as Window, workspace as Workspace } from "vscode";
 import { activateTreeView, deactivateTreeView } from "./deviceView";
 import { activateLsp, deactivateLsp } from "./lspClient";
 import { createOutputCommand } from "./output";
@@ -15,49 +15,167 @@ import { createSerialMonitor } from "./toitMonitor";
 import { createSerialProvision } from "./toitProvision";
 import { createStartSimCommand, createStopSimCommand } from "./toitSimulator";
 import { createUninstallCommand } from "./toitUninstall";
-import { Context, revealDevice } from "./utils";
+import { Context, revealDevice, TOIT_LSP_ARGS, TOIT_SHORT_VERSION_ARGS } from "./utils";
+
 import cp = require("child_process");
 
 const MIN_TOIT_VERSION = "1.8.0";
 
-async function checkToitCLI(ctx: Context): Promise<boolean> {
-  try {
-    const version = clean(cp.execFileSync(ctx.toitExec, [ "version", "-o", "short" ], {"encoding": "utf8"}));
-    if (!version || gt(MIN_TOIT_VERSION, version)) {
-      invalidCLIVersionPrompt(ctx, version);
-      return false;
-    }
-  } catch (err) {
-    if (err?.code === "ENOENT") {
-      missingCLIPrompt();
-    }
-    return false;
-  }
-  return true;
+interface RunResult {
+  executableExists : boolean;
+  // The output, if an executable was found and returned a value.
+  // If the executable exists, but the output is null, then the program crashed.
+  output : string | null;
 }
 
-async function invalidCLIVersionPrompt(ctx: Context, version?: string | null): Promise<void> {
+function run(exec: string, args: Array<string>): RunResult {
+  try {
+    const output = clean(cp.execFileSync(exec, args, {"encoding": "utf8"}));
+    return {
+      "executableExists": true,
+      "output": output
+    };
+  } catch (err) {
+    return {
+      "executableExists": err?.code !== "ENOENT",
+      "output": null
+    };
+  }
+}
+
+async function invalidCLIVersionPrompt(toitExec: string, version?: string | null): Promise<void> {
   const updateToitAction = "Update toit executable";
   const action = await Window.showErrorMessage(`Toit executable${version ? ` ${version}` : ""} is outdated. Please update the executable to use the extension (reload window to activate the extension).`, updateToitAction);
   if (action === updateToitAction) {
-    cp.execFileSync(ctx.toitExec, ["update"]);
+    cp.execFileSync(toitExec, ["update"]);
   }
 }
 
-async function missingCLIPrompt() {
+async function missingCLIPrompt(path: string|null) {
   const installAction = "Install";
   const settingsAction = "Update settings";
-  const action = await Window.showErrorMessage("Could not find the `toit` executable. Please make sure `toit` is installed and set the toit.Path setting to the executable (reload the window to activate the extension).", installAction, settingsAction);
+  let message = "Could not find the `toit` executable";
+  if (path !== null) {
+    message += " at '" + path + "'";
+  }
+  message += ". Please make sure `toit` is installed and set the toit.path setting to the executable (reload the window to activate the extension";
+  const action = await Window.showErrorMessage(message, installAction, settingsAction);
   if (action === installAction) {
     env.openExternal(Uri.parse("https://docs.toit.io/getstarted/installation"));
   } else if (action === settingsAction) {
-    Commands.executeCommand( "workbench.action.openSettings", "toit.Path" );
+    Commands.executeCommand( "workbench.action.openSettings", "toit.path" );
   }
 }
 
+async function badCLIPrompt(path: string|null) {
+  const installAction = "Install";
+  const settingsAction = "Update settings";
+  let message = "The `toit` executable ";
+  if (path !== null) {
+    message += "at '" + path + "' ";
+  }
+  message += "was found but did not execute correctly.";
+  const action = await Window.showErrorMessage(message, installAction, settingsAction);
+  if (action === installAction) {
+    env.openExternal(Uri.parse("https://docs.toit.io/getstarted/installation"));
+  } else if (action === settingsAction) {
+    Commands.executeCommand( "workbench.action.openSettings", "toit.path" );
+  }
+}
+
+async function badSetting(setting: string) {
+  const settingsAction = "Update settings";
+  const message = "Invalid setting for '" + setting + "'";
+  const action = await Window.showErrorMessage(message, settingsAction);
+  if (action === settingsAction) {
+    Commands.executeCommand( "workbench.action.openSettings", setting);
+  }
+}
+
+interface Executables {
+  cli: string | null;
+  lspCommand: Array<string> | null;
+}
+
+async function findExecutables(): Promise<Executables> {
+  const configCli = Workspace.getConfiguration("toit").get("path");
+  const configLspCommand = Workspace.getConfiguration("toitLanguageServer").get("command");
+
+  if (configCli !== null) {
+    if (typeof configCli !== "string") {
+      await badSetting("toit.path");
+      return {
+        "cli": null,
+        "lspCommand": null
+      };
+    }
+  }
+  if (configLspCommand !== null) {
+    if (!(configLspCommand instanceof Array) ||
+        configLspCommand.some((entry) => typeof entry !== "string")) {
+      await badSetting("toitLanguageServer.command");
+      return {
+        "cli": null,
+        "lspCommand": null
+      };
+    }
+  }
+
+  let cliExec: string|null = null;
+  let lspCommand: Array<string>|null = null;
+  let cliVersion: string|null = null;
+
+  if (configCli === null && configLspCommand === null) {
+    // No configuration. We try to find it in the PATH.
+    const check = run("toit", [ "version", "-o", "short" ]);
+    if (check.executableExists) {
+      cliExec = "toit";
+      cliVersion = check.output;
+    } else {
+      // Try to find the language server in the path.
+      const lspResult = run("toitlsp", ["version"]);
+      if (lspResult.executableExists && lspResult.output !== null) {
+        const toitcResult = run("toitc", ["--version"]);
+        if (toitcResult.executableExists && toitcResult.output !== null) {
+          // The toitlsp and toitc executables exist and don't crash.
+          // We will try to use them as LSP.
+          lspCommand = [ "toitlsp", "--toitc", "toitc" ];
+        }
+      }
+    }
+  } else if (typeof configCli === "string") {
+    const check = run(configCli, TOIT_SHORT_VERSION_ARGS);
+    cliVersion = check.output;
+    if (check.executableExists) {
+      cliExec = configCli;
+      cliVersion = check.output;
+    }
+  }
+
+  if (cliExec === null && lspCommand === null) {
+    await missingCLIPrompt(configCli as string);
+  } else if (cliExec !== null) {
+    if (cliVersion === null) {
+      await badCLIPrompt(configCli as string);
+      cliExec = null;
+    } else if (gt(MIN_TOIT_VERSION, cliVersion)) {
+      await invalidCLIVersionPrompt(cliExec, cliVersion);
+      cliExec = null;
+    } else if (lspCommand === null) {
+      lspCommand = [cliExec];
+      lspCommand.push(...TOIT_LSP_ARGS);
+    }
+  }
+  return {
+    "cli": cliExec,
+    "lspCommand": lspCommand
+  };
+}
+
 export async function activate(extContext: ExtensionContext): Promise<void> {
-  const ctx = new Context();
-  if (await checkToitCLI(ctx)) {
+  const executables = await findExecutables();
+  if (executables.cli !== null) {
+    const ctx = new Context(executables.cli);
     Commands.executeCommand("setContext", "toit.extensionActive", true);
 
     activateTreeView(ctx);
@@ -79,7 +197,9 @@ export async function activate(extContext: ExtensionContext): Promise<void> {
 
     activateToitStatusBar(ctx, extContext);
   }
-  activateLsp(extContext);
+  if (executables.lspCommand !== null) {
+    activateLsp(extContext, executables.lspCommand);
+  }
 }
 
 export function deactivate(): Thenable<void> {

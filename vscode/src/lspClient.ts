@@ -7,7 +7,6 @@ import { platform } from "os";
 import * as p from "path";
 import { ExtensionContext, OutputChannel, TextDocument, Uri, window as Window, workspace as Workspace, WorkspaceFolder } from "vscode";
 import { DocumentSelector, LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-languageclient";
-import { getToitPath } from "./utils";
 
 // Untitled documents, or documents outside all workspaces go to a default client.
 let nonFileClient: LanguageClient;
@@ -54,6 +53,7 @@ function getOuterMostWorkspaceFolder(folder: WorkspaceFolder): WorkspaceFolder {
 
 
 function startToitLsp(_: ExtensionContext,
+    lspCommand: Array<string>,
     outputChannel: OutputChannel,
     config: ClientConfiguration) : LanguageClient {
   const workingDir = config.workingDir;
@@ -61,20 +61,7 @@ function startToitLsp(_: ExtensionContext,
   const scheme = config.scheme;
   const pattern = config.pattern;
   const lspSettings = Workspace.getConfiguration("toitLanguageServer", workspaceFolder);
-  let toitPath = lspSettings.get("toitPath");
-  let lspArguments: Array<string> | string | null | undefined = lspSettings.get("arguments");
   let debugClientToServer = !!lspSettings.get("debug.clientToServer");
-
-  if (toitPath === null || toitPath === undefined || toitPath === "") {
-    toitPath = getToitPath();
-  }
-  if (lspArguments === null || lspArguments === undefined) {
-    lspArguments = [ "tool", "lsp" ];
-  }
-
-  if (typeof lspArguments === "string") {
-    lspArguments = [lspArguments];
-  }
 
   // If the extension is launched in debug mode then the debug server options are used
   // Otherwise the normal ones are used
@@ -84,12 +71,12 @@ function startToitLsp(_: ExtensionContext,
     Window.showInformationMessage("Client-Server debugging is only available on Linux");
   }
   if (debugClientToServer) {
-    let toitCommand = (toitPath as string);
-    for (const arg of lspArguments) {
-      toitCommand += ' "' + arg + '"';
+    let command = "";
+    for (const arg of lspCommand) {
+      command += ' "' + arg + '"';
     }
     const logFile = "/tmp/debug_client_to_server-" + (new Date().toISOString()) + ".log";
-    const args = [ "-c", 'tee "' + logFile + '" | ' + toitCommand ];
+    const args = [ "-c", 'tee "' + logFile + '" | ' + command ];
 
     serverOptions = {
       "command": "/bin/bash",
@@ -100,8 +87,8 @@ function startToitLsp(_: ExtensionContext,
     };
   } else {
     serverOptions = {
-      "command": toitPath as string,
-      "args": lspArguments,
+      "command": lspCommand[0],
+      "args": lspCommand.slice(1),
       "options": {
         "cwd": workingDir
       }
@@ -152,7 +139,7 @@ interface ClientConfiguration {
   pattern?: string
 }
 
-export function activateLsp(context: ExtensionContext): void {
+export function activateLsp(context: ExtensionContext, lspCommand: Array<string>): void {
   const outputChannel: OutputChannel = Window.createOutputChannel("Toit LSP Server");
 
   function computeClientConfiguration(document: TextDocument): ClientConfiguration {
@@ -202,13 +189,13 @@ export function activateLsp(context: ExtensionContext): void {
 
     if (config.scheme !== "file") {
       if (!nonFileClient) {
-        nonFileClient = startToitLsp(context, outputChannel, config);
+        nonFileClient = startToitLsp(context, lspCommand, outputChannel, config);
       }
       return;
     }
     const workingDir = config.workingDir!;
     if (!clients.has(workingDir)) {
-      const client = startToitLsp(context, outputChannel, config);
+      const client = startToitLsp(context, lspCommand, outputChannel, config);
       clients.set(workingDir, client);
       clientCounts.set(workingDir, 1);
     } else {
