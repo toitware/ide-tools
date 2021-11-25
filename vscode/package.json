@@ -312,10 +312,5 @@
 		"vsce": "^1.77.0",
 		"vscode-languageclient": "^5.2.1",
 		"vscode-test": "^1.5.2"
-	},
-	"__metadata": {
-		"id": "f78543a3-3f95-4cfc-9b62-50c5a948657f",
-		"publisherDisplayName": null,
-		"publisherId": "cc0933a9-8e93-4b38-a2df-865298913348"
 	}
 }

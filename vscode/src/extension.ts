@@ -15,7 +15,7 @@ import { createSerialMonitor } from "./toitMonitor";
 import { createSerialProvision } from "./toitProvision";
 import { createStartSimCommand, createStopSimCommand } from "./toitSimulator";
 import { createUninstallCommand } from "./toitUninstall";
-import { Context, revealDevice } from "./utils";
+import { Context, revealDevice, TOIT_LSP_ARGS, TOIT_SHORT_VERSION_ARGS } from "./utils";
 
 import cp = require("child_process");
 
@@ -28,7 +28,7 @@ interface RunResult {
   output : string | null;
 }
 
-async function run(exec: string, args: Array<string>): Promise<RunResult> {
+function run(exec: string, args: Array<string>): RunResult {
   try {
     const output = clean(cp.execFileSync(exec, args, {"encoding": "utf8"}));
     return {
@@ -83,6 +83,15 @@ async function badCLIPrompt(path: string|null) {
   }
 }
 
+async function badSetting(setting: string) {
+  const settingsAction = "Update settings";
+  const message = "Invalid setting for '" + setting + "'";
+  const action = await Window.showErrorMessage(message, settingsAction);
+  if (action === settingsAction) {
+    Commands.executeCommand( "workbench.action.openSettings", setting);
+  }
+}
+
 interface Executables {
   cli: string | null;
   lspCommand: Array<string> | null;
@@ -92,37 +101,55 @@ async function findExecutables(): Promise<Executables> {
   const configCli = Workspace.getConfiguration("toit").get("path");
   const configLspCommand = Workspace.getConfiguration("toitLanguageServer").get("command");
 
+  if (configCli !== null) {
+    if (typeof configCli !== "string") {
+      await badSetting("toit.path");
+      return {
+        "cli": null,
+        "lspCommand": null
+      };
+    }
+  }
+  if (configLspCommand !== null) {
+    if (!(configLspCommand instanceof Array) ||
+        configLspCommand.some((entry) => typeof entry !== "string")) {
+      await badSetting("toitLanguageServer.command");
+      return {
+        "cli": null,
+        "lspCommand": null
+      };
+    }
+  }
+
   let cliExec: string|null = null;
   let lspCommand: Array<string>|null = null;
   let cliVersion: string|null = null;
 
   if (configCli === null && configLspCommand === null) {
     // No configuration. We try to find it in the PATH.
-    const check = await run("toit", [ "version", "-o", "short" ]);
+    const check = run("toit", [ "version", "-o", "short" ]);
     if (check.executableExists) {
       cliExec = "toit";
       cliVersion = check.output;
     } else {
       // Try to find the language server in the path.
-      const lspResult = await run("toitlsp", ["version"]);
+      const lspResult = run("toitlsp", ["version"]);
       if (lspResult.executableExists && lspResult.output !== null) {
-        const toitcResult = await run("toitc", ["--version"]);
+        const toitcResult = run("toitc", ["--version"]);
         if (toitcResult.executableExists && toitcResult.output !== null) {
-          // Good enough for us.
+          // The toitlsp and toitc executables exist and don't crash.
+          // We will try to use them as LSP.
           lspCommand = [ "toitlsp", "--toitc", "toitc" ];
         }
       }
     }
   } else if (typeof configCli === "string") {
-    const check = await run(configCli, [ "version", "-o", "short" ]);
+    const check = run(configCli, TOIT_SHORT_VERSION_ARGS);
     cliVersion = check.output;
     if (check.executableExists) {
       cliExec = configCli;
       cliVersion = check.output;
     }
-  }
-  if (configLspCommand !== null) {
-    lspCommand = configLspCommand as Array<string>;
   }
 
   if (cliExec === null && lspCommand === null) {
@@ -135,7 +162,8 @@ async function findExecutables(): Promise<Executables> {
       await invalidCLIVersionPrompt(cliExec, cliVersion);
       cliExec = null;
     } else if (lspCommand === null) {
-      lspCommand = [ cliExec, "tool", "lsp" ];
+      lspCommand = [cliExec];
+      lspCommand.push(...TOIT_LSP_ARGS);
     }
   }
   return {

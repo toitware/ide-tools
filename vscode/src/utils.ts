@@ -308,3 +308,7 @@ export async function revealDevice(ctx: Context, hwid: string): Promise<void> {
   }
   await ctx.views.getDeviceView()?.reveal(device, { "focus": true, "select": false, "expand": true });
 }
+
+export const TOIT_SHORT_VERSION_ARGS = [ "version", "-o", "short" ];
+
+export const TOIT_LSP_ARGS = [ "tool", "lsp" ];
