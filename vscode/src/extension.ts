@@ -145,7 +145,6 @@ async function findExecutables(): Promise<Executables> {
     }
   } else if (typeof configCli === "string") {
     const check = run(configCli, TOIT_SHORT_VERSION_ARGS);
-    cliVersion = check.output;
     if (check.executableExists) {
       cliExec = configCli;
       cliVersion = check.output;
