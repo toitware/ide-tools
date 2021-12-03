@@ -23,6 +23,7 @@ const MIN_TOIT_VERSION = "1.8.0";
 
 interface RunResult {
   executableExists : boolean;
+  error : unknown;
   // The output, if an executable was found and returned a value.
   // If the executable exists, but the output is null, then the program crashed.
   output : string | null;
@@ -33,11 +34,13 @@ function run(exec: string, args: Array<string>): RunResult {
     const output = clean(cp.execFileSync(exec, args, {"encoding": "utf8"}));
     return {
       "executableExists": true,
+      "error": null,
       "output": output
     };
   } catch (err) {
     return {
       "executableExists": err?.code !== "ENOENT",
+      "error": err,
       "output": null
     };
   }
@@ -67,14 +70,16 @@ async function missingCLIPrompt(path: string|null) {
   }
 }
 
-async function badCLIPrompt(path: string|null) {
+async function badCLIPrompt(path: string|null, error: unknown) {
   const installAction = "Install";
   const settingsAction = "Update settings";
-  let message = "The `toit` executable ";
-  if (path !== null) {
-    message += "at '" + path + "' ";
+  let message = "";
+  if (path === null) {
+    message = "The given 'toit' path did not execute correctly";
+  } else {
+    message = "Running '" + path + "' yielded an error";
   }
-  message += "was found but did not execute correctly.";
+  if (error !== null) message += ": " + error;
   const action = await Window.showErrorMessage(message, installAction, settingsAction);
   if (action === installAction) {
     env.openExternal(Uri.parse("https://docs.toit.io/getstarted/installation"));
@@ -122,6 +127,7 @@ async function findExecutables(): Promise<Executables> {
   }
 
   let cliExec: string|null = null;
+  let cliError: unknown = null;
   let lspCommand: Array<string>|null = null;
   let cliVersion: string|null = null;
 
@@ -130,6 +136,7 @@ async function findExecutables(): Promise<Executables> {
     const check = run("toit", [ "version", "-o", "short" ]);
     if (check.executableExists) {
       cliExec = "toit";
+      cliError = check.error;
       cliVersion = check.output;
     } else {
       // Try to find the language server in the path.
@@ -145,18 +152,18 @@ async function findExecutables(): Promise<Executables> {
     }
   } else if (typeof configCli === "string") {
     const check = run(configCli, TOIT_SHORT_VERSION_ARGS);
+    cliError = check.error;
     cliVersion = check.output;
     if (check.executableExists) {
       cliExec = configCli;
-      cliVersion = check.output;
     }
   }
 
   if (cliExec === null && lspCommand === null) {
     await missingCLIPrompt(configCli as string);
   } else if (cliExec !== null) {
-    if (cliVersion === null) {
-      await badCLIPrompt(configCli as string);
+    if (cliError !== null || cliVersion === null) {
+      await badCLIPrompt(configCli as string, cliError);
       cliExec = null;
     } else if (gt(MIN_TOIT_VERSION, cliVersion)) {
       await invalidCLIVersionPrompt(cliExec, cliVersion);
