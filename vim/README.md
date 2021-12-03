@@ -15,7 +15,7 @@ Syntax highlighting
 ===================
 
 Create a folder called `syntax` in the location of your vim/neovim installation,
-copy `syntax/toit.vim` to that folder and your `.vimrc` or `init.vim` file add
+copy `syntax/toit.vim` to that folder and add the following to your `.vimrc` or `init.vim` file:
 
 ```
 au! BufNewFile,BufReadPost *.{toit} set filetype=toit
