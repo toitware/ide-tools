@@ -8,11 +8,24 @@ The Toit extension adds language support for the Toit programming language, incl
 
 ## Quick start
 
+### toit.io
+In this configuration the extension uses the `toit` CLI to connect to the Toit servers.
+
+All of the extension's features are activated in this mode.
+
 - _Step 1:_ Install [Toit](https://docs.toit.io/getstarted/installation) and the [Toit Visual Studio Code extension](https://marketplace.visualstudio.com/items?itemName=toit.toit).
 - _Step 2:_ Either place `toit` in your path or set `toit.Path` to the location of `toit`.
 - _Step 3:_ The extension is activated when you open a `.toit` file.
 
 The extension is now set up and ready to use. Visit the [Toit docs](https://docs.toit.io/) for more information about Toit.
+
+### toitlang.org
+The open-source version of Toit provides syntax highlighting and the
+language server (providing completions, diagnostics, ...).
+
+- _Step 1:_ Follow the steps to build the tools as described in the [README](https://github.com/toitlang/toit).
+- _Step 2:_ Either place `toitlsp` and `toitc` in your path or set `toitLanguageServer.command` to `["PATH_TO_TOITLSP", "--toitc=PATH_TO_TOITC"]`.
+- _Step 3:_ The extension is activated when you open a `.toit` file.
 
 ## Extension tour
 
