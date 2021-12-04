@@ -20,7 +20,7 @@ All of the extension's features are activated in this mode.
 The extension is now set up and ready to use. Visit the [Toit docs](https://docs.toit.io/) for more information about Toit.
 
 ### toitlang.org
-The open-source version of Toit provides syntax highlighting and the
+The open source version of Toit provides syntax highlighting and the
 language server (providing completions, diagnostics, ...).
 
 - _Step 1:_ Follow the steps to build the tools as described in the [README](https://github.com/toitlang/toit).
