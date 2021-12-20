@@ -11,6 +11,18 @@ Alternatively, if you are using Vim 8 or newer you can recursively
 copy this directory to a $HOME/.vim/pack/toit/start/toit directory
 so that this file appears as $HOME/.vim/pack/toit/start/toit/README.md
 
+Syntax highlighting
+===================
+
+Create a folder called `syntax` in the location of your vim/neovim installation,
+copy `syntax/toit.vim` to that folder and add the following to your `.vimrc` or `init.vim` file:
+
+```
+au! BufNewFile,BufReadPost *.{toit} set filetype=toit
+```
+
+This will enable syntax highlighting in vim/neovim.
+
 Language Server
 ===============
 
