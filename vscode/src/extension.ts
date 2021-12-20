@@ -139,7 +139,7 @@ async function findExecutables(): Promise<Executables> {
       cliError = check.error;
       cliVersion = check.output;
     } else {
-      // Try to find the language server in the path.
+      // Try to find the language server in the PATH.
       const lspResult = run("toitlsp", ["version"]);
       if (lspResult.executableExists && lspResult.output !== null) {
         const toitcResult = run("toitc", ["--version"]);
@@ -147,6 +147,13 @@ async function findExecutables(): Promise<Executables> {
           // The toitlsp and toitc executables exist and don't crash.
           // We will try to use them as LSP.
           lspCommand = [ "toitlsp", "--toitc", "toitc" ];
+        }
+      } else {
+        // Last resort: Try to find 'jag' in the PATH.
+        const jagResult = run("jag", ["version"])
+        if (jagResult.executableExists && jagResult.output !== null) {
+          // The 'jag' executable exists and does not crash.
+          lspCommand = [ "jag", "toit", "lsp", "--" ];
         }
       }
     }
