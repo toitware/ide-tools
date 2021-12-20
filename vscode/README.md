@@ -21,7 +21,9 @@ The extension is now set up and ready to use. Visit the [Toit docs](https://docs
 
 ### toitlang.org
 The open source version of Toit provides syntax highlighting and the
-language server (providing completions, diagnostics, ...).
+language server (providing completions, diagnostics, ...). The easiest way to set it up is to 
+download the [Jaguar](https://github.com/toitlang/jaguar) development support and put `jag` or `jag.exe` in your path.
+Jaguar bundles the Toit SDK, but if you'd rather build that yourself, you can follow these steps:
 
 - _Step 1:_ Follow the steps to build the tools as described in the [README](https://github.com/toitlang/toit).
 - _Step 2:_ Either place `toitlsp` and `toitc` in your path or set `toitLanguageServer.command` to `["PATH_TO_TOITLSP", "--toitc=PATH_TO_TOITC"]`.
