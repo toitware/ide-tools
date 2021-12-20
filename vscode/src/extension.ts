@@ -29,9 +29,13 @@ interface RunResult {
   output : string | null;
 }
 
+interface CodeError {
+  code : string;
+}
+
 function run(exec: string, args: Array<string>): RunResult {
   try {
-    const output = clean(cp.execFileSync(exec, args, {"encoding": "utf8"}));
+    const output = cp.execFileSync(exec, args, {"encoding": "utf8"});
     return {
       "executableExists": true,
       "error": null,
@@ -39,7 +43,7 @@ function run(exec: string, args: Array<string>): RunResult {
     };
   } catch (err) {
     return {
-      "executableExists": err?.code !== "ENOENT",
+      "executableExists": (err as CodeError)?.code !== "ENOENT",
       "error": err,
       "output": null
     };
@@ -137,7 +141,7 @@ async function findExecutables(): Promise<Executables> {
     if (check.executableExists) {
       cliExec = "toit";
       cliError = check.error;
-      cliVersion = check.output;
+      cliVersion = clean(check.output!);
     } else {
       // Try to find the language server in the PATH.
       const lspResult = run("toitlsp", ["version"]);
@@ -150,7 +154,7 @@ async function findExecutables(): Promise<Executables> {
         }
       } else {
         // Last resort: Try to find 'jag' in the PATH.
-        const jagResult = run("jag", ["version"])
+        const jagResult = run("jag", ["version"]);
         if (jagResult.executableExists && jagResult.output !== null) {
           // The 'jag' executable exists and does not crash.
           lspCommand = [ "jag", "toit", "lsp", "--" ];
@@ -164,6 +168,8 @@ async function findExecutables(): Promise<Executables> {
     if (check.executableExists) {
       cliExec = configCli;
     }
+  } else {
+    lspCommand = configLspCommand;
   }
 
   if (cliExec === null && lspCommand === null) {
