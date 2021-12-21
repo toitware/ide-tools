@@ -63,19 +63,22 @@
 				"command": "toit.stopSimulator",
 				"title": "Stop simulator",
 				"category": "Toit",
-				"icon": "$(circle-slash)"
+				"icon": "$(circle-slash)",
+				"enablement": "toit.extensionActive"
 			},
 			{
 				"command": "toit.startSimulator",
 				"title": "Start simulator",
 				"category": "Toit",
-				"icon": "$(rocket)"
+				"icon": "$(rocket)",
+				"enablement": "toit.extensionActive"
 			},
 			{
 				"command": "toit.uninstallApp",
 				"title": "Uninstall",
 				"category": "Toit",
-				"icon": "$(trash)"
+				"icon": "$(trash)",
+				"enablement": "toit.extensionActive"
 			},
 			{
 				"command": "toit.refreshDeviceView",
