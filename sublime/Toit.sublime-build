@@ -1,0 +1,17 @@
+{
+  "shell_cmd": ["toit", "run", "--no-device", "\"${file}\""],
+  "file_regex": "^",
+  "syntax": "Packages/Toit/Toit.sublime-syntax",
+  "selector": "source.toit",
+  "file_patterns": "*.toit",
+  "working_dir": "${project_path:${folder:${file_path}}}",
+  "windows": {
+    "cmd": ["toit", "run", "--no-device", "\"${file}\""]
+  },
+  "variants": [
+    {
+      "name": "Test",
+      "cmd": ["jag", "watch", "\"${file}\""]
+    }
+  ]
+}
