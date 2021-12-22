@@ -134,6 +134,41 @@
 				"category": "Toit",
 				"icon": "$(selection)",
 				"enablement": "toit.extensionActive"
+			},
+			{
+				"command": "jag.watch",
+				"title": "Watch for changes and rerun",
+				"category": "Jag",
+				"icon": "$(eye)",
+				"enablement": "jag.execPresent"
+			},
+			{
+				"command": "jag.run",
+				"title": "Run file on device",
+				"category": "Jag",
+				"icon": "$(run)",
+				"enablement": "jag.execPresent"
+			},
+			{
+				"command": "jag.monitor",
+				"title": "Monitor serial output",
+				"category": "Jag",
+				"icon": "$(selection)",
+				"enablement": "jag.execPresent"
+			},
+			{
+				"command": "jag.scan",
+				"title": "Scan for Jaguar devices",
+				"category": "Jag",
+				"icon": "$(call-outgoing)",
+				"enablement": "jag.execPresent"
+			},
+			{
+				"command": "jag.flash",
+				"title": "Flash a device with Jaguar",
+				"category": "Jag",
+				"icon": "$(call-outgoing)",
+				"enablement": "jag.execPresent"
 			}
 		],
 		"menus": {
@@ -228,7 +263,7 @@
 						"null"
 					],
 					"default": null,
-					"description": "The path to 'toit' executable, e.g. `/usr/bin/toit`. If left unset, the 'toit' executable in the path is used. If set to empty, then the extension only uses the language server.",
+					"description": "The path to the 'toit' executable, e.g. `/usr/bin/toit`. If left unset, the 'toit' executable in the path is used. If set to empty, then the extension only uses the language server.",
 					"scope": "machine-overridable"
 				},
 				"toit.Path": {
@@ -236,8 +271,16 @@
 						"string",
 						"null"
 					],
-					"description": "The path to 'toit' executable, e.g. `/usr/bin/toit`.",
+					"description": "The path to the 'toit' executable, e.g. `/usr/bin/toit`.",
 					"deprecationMessage": "Deprecated: Use toit.path instead.",
+					"scope": "machine-overridable"
+				},
+				"jag.path": {
+					"type": [
+						"string",
+						"null"
+					],
+					"description": "The path to the 'jag' executable, e.g. `/usr/bin/jsg`. If left unset, the 'jsg' executable in the path is used.",
 					"scope": "machine-overridable"
 				},
 				"toitLanguageServer.command": {

@@ -65,7 +65,7 @@ export class DeviceOutput {
   constructor(output: OutputChannel) {
     this.output = output;
   }
-  
+
   show(): void {
     this.output.show(true);
   }
@@ -126,7 +126,6 @@ async function executeOutputCommand(ctx: Context, device?: Device) {
 
   ctx.output.startDeviceOutput(device);
   ctx.output.showDeviceOutput(device);
-
 }
 
 export function createOutputCommand(ctx: Context): () => void {

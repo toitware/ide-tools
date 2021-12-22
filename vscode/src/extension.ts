@@ -5,6 +5,7 @@
 import { clean, gt } from "semver";
 import { commands as Commands, env, ExtensionContext, Uri, window as Window, workspace as Workspace } from "vscode";
 import { activateTreeView, deactivateTreeView } from "./deviceView";
+import { createJagFlashCommand, createJagMonitorCommand, createJagRunCommand, createJagScanCommand, createJagWatchCommand } from "./jagCmds";
 import { activateLsp, deactivateLsp } from "./lspClient";
 import { createOutputCommand } from "./output";
 import { activateToitStatusBar, createSetProjectCommand } from "./projectCmd";
@@ -15,7 +16,7 @@ import { createSerialMonitor } from "./toitMonitor";
 import { createSerialProvision } from "./toitProvision";
 import { createStartSimCommand, createStopSimCommand } from "./toitSimulator";
 import { createUninstallCommand } from "./toitUninstall";
-import { Context, revealDevice, TOIT_LSP_ARGS, TOIT_SHORT_VERSION_ARGS } from "./utils";
+import { Context, JagContext, revealDevice, TOIT_LSP_ARGS, TOIT_SHORT_VERSION_ARGS } from "./utils";
 
 import cp = require("child_process");
 
@@ -104,18 +105,21 @@ async function badSetting(setting: string) {
 interface Executables {
   cli: string | null;
   lspCommand: Array<string> | null;
+  jag: string | null;
 }
 
 async function findExecutables(): Promise<Executables> {
   const configCli = Workspace.getConfiguration("toit").get("path");
   const configLspCommand = Workspace.getConfiguration("toitLanguageServer").get("command");
+  const configJag = Workspace.getConfiguration("jag").get("path");
 
   if (configCli !== null) {
     if (typeof configCli !== "string") {
       await badSetting("toit.path");
       return {
         "cli": null,
-        "lspCommand": null
+        "lspCommand": null,
+        "jag": null
       };
     }
   }
@@ -125,7 +129,18 @@ async function findExecutables(): Promise<Executables> {
       await badSetting("toitLanguageServer.command");
       return {
         "cli": null,
-        "lspCommand": null
+        "lspCommand": null,
+        "jag": null
+      };
+    }
+  }
+  if (configJag !== null) {
+    if (typeof configJag !== "string") {
+      await badSetting("toit.jag");
+      return {
+        "cli": null,
+        "lspCommand": null,
+        "jag": null
       };
     }
   }
@@ -134,6 +149,7 @@ async function findExecutables(): Promise<Executables> {
   let cliError: unknown = null;
   let lspCommand: Array<string>|null = null;
   let cliVersion: string|null = null;
+  let jagExec: string|null = null;
 
   if (configCli === null && configLspCommand === null) {
     // No configuration. We try to find it in the PATH.
@@ -158,6 +174,7 @@ async function findExecutables(): Promise<Executables> {
         if (jagResult.executableExists && jagResult.output !== null) {
           // The 'jag' executable exists and does not crash.
           lspCommand = [ "jag", "toit", "lsp", "--" ];
+          jagExec = "jag";
         }
       }
     }
@@ -170,6 +187,14 @@ async function findExecutables(): Promise<Executables> {
     }
   } else {
     lspCommand = configLspCommand;
+  }
+
+  if (jagExec === null) {
+    const jagResult = run("jag", ["version"]);
+    if (jagResult.executableExists && jagResult.output !== null) {
+      // The 'jag' executable exists and does not crash.
+      jagExec = "jag";
+    }
   }
 
   if (cliExec === null && lspCommand === null) {
@@ -188,7 +213,8 @@ async function findExecutables(): Promise<Executables> {
   }
   return {
     "cli": cliExec,
-    "lspCommand": lspCommand
+    "lspCommand": lspCommand,
+    "jag": jagExec
   };
 }
 
@@ -219,6 +245,17 @@ export async function activate(extContext: ExtensionContext): Promise<void> {
   }
   if (executables.lspCommand !== null) {
     activateLsp(extContext, executables.lspCommand);
+  }
+  if (executables.jag !== null) {
+    Commands.executeCommand("setContext", "jag.execPresent", true);
+
+    const ctx = new JagContext(executables.jag);
+
+    extContext.subscriptions.push(Commands.registerCommand("jag.watch", createJagWatchCommand(ctx)));
+    extContext.subscriptions.push(Commands.registerCommand("jag.run", createJagRunCommand(ctx)));
+    extContext.subscriptions.push(Commands.registerCommand("jag.monitor", createJagMonitorCommand(ctx)));
+    extContext.subscriptions.push(Commands.registerCommand("jag.scan", createJagScanCommand(ctx)));
+    extContext.subscriptions.push(Commands.registerCommand("jag.flash", createJagFlashCommand(ctx)));
   }
 }
 
