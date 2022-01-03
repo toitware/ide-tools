@@ -53,7 +53,7 @@ function run(exec: string, args: Array<string>): RunResult {
 
 function isJagSetup(jagExec: string) : boolean {
   const jagResult = run(jagExec, [ "setup", "--check" ]);
-  return !!jagResult.output?.startsWith("Jaguar setup is valid.");
+  return !(jagResult.error);
 }
 
 async function missingJagSetupPrompt(jagExec: string) : Promise<boolean> {
