@@ -194,7 +194,7 @@ async function findExecutables(): Promise<Executables> {
     } else if (runCheck("jag", ["version"])) {
       // The 'jag' executable exists and does not crash.
       lspCommand = [ "jag", "toit", "lsp", "--" ];
-          jagExec = "jag";
+      jagExec = "jag";
     }
   } else if (typeof configCli === "string") {
     const check = run(configCli, TOIT_SHORT_VERSION_ARGS);
@@ -207,12 +207,9 @@ async function findExecutables(): Promise<Executables> {
     lspCommand = configLspCommand;
   }
 
-  if (jagExec === null) {
-    const jagResult = run("jag", ["version"]);
-    if (jagResult.executableExists && jagResult.output !== null) {
-      // The 'jag' executable exists and does not crash.
-      jagExec = "jag";
-    }
+  if (jagExec === null && runCheck("jag", ["version"])) {
+    // The 'jag' executable exists and does not crash.
+    jagExec = "jag";
   }
 
   if (cliExec === null && lspCommand === null) {
