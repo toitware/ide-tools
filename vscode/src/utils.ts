@@ -25,7 +25,7 @@ export class JagContext {
 
   ensureSharedTerminal() : Terminal {
     if (!this.sharedTerminal || this.sharedTerminal.exitStatus) {
-      this.sharedTerminal = Window.createTerminal(`Jag`);
+      this.sharedTerminal = Window.createTerminal(`jag`);
     }
     return this.sharedTerminal;
   }

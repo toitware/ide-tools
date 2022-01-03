@@ -15,7 +15,7 @@ async function executeJagWatch(ctx: JagContext) {
     if (!filePath) return;
 
     const prefix = ctx.watchNumber === 0 ? "" : ` (${ctx.watchNumber++})`;
-    const terminal = Window.createTerminal(`Jag watch${prefix}`);
+    const terminal = Window.createTerminal(`jag watch${prefix}`);
     terminal.show(false);
     terminal.sendText(`${ctx.jagExec} watch ${filePath}`);
   } catch (e) {
@@ -51,7 +51,7 @@ async function executeJagMonitor(ctx: JagContext) {
     const portFlag = port ? `--port '${port}'`: "";
 
     const prefix = ctx.monitorNumber === 0 ? "" : ` (${ctx.monitorNumber++})`;
-    const terminal = Window.createTerminal(`Jag monitor${prefix}`);
+    const terminal = Window.createTerminal(`jag monitor${prefix}`);
     terminal.show(false);
     terminal.sendText(`${ctx.jagExec} monitor ${portFlag}`);
   } catch (e) {
