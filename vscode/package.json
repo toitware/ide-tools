@@ -263,7 +263,7 @@
 						"null"
 					],
 					"default": null,
-					"description": "The path to the 'toit' executable, e.g. `/usr/bin/toit`. If left unset, the 'toit' executable in the path is used. If set to empty, then the extension only uses the language server.",
+					"description": "The path to the 'toit' executable, e.g. `/usr/bin/toit`.",
 					"scope": "machine-overridable"
 				},
 				"toit.Path": {
