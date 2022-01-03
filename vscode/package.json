@@ -280,7 +280,7 @@
 						"string",
 						"null"
 					],
-					"description": "The path to the 'jag' executable, e.g. `/usr/bin/jsg`. If left unset, the 'jsg' executable in the path is used.",
+					"description": "The path to the 'jag' executable, e.g. `/usr/bin/jag`. If left unset, the 'jag' executable in the path is used.",
 					"scope": "machine-overridable"
 				},
 				"toitLanguageServer.command": {
