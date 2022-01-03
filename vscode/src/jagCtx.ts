@@ -11,7 +11,6 @@ export class JagContext {
   monitorNumber = 0;
   sharedTerminal: Terminal|null = null;
   jagExec: string;
-  // Fix this any type before committing!
   lastDevice: Device | null = null;
 
   constructor(jagExec: string) {
