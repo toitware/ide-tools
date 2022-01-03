@@ -138,35 +138,35 @@
 			{
 				"command": "jag.watch",
 				"title": "Watch for changes and rerun",
-				"category": "Jag",
+				"category": "Jaguar",
 				"icon": "$(eye)",
 				"enablement": "jag.execPresent"
 			},
 			{
 				"command": "jag.run",
 				"title": "Run file on device",
-				"category": "Jag",
+				"category": "Jaguar",
 				"icon": "$(run)",
 				"enablement": "jag.execPresent"
 			},
 			{
 				"command": "jag.monitor",
 				"title": "Monitor serial output",
-				"category": "Jag",
+				"category": "Jaguar",
 				"icon": "$(selection)",
 				"enablement": "jag.execPresent"
 			},
 			{
 				"command": "jag.scan",
 				"title": "Scan for Jaguar devices",
-				"category": "Jag",
+				"category": "Jaguar",
 				"icon": "$(call-outgoing)",
 				"enablement": "jag.execPresent"
 			},
 			{
 				"command": "jag.flash",
 				"title": "Flash a device with Jaguar",
-				"category": "Jag",
+				"category": "Jaguar",
 				"icon": "$(call-outgoing)",
 				"enablement": "jag.execPresent"
 			}
