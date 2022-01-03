@@ -52,10 +52,10 @@ async function executeJagRun(ctx: JagContext) {
 
 async function executeJagMonitor(ctx: JagContext) {
   try {
-    const port = selectPort(ctx);
+    const port = await selectPort(ctx);
     if (!port) return;
 
-    const terminal = Window.createTerminal(`jag monitor (${port})`);
+    const terminal = ctx.portTerminal(port);
     terminal.show(false);
     terminal.sendText(`${ctx.jagExec} monitor --port '${port}'`);
   } catch (e) {
@@ -86,10 +86,10 @@ async function executeJagFlash(ctx: JagContext) {
     const name = await Window.showInputBox(namePromptOptions);
     const nameFlag = name ? `--name '${name}'`: "";
 
-    const port = selectPort(ctx);
+    const port = await selectPort(ctx);
     if (!port) return;
 
-    const terminal = ctx.ensureSharedTerminal();
+    const terminal = ctx.portTerminal(port);
     terminal.show(false);
     terminal.sendText(`${ctx.jagExec} flash --port '${port}' ${nameFlag} --wifi-ssid '${wifiInfo.ssid}' --wifi-password '${wifiInfo.password}'`);
   } catch (e) {

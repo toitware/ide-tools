@@ -13,6 +13,7 @@ export class JagContext {
   jagExec: string;
   lastDevice: Device | null = null;
   lastPort: string | null = null;
+  portTerminals: Map<string, Terminal> = new Map();
 
   constructor(jagExec: string) {
     this.jagExec = jagExec;
@@ -23,6 +24,16 @@ export class JagContext {
       this.sharedTerminal = Window.createTerminal(`jag`);
     }
     return this.sharedTerminal;
+  }
+
+  portTerminal(port: string) : Terminal {
+    let serial = this.portTerminals.get(port);
+    if (serial && !serial.exitStatus) return serial;
+
+    serial = Window.createTerminal(`Toit serial (${port})`);
+    this.portTerminals.set(port, serial);
+
+    return serial;
   }
 }
 
