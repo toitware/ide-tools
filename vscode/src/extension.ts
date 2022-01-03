@@ -52,6 +52,26 @@ function run(exec: string, args: Array<string>): RunResult {
   }
 }
 
+function isJagSetup(jagExec: string) : boolean {
+  const jagResult = run(jagExec, [ "setup", "--check" ]);
+  return !(jagResult.error);
+}
+
+async function missingJagSetupPrompt(jagExec: string) : Promise<boolean> {
+  const setupJagAction = "Setup Jaguar";
+  const action = await Window.showErrorMessage(`The Jaguar installation is incomplete.`, setupJagAction);
+  if (action === setupJagAction) {
+    cp.execFileSync(jagExec, ["setup"]);
+  }
+  if (isJagSetup(jagExec)) {
+    Window.showInformationMessage(`Jaguar setup completed.`);
+    return true;
+  }
+  Window.showWarningMessage(`Failed to set up Jaguar.`);
+  return false;
+
+}
+
 async function invalidCLIVersionPrompt(toitExec: string, version?: string | null): Promise<void> {
   const updateToitAction = "Update toit executable";
   const action = await Window.showErrorMessage(`Toit executable${version ? ` ${version}` : ""} is outdated. Please update the executable to use the extension (reload window to activate the extension).`, updateToitAction);
@@ -210,6 +230,13 @@ async function findExecutables(): Promise<Executables> {
     } else if (lspCommand === null) {
       lspCommand = [cliExec];
       lspCommand.push(...TOIT_LSP_ARGS);
+    }
+  }
+
+  if (jagExec !== null) {
+    if (!isJagSetup(jagExec)) {
+      const success = await missingJagSetupPrompt(jagExec);
+      if (!success) jagExec = null;
     }
   }
   return {
