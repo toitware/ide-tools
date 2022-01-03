@@ -12,6 +12,8 @@ export class JagContext {
   sharedTerminal: Terminal|null = null;
   jagExec: string;
   lastDevice: Device | null = null;
+  lastPort: string | null = null;
+  portTerminals: Map<string, Terminal> = new Map();
 
   constructor(jagExec: string) {
     this.jagExec = jagExec;
@@ -22,6 +24,16 @@ export class JagContext {
       this.sharedTerminal = Window.createTerminal(`jag`);
     }
     return this.sharedTerminal;
+  }
+
+  portTerminal(port: string) : Terminal {
+    let serial = this.portTerminals.get(port);
+    if (serial && !serial.exitStatus) return serial;
+
+    serial = Window.createTerminal(`Toit serial (${port})`);
+    this.portTerminals.set(port, serial);
+
+    return serial;
   }
 }
 
@@ -62,10 +74,35 @@ function preferLastPicked(ctx: JagContext, devices: DeviceItem[]) {
 }
 
 async function listDeviceItems(ctx: JagContext): Promise<DeviceItem[]> {
-  const { stdout } = await jagExecFilePromise(ctx, "scan", "--list", "-o", "json" );
+  const { stdout } = await jagExecFilePromise(ctx, "scan", "--list", "--output", "json" );
   const jsonResult = JSON.parse(stdout);
   return (jsonResult.devices as Device[]).map(dev => new DeviceItem(dev));
 }
+
+export async function selectPort(ctx: JagContext): Promise<string | undefined> {
+  const ports = await listPorts(ctx);
+
+  const lastPort = ctx.lastPort;
+  if (lastPort) {
+    const i = ports.findIndex(port => port === lastPort);
+    if (i > 0) preferElement(i, ports);
+  }
+
+  const port = await Window.showQuickPick(ports, { "placeHolder": "Pick a port" });
+  if (!port) return undefined;
+
+  ctx.lastPort = port;
+  return port;
+}
+
+async function listPorts(ctx: JagContext): Promise<string[]> {
+  const { stdout } = await jagExecFilePromise(ctx, "port", "--list", "--output", "json" );
+  const jsonResult = JSON.parse(stdout);
+  if (!jsonResult.ports) return [];
+
+  return jsonResult.ports as string[];
+}
+
 
 function jagExecFilePromise(ctx: JagContext, ...args: string[]): Promise<{stdout: string, stderr: string}> {
   return execFile(ctx.jagExec, args);
