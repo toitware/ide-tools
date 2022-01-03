@@ -52,17 +52,17 @@ function run(exec: string, args: Array<string>): RunResult {
 }
 
 async function missingJagSetupPrompt(jagExec: string) : Promise<boolean> {
-  const setupJagAction = "Setup jag";
-  const action = await Window.showErrorMessage(`The jag installation is incorrectly setup.`, setupJagAction);
+  const setupJagAction = "Setup Jaguar";
+  const action = await Window.showErrorMessage(`The Jaguar installation is incomplete.`, setupJagAction);
   if (action === setupJagAction) {
     cp.execFileSync(jagExec, ["setup"]);
   }
   const jagResult = run("jag", [ "setup", "--check" ]);
   if (jagResult.output?.startsWith("Jaguar setup is valid.")) {
-    Window.showInformationMessage(`Jag setup completed.`);
+    Window.showInformationMessage(`Jaguar setup completed.`);
     return true;
   }
-  Window.showWarningMessage(`Failed to set up jag.`);
+  Window.showWarningMessage(`Failed to set up Jaguar.`);
   return false;
 
 }
