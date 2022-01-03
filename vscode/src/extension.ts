@@ -51,14 +51,18 @@ function run(exec: string, args: Array<string>): RunResult {
   }
 }
 
+function isJagSetup(jagExec: string) : boolean {
+  const jagResult = run(jagExec, [ "setup", "--check" ]);
+  return !!jagResult.output?.startsWith("Jaguar setup is valid.");
+}
+
 async function missingJagSetupPrompt(jagExec: string) : Promise<boolean> {
   const setupJagAction = "Setup Jaguar";
   const action = await Window.showErrorMessage(`The Jaguar installation is incomplete.`, setupJagAction);
   if (action === setupJagAction) {
     cp.execFileSync(jagExec, ["setup"]);
   }
-  const jagResult = run("jag", [ "setup", "--check" ]);
-  if (jagResult.output?.startsWith("Jaguar setup is valid.")) {
+  if (isJagSetup(jagExec)) {
     Window.showInformationMessage(`Jaguar setup completed.`);
     return true;
   }
@@ -229,8 +233,7 @@ async function findExecutables(): Promise<Executables> {
   }
 
   if (jagExec !== null) {
-    const jagResult = run("jag", [ "setup", "--check" ]);
-    if (!jagResult.output?.startsWith("Jaguar setup is valid.")) {
+    if (!isJagSetup(jagExec)) {
       const success = await missingJagSetupPrompt(jagExec);
       if (!success) jagExec = null;
     }
