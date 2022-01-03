@@ -12,7 +12,7 @@ export class JagContext {
   sharedTerminal: Terminal|null = null;
   jagExec: string;
   // Fix this any type before committing!
-  lastDevice: any = null;
+  lastDevice: Device | null = null;
 
   constructor(jagExec: string) {
     this.jagExec = jagExec;
