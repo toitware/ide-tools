@@ -6,6 +6,7 @@ import { clean, gt } from "semver";
 import { commands as Commands, env, ExtensionContext, Uri, window as Window, workspace as Workspace } from "vscode";
 import { activateTreeView, deactivateTreeView } from "./deviceView";
 import { createJagFlashCommand, createJagMonitorCommand, createJagRunCommand, createJagScanCommand, createJagWatchCommand } from "./jagCmds";
+import { JagContext } from "./jagCtx";
 import { activateLsp, deactivateLsp } from "./lspClient";
 import { createOutputCommand } from "./output";
 import { activateToitStatusBar, createSetProjectCommand } from "./projectCmd";
@@ -16,7 +17,7 @@ import { createSerialMonitor } from "./toitMonitor";
 import { createSerialProvision } from "./toitProvision";
 import { createStartSimCommand, createStopSimCommand } from "./toitSimulator";
 import { createUninstallCommand } from "./toitUninstall";
-import { Context, JagContext, revealDevice, TOIT_LSP_ARGS, TOIT_SHORT_VERSION_ARGS } from "./utils";
+import { Context, revealDevice, TOIT_LSP_ARGS, TOIT_SHORT_VERSION_ARGS } from "./utils";
 
 import cp = require("child_process");
 

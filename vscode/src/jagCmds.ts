@@ -1,7 +1,9 @@
 // Copyright (C) 2021 Toitware ApS. All rights reserved.
 
 import { InputBoxOptions, window as Window } from "vscode";
-import { getExecuteFilePath, JagContext, promptForWiFiInfo } from "./utils";
+import { JagContext, selectDevice } from "./jagCtx";
+import { getExecuteFilePath, promptForWiFiInfo } from "./utils";
+
 
 async function executeJagWatch(ctx: JagContext) {
   try {
@@ -14,10 +16,13 @@ async function executeJagWatch(ctx: JagContext) {
 
     if (!filePath) return;
 
+    const device = await selectDevice(ctx);
+    if (!device) return;
+
     const prefix = ctx.watchNumber === 0 ? "" : ` (${ctx.watchNumber++})`;
     const terminal = Window.createTerminal(`jag watch${prefix}`);
     terminal.show(false);
-    terminal.sendText(`${ctx.jagExec} watch ${filePath}`);
+    terminal.sendText(`${ctx.jagExec} watch ${filePath} --device ${device.id}`);
   } catch (e) {
     return Window.showErrorMessage(`Unable to watch: ${e.message}`);
   }
@@ -34,9 +39,12 @@ async function executeJagRun(ctx: JagContext) {
 
     if (!filePath) return;
 
+    const device = await selectDevice(ctx);
+    if (!device) return;
+
     const terminal = ctx.ensureSharedTerminal();
     terminal.show(false);
-    terminal.sendText(`${ctx.jagExec} run ${filePath}`);
+    terminal.sendText(`${ctx.jagExec} run ${filePath} --device ${device.id}`);
   } catch (e) {
     return Window.showErrorMessage(`Unable to watch: ${e.message}`);
   }
