@@ -63,19 +63,22 @@
 				"command": "toit.stopSimulator",
 				"title": "Stop simulator",
 				"category": "Toit",
-				"icon": "$(circle-slash)"
+				"icon": "$(circle-slash)",
+				"enablement": "toit.extensionActive"
 			},
 			{
 				"command": "toit.startSimulator",
 				"title": "Start simulator",
 				"category": "Toit",
-				"icon": "$(rocket)"
+				"icon": "$(rocket)",
+				"enablement": "toit.extensionActive"
 			},
 			{
 				"command": "toit.uninstallApp",
 				"title": "Uninstall",
 				"category": "Toit",
-				"icon": "$(trash)"
+				"icon": "$(trash)",
+				"enablement": "toit.extensionActive"
 			},
 			{
 				"command": "toit.refreshDeviceView",
@@ -131,6 +134,41 @@
 				"category": "Toit",
 				"icon": "$(selection)",
 				"enablement": "toit.extensionActive"
+			},
+			{
+				"command": "jag.watch",
+				"title": "Watch for changes and rerun",
+				"category": "Jaguar",
+				"icon": "$(eye)",
+				"enablement": "jag.execPresent"
+			},
+			{
+				"command": "jag.run",
+				"title": "Run file on device",
+				"category": "Jaguar",
+				"icon": "$(run)",
+				"enablement": "jag.execPresent"
+			},
+			{
+				"command": "jag.monitor",
+				"title": "Monitor serial output",
+				"category": "Jaguar",
+				"icon": "$(selection)",
+				"enablement": "jag.execPresent"
+			},
+			{
+				"command": "jag.scan",
+				"title": "Scan for Jaguar devices",
+				"category": "Jaguar",
+				"icon": "$(call-outgoing)",
+				"enablement": "jag.execPresent"
+			},
+			{
+				"command": "jag.flash",
+				"title": "Flash a device with Jaguar",
+				"category": "Jaguar",
+				"icon": "$(call-outgoing)",
+				"enablement": "jag.execPresent"
 			}
 		],
 		"menus": {
@@ -225,7 +263,7 @@
 						"null"
 					],
 					"default": null,
-					"description": "The path to 'toit' executable, e.g. `/usr/bin/toit`. If left unset, the 'toit' executable in the path is used. If set to empty, then the extension only uses the language server.",
+					"description": "The path to the 'toit' executable, e.g. `/usr/bin/toit`. If left unset, the 'toit' executable in the path is used. If set to empty, then the extension only uses the language server.",
 					"scope": "machine-overridable"
 				},
 				"toit.Path": {
@@ -233,8 +271,16 @@
 						"string",
 						"null"
 					],
-					"description": "The path to 'toit' executable, e.g. `/usr/bin/toit`.",
+					"description": "The path to the 'toit' executable, e.g. `/usr/bin/toit`.",
 					"deprecationMessage": "Deprecated: Use toit.path instead.",
+					"scope": "machine-overridable"
+				},
+				"jag.path": {
+					"type": [
+						"string",
+						"null"
+					],
+					"description": "The path to the 'jag' executable, e.g. `/usr/bin/jag`. If left unset, the 'jag' executable in the path is used.",
 					"scope": "machine-overridable"
 				},
 				"toitLanguageServer.command": {
