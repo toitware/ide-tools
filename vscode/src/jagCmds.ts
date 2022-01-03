@@ -1,7 +1,7 @@
 // Copyright (C) 2021 Toitware ApS. All rights reserved.
 
 import { InputBoxOptions, window as Window } from "vscode";
-import { JagContext, selectDevice } from "./jagCtx";
+import { JagContext, selectDevice, selectPort } from "./jagCtx";
 import { getExecuteFilePath, promptForWiFiInfo } from "./utils";
 
 
@@ -52,16 +52,12 @@ async function executeJagRun(ctx: JagContext) {
 
 async function executeJagMonitor(ctx: JagContext) {
   try {
-    const portPromptOptions: InputBoxOptions = {
-      "prompt": "Enter port (optional)"
-    };
-    const port = await Window.showInputBox(portPromptOptions);
-    const portFlag = port ? `--port '${port}'`: "";
+    const port = selectPort(ctx);
+    if (!port) return;
 
-    const prefix = ctx.monitorNumber === 0 ? "" : ` (${ctx.monitorNumber++})`;
-    const terminal = Window.createTerminal(`jag monitor${prefix}`);
+    const terminal = Window.createTerminal(`jag monitor (${port})`);
     terminal.show(false);
-    terminal.sendText(`${ctx.jagExec} monitor ${portFlag}`);
+    terminal.sendText(`${ctx.jagExec} monitor --port '${port}'`);
   } catch (e) {
     return Window.showErrorMessage(`Unable to monitor: ${e.message}`);
   }
@@ -90,15 +86,12 @@ async function executeJagFlash(ctx: JagContext) {
     const name = await Window.showInputBox(namePromptOptions);
     const nameFlag = name ? `--name '${name}'`: "";
 
-    const portPromptOptions: InputBoxOptions = {
-      "prompt": "Enter port (optional)"
-    };
-    const port = await Window.showInputBox(portPromptOptions);
-    const portFlag = port ? `--port '${port}'`: "";
+    const port = selectPort(ctx);
+    if (!port) return;
 
     const terminal = ctx.ensureSharedTerminal();
     terminal.show(false);
-    terminal.sendText(`${ctx.jagExec} flash ${portFlag} ${nameFlag} --wifi-ssid '${wifiInfo.ssid}' --wifi-password '${wifiInfo.password}'`);
+    terminal.sendText(`${ctx.jagExec} flash --port '${port}' ${nameFlag} --wifi-ssid '${wifiInfo.ssid}' --wifi-password '${wifiInfo.password}'`);
   } catch (e) {
     return Window.showErrorMessage(`Unable to flash: ${e.message}`);
   }

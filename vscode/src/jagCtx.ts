@@ -68,7 +68,7 @@ async function listDeviceItems(ctx: JagContext): Promise<DeviceItem[]> {
   return (jsonResult.devices as Device[]).map(dev => new DeviceItem(dev));
 }
 
-async function selectPort(ctx: JagContext): Promise<string | undefined> {
+export async function selectPort(ctx: JagContext): Promise<string | undefined> {
   const ports = await listPorts(ctx);
 
   const lastPort = ctx.lastPort;
