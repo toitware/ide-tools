@@ -263,7 +263,7 @@
 						"null"
 					],
 					"default": null,
-					"description": "The path to the 'toit' executable, e.g. `/usr/bin/toit`.",
+					"description": "The path to the 'toit' executable, for example `/usr/bin/toit`.",
 					"scope": "machine-overridable"
 				},
 				"toit.Path": {
