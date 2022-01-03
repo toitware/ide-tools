@@ -271,7 +271,7 @@
 						"string",
 						"null"
 					],
-					"description": "The path to the 'toit' executable, e.g. `/usr/bin/toit`.",
+					"description": "The path to the 'toit' executable, for example `/usr/bin/toit`.",
 					"deprecationMessage": "Deprecated: Use toit.path instead.",
 					"scope": "machine-overridable"
 				},
@@ -280,7 +280,7 @@
 						"string",
 						"null"
 					],
-					"description": "The path to the 'jag' executable, e.g. `/usr/bin/jag`. If left unset, the 'jag' executable in the path is used.",
+					"description": "The path to the 'jag' executable, for example `/usr/bin/jag`. If left unset, the 'jag' executable in the path is used.",
 					"scope": "machine-overridable"
 				},
 				"toitLanguageServer.command": {
