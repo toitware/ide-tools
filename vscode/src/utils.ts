@@ -2,7 +2,7 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file.
 
-import { InputBoxOptions, OpenDialogOptions, QuickPickItem, StatusBarItem, Terminal, window as Window } from "vscode";
+import { InputBoxOptions, OpenDialogOptions, QuickPickItem, StatusBarItem, window as Window } from "vscode";
 import { App, ConsoleApp } from "./app";
 import { toitExecFilePromise } from "./cli";
 import { ConsoleDevice, ConsoleDeviceInfo, Device, DeviceInfo, RelatedDevice } from "./device";
@@ -12,24 +12,6 @@ import { updateStatus } from "./projectCmd";
 import { ConsoleSerialInfo, SerialInfo, SerialPort, SerialStatus } from "./serialPort";
 import { Views } from "./views";
 
-
-export class JagContext {
-  watchNumber = 0;
-  monitorNumber = 0;
-  sharedTerminal: Terminal|null = null;
-  jagExec: string;
-
-  constructor(jagExec: string) {
-    this.jagExec = jagExec;
-  }
-
-  ensureSharedTerminal() : Terminal {
-    if (!this.sharedTerminal || this.sharedTerminal.exitStatus) {
-      this.sharedTerminal = Window.createTerminal(`jag`);
-    }
-    return this.sharedTerminal;
-  }
-}
 
 export class Context {
   statusBar?: StatusBarItem;
@@ -244,7 +226,7 @@ export async function selectPort(ctx: Context): Promise<string | undefined> {
   return port;
 }
 
-function preferElement<T>(index: number, list: T[]): void {
+export function preferElement<T>(index: number, list: T[]): void {
   if (index <= 0) return;
   const preferred = list[index];
   list.splice(index, 1);
