@@ -5,6 +5,8 @@
 import { clean, gt } from "semver";
 import { commands as Commands, env, ExtensionContext, Uri, window as Window, workspace as Workspace } from "vscode";
 import { activateTreeView, deactivateTreeView } from "./deviceView";
+import { createJagFlashCommand, createJagMonitorCommand, createJagRunCommand, createJagScanCommand, createJagWatchCommand } from "./jagCmds";
+import { JagContext } from "./jagCtx";
 import { activateLsp, deactivateLsp } from "./lspClient";
 import { createOutputCommand } from "./output";
 import { activateToitStatusBar, createSetProjectCommand } from "./projectCmd";
@@ -54,6 +56,26 @@ function run(exec: string, args: Array<string>): RunResult {
 function runCheck(exec: string, args: Array<string>): boolean {
   const result = run(exec, args);
   return result.executableExists && result.output !== null;
+}
+
+function isJagSetup(jagExec: string) : boolean {
+  const jagResult = run(jagExec, [ "setup", "--check" ]);
+  return !(jagResult.error);
+}
+
+async function missingJagSetupPrompt(jagExec: string) : Promise<boolean> {
+  const setupJagAction = "Setup Jaguar";
+  const action = await Window.showErrorMessage(`The Jaguar installation is incomplete.`, setupJagAction);
+  if (action === setupJagAction) {
+    cp.execFileSync(jagExec, ["setup"]);
+  }
+  if (isJagSetup(jagExec)) {
+    Window.showInformationMessage(`Jaguar setup completed.`);
+    return true;
+  }
+  Window.showWarningMessage(`Failed to set up Jaguar.`);
+  return false;
+
 }
 
 async function invalidCLIVersionPrompt(toitExec: string, version?: string | null): Promise<void> {
@@ -110,18 +132,21 @@ async function badSetting(setting: string) {
 interface Executables {
   cli: string | null;
   lspCommand: Array<string> | null;
+  jag: string | null;
 }
 
 async function findExecutables(): Promise<Executables> {
   const configCli = Workspace.getConfiguration("toit").get("path");
   const configLspCommand = Workspace.getConfiguration("toitLanguageServer").get("command");
+  const configJag = Workspace.getConfiguration("jag").get("path");
 
   if (configCli !== null) {
     if (typeof configCli !== "string") {
       await badSetting("toit.path");
       return {
         "cli": null,
-        "lspCommand": null
+        "lspCommand": null,
+        "jag": null
       };
     }
   }
@@ -131,7 +156,18 @@ async function findExecutables(): Promise<Executables> {
       await badSetting("toitLanguageServer.command");
       return {
         "cli": null,
-        "lspCommand": null
+        "lspCommand": null,
+        "jag": null
+      };
+    }
+  }
+  if (configJag !== null) {
+    if (typeof configJag !== "string") {
+      await badSetting("toit.jag");
+      return {
+        "cli": null,
+        "lspCommand": null,
+        "jag": null
       };
     }
   }
@@ -140,6 +176,7 @@ async function findExecutables(): Promise<Executables> {
   let cliError: unknown = null;
   let lspCommand: Array<string>|null = null;
   let cliVersion: string|null = null;
+  let jagExec: string|null = null;
 
   if (configCli === null && configLspCommand === null) {
     // No configuration. We try to find it in the PATH.
@@ -157,6 +194,7 @@ async function findExecutables(): Promise<Executables> {
     } else if (runCheck("jag", ["version"])) {
       // The 'jag' executable exists and does not crash.
       lspCommand = [ "jag", "toit", "lsp", "--" ];
+          jagExec = "jag";
     }
   } else if (typeof configCli === "string") {
     const check = run(configCli, TOIT_SHORT_VERSION_ARGS);
@@ -167,6 +205,14 @@ async function findExecutables(): Promise<Executables> {
     }
   } else {
     lspCommand = configLspCommand;
+  }
+
+  if (jagExec === null) {
+    const jagResult = run("jag", ["version"]);
+    if (jagResult.executableExists && jagResult.output !== null) {
+      // The 'jag' executable exists and does not crash.
+      jagExec = "jag";
+    }
   }
 
   if (cliExec === null && lspCommand === null) {
@@ -183,9 +229,17 @@ async function findExecutables(): Promise<Executables> {
       lspCommand.push(...TOIT_LSP_ARGS);
     }
   }
+
+  if (jagExec !== null) {
+    if (!isJagSetup(jagExec)) {
+      const success = await missingJagSetupPrompt(jagExec);
+      if (!success) jagExec = null;
+    }
+  }
   return {
     "cli": cliExec,
-    "lspCommand": lspCommand
+    "lspCommand": lspCommand,
+    "jag": jagExec
   };
 }
 
@@ -216,6 +270,17 @@ export async function activate(extContext: ExtensionContext): Promise<void> {
   }
   if (executables.lspCommand !== null) {
     activateLsp(extContext, executables.lspCommand);
+  }
+  if (executables.jag !== null) {
+    Commands.executeCommand("setContext", "jag.execPresent", true);
+
+    const ctx = new JagContext(executables.jag);
+
+    extContext.subscriptions.push(Commands.registerCommand("jag.watch", createJagWatchCommand(ctx)));
+    extContext.subscriptions.push(Commands.registerCommand("jag.run", createJagRunCommand(ctx)));
+    extContext.subscriptions.push(Commands.registerCommand("jag.monitor", createJagMonitorCommand(ctx)));
+    extContext.subscriptions.push(Commands.registerCommand("jag.scan", createJagScanCommand(ctx)));
+    extContext.subscriptions.push(Commands.registerCommand("jag.flash", createJagFlashCommand(ctx)));
   }
 }
 

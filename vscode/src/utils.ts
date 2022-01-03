@@ -2,7 +2,7 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file.
 
-import { InputBoxOptions, QuickPickItem, StatusBarItem, window as Window } from "vscode";
+import { InputBoxOptions, OpenDialogOptions, QuickPickItem, StatusBarItem, window as Window } from "vscode";
 import { App, ConsoleApp } from "./app";
 import { toitExecFilePromise } from "./cli";
 import { ConsoleDevice, ConsoleDeviceInfo, Device, DeviceInfo, RelatedDevice } from "./device";
@@ -11,6 +11,7 @@ import { ConsoleProject as ConsoleProject, Project as Project } from "./project"
 import { updateStatus } from "./projectCmd";
 import { ConsoleSerialInfo, SerialInfo, SerialPort, SerialStatus } from "./serialPort";
 import { Views } from "./views";
+
 
 export class Context {
   statusBar?: StatusBarItem;
@@ -183,7 +184,8 @@ export async function promptForWiFiInfo(): Promise<WiFiInfo | undefined> {
   if (!ssid) return undefined;
 
   const passwordPromptOptions: InputBoxOptions = {
-    "prompt": "Enter Wi-Fi password"
+    "prompt": "Enter Wi-Fi password",
+    "password": true
   };
   const password = await Window.showInputBox(passwordPromptOptions);
   if (password === undefined) return undefined;
@@ -224,7 +226,7 @@ export async function selectPort(ctx: Context): Promise<string | undefined> {
   return port;
 }
 
-function preferElement<T>(index: number, list: T[]): void {
+export function preferElement<T>(index: number, list: T[]): void {
   if (index <= 0) return;
   const preferred = list[index];
   list.splice(index, 1);
@@ -312,3 +314,21 @@ export async function revealDevice(ctx: Context, hwid: string): Promise<void> {
 export const TOIT_SHORT_VERSION_ARGS = [ "version", "-o", "short" ];
 
 export const TOIT_LSP_ARGS = [ "tool", "lsp" ];
+
+async function pickFile(dialogOptions: OpenDialogOptions): Promise<string | undefined> {
+  const fileURI = await Window.showOpenDialog(dialogOptions);
+  if (!fileURI) return;  // File selection prompt dismissed.
+
+  return fileURI[0].fsPath;
+}
+
+
+export async function getExecuteFilePath(suffix: string, dialogOptions: OpenDialogOptions): Promise<string | undefined> {
+  const editor = Window.activeTextEditor;
+  if (!editor) return await pickFile(dialogOptions);
+
+  const filePath = editor.document.fileName;
+  if (!(filePath.endsWith(suffix))) return await pickFile(dialogOptions);
+
+  return filePath;
+}

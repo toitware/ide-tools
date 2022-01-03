@@ -3,29 +3,12 @@
 // found in the LICENSE file.
 
 import { basename } from "path";
-import { OpenDialogOptions, window as Window } from "vscode";
+import { window as Window } from "vscode";
 import { toitExecFile, toitExecFilePromise } from "./cli";
 import { Device } from "./device";
 import { } from "./deviceView";
-import { Context, ensureAuth, selectDevice } from "./utils";
+import { Context, ensureAuth, getExecuteFilePath, selectDevice } from "./utils";
 
-
-async function pickFile(dialogOptions: OpenDialogOptions): Promise<string | undefined> {
-  const fileURI = await Window.showOpenDialog(dialogOptions);
-  if (!fileURI) return;  // File selection prompt dismissed.
-
-  return fileURI[0].fsPath;
-}
-
-async function getExecuteFilePath(suffix: string, dialogOptions: OpenDialogOptions): Promise<string | undefined> {
-  const editor = Window.activeTextEditor;
-  if (!editor) return await pickFile(dialogOptions);
-
-  const filePath = editor.document.fileName;
-  if (!(filePath.endsWith(suffix))) return await pickFile(dialogOptions);
-
-  return filePath;
-}
 
 async function executeRunCommand(ctx: Context, device?: Device) {
   const filePath = await getExecuteFilePath(".toit", {
