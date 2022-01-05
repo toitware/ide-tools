@@ -113,7 +113,7 @@ async function startToitLsp(_: ExtensionContext,
 
   const result = new LanguageClient("toitLanguageServer", "Language Server", serverOptions, clientOptions);
   result.start();
-  return new Promise((resolve,reject) => {
+  return new Promise((resolve, reject) => {
     setTimeout(() => {
       // If the start failed, then VSCode already reported an error message.
       // We could add an additional one to point the user to the trouble-shooting guide.
