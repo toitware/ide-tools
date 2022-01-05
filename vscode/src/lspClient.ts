@@ -52,10 +52,10 @@ function getOuterMostWorkspaceFolder(folder: WorkspaceFolder): WorkspaceFolder {
 
 
 
-function startToitLsp(_: ExtensionContext,
+async function startToitLsp(_: ExtensionContext,
     lspCommand: Array<string>,
     outputChannel: OutputChannel,
-    config: ClientConfiguration) : LanguageClient {
+    config: ClientConfiguration) : Promise<LanguageClient> {
   const workingDir = config.workingDir;
   const workspaceFolder = config.workspaceFolder;
   const scheme = config.scheme;
@@ -113,23 +113,19 @@ function startToitLsp(_: ExtensionContext,
 
   const result = new LanguageClient("toitLanguageServer", "Language Server", serverOptions, clientOptions);
   result.start();
-  let isReady = false;
-  let startFail = false;
-  setTimeout(() => {
-    // If the start failed, then VSCode already reported an error message.
-    // We could add an additional one to point the user to the trouble-shooting guide.
-    if (!startFail && !isReady) {
-      Window.showErrorMessage("The Language Server is not responding. Consult the documentation.");
-    }
-  }, 3000);
-  result.onReady().then(() => {
-    // At this point the language server responded to requests (`initialize`), and
-    //   is thus running.
-    isReady = true;
-  }, () => {
-    startFail = true;
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      // If the start failed, then VSCode already reported an error message.
+      // We could add an additional one to point the user to the trouble-shooting guide.
+      reject("The Language Server is not responding. Consult the documentation.");
+    }, 3000);
+
+    result.onReady().then(() => {
+      // At this point the language server responded to requests (`initialize`), and
+      //  is thus running.
+      resolve(result);
+    }, reject);
   });
-  return result;
 }
 
 interface ClientConfiguration {
@@ -180,7 +176,7 @@ export function activateLsp(context: ExtensionContext, lspCommand: Array<string>
     };
   }
 
-  function didOpenTextDocument(document: TextDocument): void {
+  async function didOpenTextDocumentThrow(document: TextDocument): Promise<void> {
     if (document.languageId !== "toit") {
       return;
     }
@@ -189,18 +185,26 @@ export function activateLsp(context: ExtensionContext, lspCommand: Array<string>
 
     if (config.scheme !== "file") {
       if (!nonFileClient) {
-        nonFileClient = startToitLsp(context, lspCommand, outputChannel, config);
+        nonFileClient = await startToitLsp(context, lspCommand, outputChannel, config);
       }
       return;
     }
     const workingDir = config.workingDir!;
     if (!clients.has(workingDir)) {
-      const client = startToitLsp(context, lspCommand, outputChannel, config);
+      const client = await startToitLsp(context, lspCommand, outputChannel, config);
       clients.set(workingDir, client);
       clientCounts.set(workingDir, 1);
     } else {
       const oldCount = clientCounts.get(workingDir)!;
       clientCounts.set(workingDir, oldCount + 1);
+    }
+  }
+
+  async function didOpenTextDocument(document: TextDocument): Promise<void> {
+    try {
+      await didOpenTextDocumentThrow(document);
+    } catch(e) {
+      Window.showErrorMessage("" + e);
     }
   }
 
