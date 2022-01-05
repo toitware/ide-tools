@@ -119,8 +119,10 @@ async function startToitLsp(_: ExtensionContext,
       // We could add an additional one to point the user to the trouble-shooting guide.
       reject("The Language Server is not responding. Consult the documentation.");
     }, 3000);
-    // reject("The Language Server is not responding. Consult the documentation.");
+
     result.onReady().then(() => {
+      // At this point the language server responded to requests (`initialize`), and
+      //  is thus running.
       resolve(result);
     }, reject);
   });
