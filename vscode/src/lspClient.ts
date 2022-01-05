@@ -5,7 +5,7 @@
 import * as fs from "fs";
 import { platform } from "os";
 import * as p from "path";
-import { ExtensionContext, OutputChannel, TextDocument, Uri, window, workspace as Workspace, WorkspaceFolder } from "vscode";
+import { ExtensionContext, OutputChannel, TextDocument, Uri, window as Window, workspace as Workspace, WorkspaceFolder } from "vscode";
 import { DocumentSelector, LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-languageclient";
 
 // Untitled documents, or documents outside all workspaces go to a default client.
@@ -202,7 +202,7 @@ export function activateLsp(context: ExtensionContext, lspCommand: Array<string>
     try {
       await didOpenTextDocumentThrow(document);
     } catch(e) {
-      window.showErrorMessage("" + e);
+      Window.showErrorMessage("" + e);
     }
   }
 
