@@ -32,7 +32,7 @@ export class JagContext {
     let serial = this.portTerminals.get(port);
     if (serial && !serial.exitStatus) return serial;
 
-    serial = Window.createTerminal(`Toit serial (${port})`);
+    serial = Window.createTerminal(`jag (${port})`);
     this.portTerminals.set(port, serial);
 
     return serial;
