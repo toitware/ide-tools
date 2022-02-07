@@ -22,8 +22,8 @@ function workspaceFolders(): Set<string> {
     }
     Workspace.workspaceFolders.forEach(folder => {
       let str = folder.uri.toString();
-      if (str.charAt(str.length - 1) !== p.sep) {
-        str += p.sep;
+      if (str.charAt(str.length - 1) !== "/") {
+        str += "/";
       }
       _workspaceFolders?.add(str);
     });
@@ -35,17 +35,17 @@ Workspace.onDidChangeWorkspaceFolders(() => _workspaceFolders = undefined);
 
 function getOuterMostWorkspaceFolder(folder: WorkspaceFolder): WorkspaceFolder {
   let str = folder.uri.toString();
-  if (str.charAt(str.length - 1) !== p.sep) {
-    str += p.sep;
+  if (str.charAt(str.length - 1) !== "/") {
+    str += "/";
   }
-  let index = str.indexOf(p.sep);
+  let index = str.indexOf("/");
   const folders = workspaceFolders();
   while (index !== -1) {
     const sub = str.substring(0, index + 1);
     if (folders.has(sub)) {
       return Workspace.getWorkspaceFolder(Uri.parse(sub))!;
     }
-    index = str.indexOf(p.sep, index + 1);
+    index = str.indexOf("/", index + 1);
   }
   return folder;
 }
