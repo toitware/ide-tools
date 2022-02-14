@@ -21,7 +21,7 @@ The extension is now set up and ready to use. Visit the [Toit docs](https://docs
 
 ### toitlang.org
 The open source version of Toit provides syntax highlighting and the
-language server (providing completions, diagnostics, ...). The easiest way to set it up is to 
+language server (providing completions, diagnostics, ...). The easiest way to set it up is to
 download the [Jaguar](https://github.com/toitlang/jaguar) development support and put `jag` or `jag.exe` in your path.
 Jaguar bundles the Toit SDK, but if you'd rather build that yourself, you can follow these steps:
 
@@ -77,12 +77,4 @@ Switch between Toit projects from the status bar.
 
 <p align=center>
 <img src="images/readme/demo-org.gif" width=75%>
-</p>
-
-### Simulators
-
-Start and stop simulators from the device view or the command palette.
-
-<p align=center>
-<img src="images/readme/demo-simulator.gif" width=75%>
 </p>
