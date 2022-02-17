@@ -57,3 +57,17 @@ jobs:
         with:
           name: vsix
           path: ${{ env.vscode-dir }}/toit-${{ steps.constants.outputs.version }}.vsix
+
+      - name: Publish to vscode marketplace
+        if: github.event_name == 'release'
+        env:
+          OPEN_VSX_TOKEN: ${{ secrets.VSCODE_OPEN_VSX_TOKEN }}
+        run:
+          npm run vsce-publish
+
+      - name: Publish to open-vsx.org
+        if: github.event_name == 'release'
+        env:
+          OPEN_VSX_TOKEN: ${{ secrets.VSCODE_OPEN_VSX_TOKEN }}
+        run:
+          npm run ovsx-publish
