@@ -10,7 +10,7 @@ The Toit extension adds language support for the Toit programming language, incl
 
 ### toitlang.org
 The open source version of Toit provides syntax highlighting and the
-language server (providing completions, diagnostics, ...). The easiest way to set it up is to
+language server and the language server with completions, diagnostics, etc. The easiest way to set it up is to
 download the [Jaguar](https://github.com/toitlang/jaguar) development support and put `jag` or `jag.exe` in your path.
 Jaguar bundles the Toit SDK, but if you'd rather build that yourself, you can follow these steps:
 
