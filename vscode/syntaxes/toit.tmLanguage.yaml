@@ -1,7 +1,6 @@
 # Copyright (C) 2021 Toitware ApS. All rights reserved.
 # Use of this source code is governed by an MIT-style license that can be
 # found in the LICENSE file.
-
 ---
 comment: >
   Don't edit the JSON file, but edit the YAML file instead.
@@ -12,7 +11,7 @@ comment: >
 
 name: Toit
 
-firstLineMatch: ^#!/.*\btoitc?\b|(^#!/usr/bin/env toitc?)
+firstLineMatch: ^#!(?:.*[\/ ])?toit(?:\.?vm)?$
 
 patterns:
 - include: "#comment"

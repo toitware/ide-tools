@@ -1,0 +1,179 @@
+%YAML 1.2
+---
+# Syntax: sublimetext.com/docs/syntax.html
+name: Toit
+comment: "Toit Syntax: v0.5.4"
+file_extensions: [toit]
+file_line_match: ^#!(?:.*[\/ ])?toit(?:\.?vm)?$
+uuid: cbbe31e1-ffa6-4c9b-bcda-e28a9e2fd6a8
+scope: source.toit
+extends: Packages/Toit/Toit.sublime-syntax
+
+variables:
+  before_tag: '(class)'
+  coroutine_keywords: co_(return)
+  control_keywords: 'if|else|for|while|do'
+  non_func_keywords: 'if|else|for|while|do'
+
+contexts:
+  main:
+    - include: comment-single-line
+    - include: comment-multi-line
+    - include: class
+    - include: string-double
+    - include: keyword
+    - include: numbers
+    - include: operator
+    - include: const
+    - include: method
+    - include: punctuation
+    - include: import
+    - include: export
+    - include: as-show
+    - include: function
+    - include: flag
+
+  comment-single-line:
+    - match: //
+      scope: punctuation.definition.comment.toit
+      push:
+        - meta_scope: comment.line.toit
+        - match: $\n?
+          pop: true
+
+  comment-multi-line:
+    - match: /\*
+      scope: punctuation.definition.comment.begin.toit
+      push:
+        - meta_scope: comment.block.toit
+        - match: \*/
+          scope: punctuation.definition.comment.end.toit
+          pop: true
+        - match: ^\s*(\*)(?!/)
+          captures:
+            1: punctuation.definition.comment.toit
+
+  operator:
+    - match: '([+*/%-:&|^]|<<|>>>?)='
+      scope: keyword.operator.assignment
+    - match: '[+*/%-]'
+      scope: keyword.operator.arithmetic
+    - match: '\!|\&\&|\|\|'
+      scope: keyword.operator.logical
+    - match: '[~&|^]|<<|>>>?'
+      scope: keyword.operator.bitwise
+
+  punctuation:
+    - match: \.
+      scope: punctuation.delimiter.period.dot.toit
+    - match: \,
+      scope: punctuation.delimiter.comma.toit
+    - match: \;
+      scope: punctuation.definition.other.semicolon.toit
+    - match: ':'
+      scope: punctuation.separator.key-value.colon.toit
+    - match: \?
+      scope: punctuation.definition.other.questionmark.toit
+
+  numbers:
+    - match: (?:(?:[-]?)(?:[0-9e]*)(?:[.]){1}(?:[0-9]+))
+      scope: constant.numeric.float.decimal.toit
+    - match: \b(?:0[xX])(?:[0-9a-fA-F]+)
+      scope: constant.numeric.hex.toit
+    - match: \b(?:[-]?)(?:[0-9]+)
+      scope: constant.numeric.integer.decimal.toit
+
+  keyword:
+    - match: \b(int|float|string|bool)\b
+      scope: storage.type.toit
+    - match: \b(true|false|none|null)\b
+      scope: constant.toit
+    - match: \b(break|continue)\b
+      scope: keyword.control.toit
+    - match: \b(for|while|do|return)\b
+      scope: keyword.control.toit
+    - match: \b(if|else|constructor)\b
+      scope: keyword.control.conditional.toit
+    - match: '(import|export)'
+      scope: keyword.control.import.toit
+    - match: \b(this|is|as|show|it|super)\b
+      scope: keyword.toit
+    - match: 'static'
+      scope: storage.modifier.toit
+    - match: '(abstract|class|extends|interface|operator)'
+      scope: keyword.toit
+
+  class:
+    - match: '^(?:(abstract|))\s*(class)\s+([A-Za-z0-9]{1,}):$\n?'
+      captures:
+        0: meta.class.toit
+        1: keyword
+        2: keyword.declaration.class.toit
+        3: support.class.toit
+
+  method:
+    - match: '([a-zA-Z_0-9]{1,})(?:\s*(.*|))?:'
+      captures:
+        1: entity.name.function.toit
+        2: variable.toit
+
+  function:
+    - match: '(print|join|sqrt)'
+      scope: support.function.toit
+
+  import:
+    - match: '^\s*(import)\s+([a-z_0-9]+)(?:\s+(as|show))(?:\s+((\*)|w+))$'
+      captures:
+        0: meta.import.toit
+        1: keyword
+        2: entity.name.import.toit
+        3: keyword
+        4: entity.name.import.toit
+        5: constant.toit
+
+  export:
+    - match: '^\s*(export)\s+(.*?)$'
+      captures:
+        0: meta.import.toit
+        1: keyword
+        2: entity.name.import.toit
+
+  string-double:
+    - match: '"'
+      scope: punctuation.definition.string.begin.toit
+      push:
+        - meta_scope: string.quoted.double.toit
+        - match: \\.
+          scope: constant.character.escape.toit
+        - match: '"'
+          scope: punctuation.definition.string.end.toit
+          pop: true
+        - include: char
+        - include: var
+
+  as-show:
+    - match: \b(it|is|as|show)\b
+      scope: keyword.toit
+
+  const:
+    - match: '([A-Z_0-9]+\s+(?:\:\:=|))'
+      captures:
+        0: meta.annotation.identifier.toit
+        1: variable.other.constant.toit
+        2: entity.name.constant.toit
+
+  char:
+    - match: \b(\\0|\\a|\\b|\\f|\\n|\\r|\\t|\\v|\\\$|\\"|\\'|\\\\)\b
+      scope: constant.toit
+    - match: \b(\%(?:\.|)[0-9a-f]{1,})\b
+      scope: constant.toit
+    - match: '(\$?\(.*?\))'
+      scope: constant.toit
+
+  flag:
+    - match: '-?-[a-z]+'
+      scope: support.function.toit
+
+  var:
+    - match: \b(\$(?:\(|)(.*)(?:\)|))\b
+      scope: constant.toit
