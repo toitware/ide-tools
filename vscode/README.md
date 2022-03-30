@@ -8,6 +8,16 @@ The Toit extension adds language support for the Toit programming language, incl
 
 ## Quick start
 
+### toitlang.org
+The open source version of Toit provides syntax highlighting and the
+language server and the language server with completions, diagnostics, etc. The easiest way to set it up is to
+download the [Jaguar](https://github.com/toitlang/jaguar) development support and put `jag` or `jag.exe` in your path.
+Jaguar bundles the Toit SDK, but if you'd rather build that yourself, you can follow these steps:
+
+- _Step 1:_ Follow the steps to build the tools as described in the [README](https://github.com/toitlang/toit).
+- _Step 2:_ Either place `toitlsp` and `toitc` in your path or set `toitLanguageServer.command` to `["PATH_TO_TOITLSP", "--toitc=PATH_TO_TOITC"]`.
+- _Step 3:_ The extension is activated when you open a `.toit` file.
+
 ### toit.io
 In this configuration the extension uses the `toit` CLI to connect to the Toit servers.
 
@@ -18,16 +28,6 @@ All of the extension's features are activated in this mode.
 - _Step 3:_ The extension is activated when you open a `.toit` file.
 
 The extension is now set up and ready to use. Visit the [Toit docs](https://docs.toit.io/) for more information about Toit.
-
-### toitlang.org
-The open source version of Toit provides syntax highlighting and the
-language server (providing completions, diagnostics, ...). The easiest way to set it up is to
-download the [Jaguar](https://github.com/toitlang/jaguar) development support and put `jag` or `jag.exe` in your path.
-Jaguar bundles the Toit SDK, but if you'd rather build that yourself, you can follow these steps:
-
-- _Step 1:_ Follow the steps to build the tools as described in the [README](https://github.com/toitlang/toit).
-- _Step 2:_ Either place `toitlsp` and `toitc` in your path or set `toitLanguageServer.command` to `["PATH_TO_TOITLSP", "--toitc=PATH_TO_TOITC"]`.
-- _Step 3:_ The extension is activated when you open a `.toit` file.
 
 ## Extension tour
 
