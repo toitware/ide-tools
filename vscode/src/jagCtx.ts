@@ -1,4 +1,6 @@
 // Copyright (C) 2022 Toitware ApS. All rights reserved.
+// Use of this source code is governed by an MIT-style license that can be
+// found in the LICENSE file.
 
 import * as cp from "child_process";
 import { promisify } from "util";
@@ -30,7 +32,7 @@ export class JagContext {
     let serial = this.portTerminals.get(port);
     if (serial && !serial.exitStatus) return serial;
 
-    serial = Window.createTerminal(`Toit serial (${port})`);
+    serial = Window.createTerminal(`jag (${port})`);
     this.portTerminals.set(port, serial);
 
     return serial;

@@ -22,7 +22,7 @@ async function executeRunCommand(ctx: Context, device?: Device) {
 
   if (!await ensureAuth(ctx)) return;
 
-  if (!device) device = await selectDevice(ctx, { "activeOnly": true, "simulatorOnly": false });
+  if (!device) device = await selectDevice(ctx, { "activeOnly": true });
 
   if (!device) return;  // Device selection prompt dismissed.
 
@@ -53,7 +53,7 @@ async function executeDeployCommand(ctx: Context, device?: Device) {
 
   if (!await ensureAuth(ctx)) return;
 
-  if (!device) device = await selectDevice(ctx, { "activeOnly": false, "simulatorOnly": false });
+  if (!device) device = await selectDevice(ctx, { "activeOnly": false });
 
   if (!device) return;  // Device selection prompt dismissed.
 

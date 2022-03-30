@@ -101,13 +101,11 @@ function preferLastPicked(ctx: Context, devices: DeviceItem[]) {
 
 export interface SelectOptions {
   activeOnly: boolean;
-  simulatorOnly: boolean;
 }
 
 export async function selectDevice(ctx: Context, config: SelectOptions): Promise<Device | undefined> {
   let deviceItems = await listDevices(ctx);
   if (config.activeOnly) deviceItems = deviceItems.filter(item => item.device().isActive);
-  if (config.simulatorOnly) deviceItems = deviceItems.filter(item => item.device().isSimulator);
   preferLastPicked(ctx, deviceItems);
   const device = await Window.showQuickPick(deviceItems, { "placeHolder": "Pick a device" });
   if (!device) return undefined; // Device selection dismissed.

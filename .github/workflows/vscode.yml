@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+  release:
+    types: [published]
+
+jobs:
+  vscode:
+    runs-on: ubuntu-latest
+    env:
+      vscode-dir: ./vscode
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up constants
+        id: constants
+        run: |
+          echo ::set-output name=nightly_version::$(tools/nigthlyversion)
+
+      - name: Install dependencies
+        working-directory: ${{ env.vscode-dir }}
+        run: |
+          npm install
+          sudo apt-get update
+          sudo apt-get install xvfb
+
+      - name: Lint
+        working-directory: ${{ env.vscode-dir }}
+        run: |
+          npm run lint
+
+      - name: Test
+        working-directory: ${{ env.vscode-dir }}
+        env:
+          DISPLAY: ":99.0"
+        run: |
+          /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+          npm run ci-test
+
+      - name: Compile
+        working-directory: ${{ env.vscode-dir }}
+        run: |
+          npm run compile-prod
+
+      - name: Build package
+        working-directory: ${{ env.vscode-dir }}
+        env:
+          NIGHTLY_VERSION: ${{ steps.constants.outputs.nightly_version }}
+        run: |
+          npm version $NIGHTLY_VERSION --allow-same-version
+          npm run package
+
+      - name: Upload vsix artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: vsix
+          path: ${{ env.vscode-dir }}/toit-${{ steps.constants.outputs.version }}.vsix
+
+      - name: Publish to vscode marketplace
+        if: github.event_name == 'release'
+        env:
+          OPEN_VSX_TOKEN: ${{ secrets.VSCODE_OPEN_VSX_TOKEN }}
+        run:
+          npm run vsce-publish
+
+      - name: Publish to open-vsx.org
+        if: github.event_name == 'release'
+        env:
+          OPEN_VSX_TOKEN: ${{ secrets.VSCODE_OPEN_VSX_TOKEN }}
+        run:
+          npm run ovsx-publish

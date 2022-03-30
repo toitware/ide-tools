@@ -3,7 +3,7 @@
 	"displayName": "Toit",
 	"description": "Toit Programming Language Support",
 	"publisher": "toit",
-	"version": "1.3.9",
+	"version": "1.6.0",
 	"license": "MIT",
 	"type": "commonjs",
 	"engines": {
@@ -59,20 +59,6 @@
 			}
 		],
 		"commands": [
-			{
-				"command": "toit.stopSimulator",
-				"title": "Stop simulator",
-				"category": "Toit",
-				"icon": "$(circle-slash)",
-				"enablement": "toit.extensionActive"
-			},
-			{
-				"command": "toit.startSimulator",
-				"title": "Start simulator",
-				"category": "Toit",
-				"icon": "$(rocket)",
-				"enablement": "toit.extensionActive"
-			},
 			{
 				"command": "toit.uninstallApp",
 				"title": "Uninstall",
@@ -174,11 +160,6 @@
 		"menus": {
 			"view/title": [
 				{
-					"command": "toit.startSimulator",
-					"when": "view == toitDeviceView",
-					"group": "navigation@0"
-				},
-				{
 					"command": "toit.refreshDeviceView",
 					"when": "view == toitDeviceView",
 					"group": "navigation@1"
@@ -218,11 +199,6 @@
 				{
 					"command": "toit.devLogs",
 					"when": "view == toitDeviceView && viewItem =~ /device.*/",
-					"group": "inline@0"
-				},
-				{
-					"command": "toit.stopSimulator",
-					"when": "view == toitDeviceView && viewItem == device-simulator",
 					"group": "inline@0"
 				}
 			],
@@ -321,7 +297,7 @@
 		"watch": "webpack --mode development --watch",
 		"test-watch": "tsc -p ./ -watch",
 		"test-compile": "tsc -p ./",
-		"jenkins-test": "tsc -p ./ && ts-node ./test/runTest.ts",
+		"ci-test": "tsc -p ./ && ts-node ./test/runTest.ts",
 		"lint": "eslint src --ext ts",
 		"lint-fix": "eslint src --ext ts --fix",
 		"package": "vsce package --yarn",

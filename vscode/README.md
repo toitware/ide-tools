@@ -78,11 +78,3 @@ Switch between Toit projects from the status bar.
 <p align=center>
 <img src="images/readme/demo-org.gif" width=75%>
 </p>
-
-### Simulators
-
-Start and stop simulators from the device view or the command palette.
-
-<p align=center>
-<img src="images/readme/demo-simulator.gif" width=75%>
-</p>

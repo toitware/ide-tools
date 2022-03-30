@@ -15,7 +15,6 @@ import { createEnsureAuth } from "./toitAuth";
 import { createDeployCommand, createRunCommand } from "./toitExec";
 import { createSerialMonitor } from "./toitMonitor";
 import { createSerialProvision } from "./toitProvision";
-import { createStartSimCommand, createStopSimCommand } from "./toitSimulator";
 import { createUninstallCommand } from "./toitUninstall";
 import { Context, revealDevice, TOIT_LSP_ARGS, TOIT_SHORT_VERSION_ARGS } from "./utils";
 
@@ -50,6 +49,12 @@ function run(exec: string, args: Array<string>): RunResult {
       "output": null
     };
   }
+}
+
+// Checks that the executable exists and executed normally.
+function runCheck(exec: string, args: Array<string>): boolean {
+  const result = run(exec, args);
+  return result.executableExists && result.output !== null;
 }
 
 function isJagSetup(jagExec: string) : boolean {
@@ -179,25 +184,16 @@ async function findExecutables(): Promise<Executables> {
       cliExec = "toit";
       cliError = check.error;
       cliVersion = clean(check.output!);
-    } else {
-      // Try to find the language server in the PATH.
-      const lspResult = run("toitlsp", ["version"]);
-      if (lspResult.executableExists && lspResult.output !== null) {
-        const toitcResult = run("toitc", ["--version"]);
-        if (toitcResult.executableExists && toitcResult.output !== null) {
-          // The toitlsp and toitc executables exist and don't crash.
-          // We will try to use them as LSP.
-          lspCommand = [ "toitlsp", "--toitc", "toitc" ];
-        }
-      } else {
-        // Last resort: Try to find 'jag' in the PATH.
-        const jagResult = run("jag", ["version"]);
-        if (jagResult.executableExists && jagResult.output !== null) {
-          // The 'jag' executable exists and does not crash.
-          lspCommand = [ "jag", "toit", "lsp", "--" ];
-          jagExec = "jag";
-        }
-      }
+    } else if (runCheck("toitlsp", ["version"]) && runCheck("toitc", ["--version"])) {
+      // Found the language server in the PATH.
+      lspCommand = [ "toitlsp", "--toitc", "toitc" ];
+    } else if (runCheck("toit.lsp", ["version"]) && runCheck("toit.compile", ["--version"])) {
+      // Found the language server in the PATH.
+      lspCommand = [ "toit.lsp", "--toitc", "toit.compile" ];
+    } else if (runCheck("jag", ["version"])) {
+      // The 'jag' executable exists and does not crash.
+      lspCommand = [ "jag", "toit", "lsp", "--" ];
+      jagExec = "jag";
     }
   } else if (typeof configCli === "string") {
     const check = run(configCli, TOIT_SHORT_VERSION_ARGS);
@@ -210,12 +206,9 @@ async function findExecutables(): Promise<Executables> {
     lspCommand = configLspCommand;
   }
 
-  if (jagExec === null) {
-    const jagResult = run("jag", ["version"]);
-    if (jagResult.executableExists && jagResult.output !== null) {
-      // The 'jag' executable exists and does not crash.
-      jagExec = "jag";
-    }
+  if (jagExec === null && runCheck("jag", ["version"])) {
+    // The 'jag' executable exists and does not crash.
+    jagExec = "jag";
   }
 
   if (cliExec === null && lspCommand === null) {
@@ -265,8 +258,6 @@ export async function activate(extContext: ExtensionContext): Promise<void> {
     extContext.subscriptions.push(Commands.registerCommand("toit.devDeploy", createDeployCommand(ctx)));
     extContext.subscriptions.push(Commands.registerCommand("toit.devLogs", createOutputCommand(ctx)));
     extContext.subscriptions.push(Commands.registerCommand("toit.setProject", createSetProjectCommand(ctx)));
-    extContext.subscriptions.push(Commands.registerCommand("toit.stopSimulator", createStopSimCommand(ctx)));
-    extContext.subscriptions.push(Commands.registerCommand("toit.startSimulator", createStartSimCommand(ctx)));
     extContext.subscriptions.push(Commands.registerCommand("toit.revealDevice", async(hwID) => await revealDevice(ctx, hwID)));
 
     activateToitStatusBar(ctx, extContext);
