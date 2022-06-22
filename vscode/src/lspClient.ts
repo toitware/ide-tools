@@ -193,11 +193,23 @@ export function activateLsp(context: ExtensionContext, lspCommand: Array<string>
     if (!clients.has(workingDir)) {
       const clientPromise = startToitLsp(context, lspCommand, outputChannel, config);
       clients.set(workingDir, clientPromise);
-      const client = await clientPromise
       clientCounts.set(workingDir, 1);
     } else {
       const oldCount = clientCounts.get(workingDir)!;
       clientCounts.set(workingDir, oldCount + 1);
+    }
+    const clientPromise = clients.get(workingDir);
+    try {
+      await clientPromise;
+    } catch (e) {
+      // Delete the current client promise from the map.
+      // It's not completely clear if the check for the clientPromise is necessary, but
+      // it can't hurt.
+      if (clients.has(workingDir) && clientCounts.get(workingDir) === clientPromise) {
+        clients.delete(workingDir);
+        clientCounts.delete(workingDir);
+      }
+      throw e;
     }
   }
 
@@ -255,8 +267,8 @@ export function deactivateLsp(): Thenable<void> {
   if (nonFileClient) {
     promises.push(nonFileClient.stop());
   }
-  for (const client of clients.values()) {
-    promises.push(client.then((client) => client.stop()));
+  for (const clientPromise of clients.values()) {
+    promises.push(clientPromise.then((client) => client.stop()));
   }
   return Promise.all(promises).then(() => undefined);
 }
