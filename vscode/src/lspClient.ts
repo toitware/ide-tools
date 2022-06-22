@@ -10,7 +10,7 @@ import { DocumentSelector, LanguageClient, LanguageClientOptions, ServerOptions 
 
 // Untitled documents, or documents outside all workspaces go to a default client.
 let nonFileClient: LanguageClient;
-const clients: Map<string, LanguageClient> = new Map();
+const clients: Map<string, Promise<LanguageClient>> = new Map();
 const clientCounts: Map<string, number> = new Map();
 let _workspaceFolders: Set<string>|undefined;
 
@@ -191,8 +191,9 @@ export function activateLsp(context: ExtensionContext, lspCommand: Array<string>
     }
     const workingDir = config.workingDir!;
     if (!clients.has(workingDir)) {
-      const client = await startToitLsp(context, lspCommand, outputChannel, config);
-      clients.set(workingDir, client);
+      const clientPromise = startToitLsp(context, lspCommand, outputChannel, config);
+      clients.set(workingDir, clientPromise);
+      const client = await clientPromise
       clientCounts.set(workingDir, 1);
     } else {
       const oldCount = clientCounts.get(workingDir)!;
@@ -224,10 +225,10 @@ export function activateLsp(context: ExtensionContext, lspCommand: Array<string>
     if (clients.has(workingDir)) {
       const oldCount = clientCounts.get(workingDir)!;
       if (oldCount === 1) {
-        const client = clients.get(workingDir)!;
+        const clientPromise = clients.get(workingDir)!;
         clients.delete(workingDir);
         clientCounts.delete(workingDir);
-        client.stop();
+        clientPromise.then((client) => client.stop());
       } else {
         clientCounts.set(workingDir, oldCount - 1);
       }
@@ -239,10 +240,10 @@ export function activateLsp(context: ExtensionContext, lspCommand: Array<string>
   Workspace.onDidChangeWorkspaceFolders(event => {
     for (const folder of event.removed) {
       const uriString = folder.uri.toString();
-      const client = clients.get(uriString);
-      if (client) {
+      const clientPromise = clients.get(uriString);
+      if (clientPromise) {
         clients.delete(uriString);
-        client.stop();
+        clientPromise.then((client) => client.stop());
       }
     }
   });
@@ -255,7 +256,7 @@ export function deactivateLsp(): Thenable<void> {
     promises.push(nonFileClient.stop());
   }
   for (const client of clients.values()) {
-    promises.push(client.stop());
+    promises.push(client.then((client) => client.stop()));
   }
   return Promise.all(promises).then(() => undefined);
 }
