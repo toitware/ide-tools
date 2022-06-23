@@ -3,7 +3,7 @@
 	"displayName": "Toit",
 	"description": "Toit Programming Language Support",
 	"publisher": "toit",
-	"version": "1.6.0",
+	"version": "1.6.2",
 	"license": "MIT",
 	"type": "commonjs",
 	"engines": {
