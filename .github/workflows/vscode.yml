@@ -25,6 +25,9 @@ jobs:
             VERSION=$NIGHTLY
           fi
 
+          echo $NIGHTLY
+          echo $VERSION
+
           echo ::set-output name=nightly_version::$NIGHTLY
           echo ::set-output name=version::$VERSION
 
