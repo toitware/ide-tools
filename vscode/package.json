@@ -308,7 +308,7 @@
 	"devDependencies": {
 		"@babel/core": "^7.14.6",
 		"@types/glob": "^7.1.1",
-		"@types/jest": "^26.0.23",
+		"@types/jest": "^27.0.1",
 		"@types/node": "^14.17.1",
 		"@types/semver": "^7.3.5",
 		"@types/vscode": "^1.55.0",
@@ -329,10 +329,16 @@
 		"webpack-cli": "^4.7.2"
 	},
 	"dependencies": {
+		"@vscode/test-electron": "^2.1.5",
 		"ovsx": "^0.2.0",
 		"semver": "^7.3.5",
 		"vsce": "^1.77.0",
-		"vscode-languageclient": "^5.2.1",
-		"vscode-test": "^1.5.2"
+		"vscode-languageclient": "^5.2.1"
+	},
+	"__metadata": {
+		"id": "f78543a3-3f95-4cfc-9b62-50c5a948657f",
+		"publisherDisplayName": "toit",
+		"publisherId": "cc0933a9-8e93-4b38-a2df-865298913348",
+		"isPreReleaseVersion": false
 	}
 }
