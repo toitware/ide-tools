@@ -77,8 +77,8 @@ async function missingJagSetupPrompt(jagExec: string) : Promise<boolean> {
 
 async function missingLspPrompt() {
   const installJagAction = "Install Jaguar";
-  let message = "Could not find the `jag` or `toit` executable. "
-  message += "Please make sure `jag` or `toit` is installed or set the jag.path "
+  let message = "Could not find the `jag` or `toit` executable. ";
+  message += "Please make sure `jag` or `toit` is installed or set the jag.path ";
   message += "(resp. toit.path) setting to the executable and reload the window to activate the extension";
   const action = await Window.showErrorMessage(message, installJagAction);
   if (action === installJagAction) {
@@ -133,17 +133,16 @@ async function findExecutable(tool : string, configPath : string|null, envPath :
   } else {
     check = run(exec, checkArgs);
   }
-  if (exec === null) return null
+  if (exec === null) return null;
   if (!check.executableExists) {
     // Can only happen if the user specified a path in the settings.
     await badExePrompt(tool, exec, false, setting, null);
-    return null
-  } else {
-    let error = check.error;
-    if (error !== null) {
-      await badExePrompt(tool, exec, true, configPath ? setting : null, error);
-      return null;
-    }
+    return null;
+  }
+  const error = check.error;
+  if (error !== null) {
+    await badExePrompt(tool, exec, true, configPath ? setting : null, error);
+    return null;
   }
   return exec;
 }
@@ -190,14 +189,14 @@ async function findExecutables(): Promise<Executables> {
   }
 
   const cliVersionArgs =  [ "version", "-o", "short" ];
-  let cliExec = await findExecutable("toit", configCli, "toit", "toit.path", cliVersionArgs);
+  const cliExec = await findExecutable("toit", configCli, "toit", "toit.path", cliVersionArgs);
 
-  const jagVersionArgs = [ "version" ];
+  const jagVersionArgs = ["version"];
   let jagExec: string|null = await findExecutable("jag", configJag, "jag", "jag.path", jagVersionArgs);
   if (jagExec !== null) {
     if (!isJagSetup(jagExec)) {
       const success = await missingJagSetupPrompt(jagExec);
-      if (!success) jagExec = null
+      if (!success) jagExec = null;
     }
   }
 
@@ -211,7 +210,7 @@ async function findExecutables(): Promise<Executables> {
     lspCommand.push(...TOIT_LSP_ARGS);
   } else if (runCheck("toit.lsp", ["version"]) && runCheck("toit.compile", ["--version"])) {
     // Found the language server in the PATH.
-    const fullToitcPath = wh.sync("toit.compile", {nothrow: true});
+    const fullToitcPath = wh.sync("toit.compile", {"nothrow": true});
     if (fullToitcPath !== null) {  // Should be rare, since we just succeeded.
       lspCommand = [ "toit.lsp", "--toitc", fullToitcPath ];
     }
