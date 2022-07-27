@@ -13,11 +13,11 @@ The easiest way to set it up is to download the [Jaguar](https://github.com/toit
 tool and install it, so that `jag` or `jag.exe` is in your path.
 
 * Windows: `winget jaguar`
-* macOs: `brew install toitlang/toit/jag`
+* macOS: `brew install toitlang/toit/jag`
 * Archlinux: `yay -S jaguar-bin`
 
-If the Jaguar executable is not in your path you can also set the `jag.path` setting, so it
-points to the location of your `jag`.
+If the Jaguar executable is not in your path, you can also update the `jag.path` setting, so it
+points to the location of your `jag` executable.
 
 The following commands are supported:
 - `jag.flash`: Flashes the connected device with Jaguar.
