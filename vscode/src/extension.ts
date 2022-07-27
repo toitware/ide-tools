@@ -78,8 +78,8 @@ async function missingJagSetupPrompt(jagExec: string) : Promise<boolean> {
 async function missingLspPrompt() {
   const installJagAction = "Install Jaguar";
   let message = "Could not find the `jag` or `toit` executable. ";
-  message += "Please make sure `jag` or `toit` is installed or set the jag.path ";
-  message += "(resp. toit.path) setting to the executable and reload the window to activate the extension";
+  message += "Please make sure `jag` or `toit` is installed. If not in PATH, update ";
+  message += "the 'jag.path' (or 'toit.path'). Then reload the window";
   const action = await Window.showErrorMessage(message, installJagAction);
   if (action === installJagAction) {
     env.openExternal(Uri.parse("https://github.com/toitlang/jaguar"));
