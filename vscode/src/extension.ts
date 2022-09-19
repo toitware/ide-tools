@@ -56,7 +56,12 @@ function runCheck(exec: string, args: Array<string>): boolean {
 }
 
 function isJagSetup(jagExec: string) : boolean {
-  const jagResult = run(jagExec, [ "setup", "--check" ]);
+  let jagResult = run(jagExec, [ "setup", "--no-analytics", "--check" ]);
+  if (jagResult.error) {
+    // We temporarily try without the --no-analytics flag. The flag
+    // was added in v1.6.3, so versions before that will complain.
+    jagResult = run(jagExec, [ "setup", "--check" ]);
+  }
   return !(jagResult.error);
 }
 
@@ -191,8 +196,13 @@ async function findExecutables(): Promise<Executables> {
   const cliVersionArgs =  [ "version", "-o", "short" ];
   const cliExec = await findExecutable("toit", configCli, "toit", "toit.path", cliVersionArgs);
 
-  const jagVersionArgs = ["version"];
+  const jagVersionArgs = ["version", "--no-analytics"];
   let jagExec: string|null = await findExecutable("jag", configJag, "jag", "jag.path", jagVersionArgs);
+  if (jagExec === null) {
+    // We temporarily try without the --no-analytics flag. The flag
+    // was added in v1.6.3, so versions before that will complain.
+    jagExec = await findExecutable("jag", configJag, "jag", "jag.path", ["version"]);
+  }
   if (jagExec !== null) {
     if (!isJagSetup(jagExec)) {
       const success = await missingJagSetupPrompt(jagExec);
