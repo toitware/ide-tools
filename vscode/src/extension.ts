@@ -196,12 +196,12 @@ async function findExecutables(): Promise<Executables> {
   const cliVersionArgs =  [ "version", "-o", "short" ];
   const cliExec = await findExecutable("toit", configCli, "toit", "toit.path", cliVersionArgs);
 
-  const jagVersionArgs = ["version", "--no-analytics"];
+  const jagVersionArgs = [ "version", "--no-analytics" ];
   let jagExec: string|null = await findExecutable("jag", configJag, "jag", "jag.path", jagVersionArgs);
   if (jagExec === null) {
     // We temporarily try without the --no-analytics flag. The flag
     // was added in v1.6.3, so versions before that will complain.
-    jagExec = await findExecutable("jag", configJag, "jag", "jag.path", ["version"]);
+    jagExec = await findExecutable("jag", configJag, "jag", "jag.path", [ "version" ]);
   }
   if (jagExec !== null) {
     if (!isJagSetup(jagExec)) {
