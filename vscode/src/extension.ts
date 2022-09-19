@@ -201,7 +201,7 @@ async function findExecutables(): Promise<Executables> {
   if (jagExec === null) {
     // We temporarily try without the --no-analytics flag. The flag
     // was added in v1.6.3, so versions before that will complain.
-    jagExec = await findExecutable("jag", configJag, "jag", "jag.path", [ "version" ]);
+    jagExec = await findExecutable("jag", configJag, "jag", "jag.path", ["version"]);
   }
   if (jagExec !== null) {
     if (!isJagSetup(jagExec)) {
