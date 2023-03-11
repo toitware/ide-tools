@@ -14,7 +14,7 @@ then link it into your .vim directory:
 cd somewhere-suitable
 git clone https://github.com/toitware/ide-tools.git
 mkdir -p $HOME/.vim/pack/foo/start
-ln -s `pwd`/ide-tools/vim /home/erik/.vim/pack/foo/start/toit
+ln -s `pwd`/ide-tools/vim $HOME/.vim/pack/foo/start/toit
 ```
 
 Vim 7 or earlier
