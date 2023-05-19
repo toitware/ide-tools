@@ -94,10 +94,10 @@ repository:
     - include: "#comment"
     - include: "#type-annotation"
     - name: meta.toplevel.signature
-      begin: (_?\p{Alpha}\w*[=]?)
+      begin: (_?\p{L}\w*[=]?)
       # Ends (and thus starts the body) with a ":" (unless that's for a block),
       #   or something that isn't intended by 2.
-      end: (?=\:(?![_\p{Alpha}])|^\s{0,2}(?:[^\s/]|/[^/*]))
+      end: (?=\:(?![_\p{L}])|^\s{0,2}(?:[^\s/]|/[^/*]))
       beginCaptures:
         1:
           name: storage.type.function
@@ -123,10 +123,10 @@ repository:
     - name: keyword.control.toit
       match: (\bstatic\b|\babstract\b|\boperator\b)
     - name: meta.member.signature
-      begin: (\bconstructor\b)(\._?\p{Alpha}\w*)?|(_?\p{Alpha}\w*[=]?|==|<<|>>>|>>|<=|>=|<|>|\+|-|\*|/|%|\^|&|\||\[\]\=|\[\]|\[\.\.\])
+      begin: (\bconstructor\b)(\._?\p{L}\w*)?|(_?\p{L}\w*[=]?|==|<<|>>>|>>|<=|>=|<|>|\+|-|\*|/|%|\^|&|\||\[\]\=|\[\]|\[\.\.\])
       # Ends (and thus starts the body) with a ":" (unless that's for a block),
       #   or something that isn't intended by 4.
-      end: (?=\:(?![_\p{Alpha}])|^\s{0,4}(?:[^\s/]|/[^/*]))
+      end: (?=\:(?![_\p{L}])|^\s{0,4}(?:[^\s/]|/[^/*]))
       beginCaptures:
         1:
           name: keyword.control.toit
@@ -159,7 +159,7 @@ repository:
     - include: "#type-annotation"
     - include: "#comment"
     - name: meta.parameter.setting.toit
-      match: (--)?(this)?\.(_?\p{Alpha}\w*)  # Don't color the dot. Makes it nicer?
+      match: (--)?(this)?\.(_?\p{L}\w*)  # Don't color the dot. Makes it nicer?
       captures:
         1:
           name: variable.parameter.named.setting.toit
@@ -171,7 +171,7 @@ repository:
           patterns:
           - include: "#invalid_non_expression"
     - name: variable.parameter.toit
-      match: (--)?(:)?(_?\p{Alpha}\w*)
+      match: (--)?(:)?(_?\p{L}\w*)
       captures:
         2:
           name: keyword.control.block_marker.toit
@@ -197,7 +197,7 @@ repository:
   type-annotation:
     patterns:
     - name: entity.name.type.annotation.toit
-      begin: '(/|->) *(?=_?\p{Alpha})'
+      begin: '(/|->) *(?=_?\p{L})'
       end: (?=[^\w.?])
       beginCaptures:
         1:
