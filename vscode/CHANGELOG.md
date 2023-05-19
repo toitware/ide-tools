@@ -4,13 +4,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2023-05-19
+### Changed
+- Use unicode category to match letters in the syntax highlighting.
+
+## [1.6.6] - 2022-10-21
+### Changed
+- Remove toit.io from vscode page.
+
+## [1.6.5] - 2022-09-19
+### Changed
+- Don't fail on bad jag execution.
+
+## [1.6.4] - 2022-07-27
+### Changed
+- Prefer Jaguar over Toit.
+
+## [1.6.1] - 2022-06-23
+### Changed
+- Fixed race in the LSP server.
+
 ## [1.6.0] - 2022-02-14
 ### Removed
-- Removed support for simulators
+- Removed support for simulators.
 
 ## [1.5.0] - 2022-02-07
 ### Changed
-- Fixed paths on Windows
+- Fixed paths on Windows.
 
 ## [1.4.0] - 2022-01-03
 ### Added
