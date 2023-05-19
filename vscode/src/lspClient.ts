@@ -185,12 +185,14 @@ export function activateLsp(context: ExtensionContext, lspCommand: Array<string>
 
     if (config.scheme !== "file") {
       if (!nonFileClient) {
+        outputChannel.appendLine("Starting Toit LSP server for non-file documents");
         nonFileClient = await startToitLsp(context, lspCommand, outputChannel, config);
       }
       return;
     }
     const workingDir = config.workingDir!;
     if (!clients.has(workingDir)) {
+      outputChannel.appendLine("Starting Toit LSP server for " + workingDir + " derived from " + document.uri.fsPath);
       const clientPromise = startToitLsp(context, lspCommand, outputChannel, config);
       clients.set(workingDir, clientPromise);
       clientCounts.set(workingDir, 1);
@@ -214,6 +216,7 @@ export function activateLsp(context: ExtensionContext, lspCommand: Array<string>
   }
 
   async function didOpenTextDocument(document: TextDocument): Promise<void> {
+    outputChannel.appendLine("Got open message for " + document.uri.fsPath);
     try {
       await didOpenTextDocumentThrow(document);
     } catch(e) {
