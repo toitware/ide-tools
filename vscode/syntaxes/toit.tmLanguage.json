@@ -147,8 +147,8 @@
         },
         {
           "name": "meta.toplevel.signature",
-          "begin": "(_?\\p{Alpha}\\w*[=]?)",
-          "end": "(?=\\:(?![_\\p{Alpha}])|^\\s{0,2}(?:[^\\s/]|/[^/*]))",
+          "begin": "(_?\\p{L}\\w*[=]?)",
+          "end": "(?=\\:(?![_\\p{L}])|^\\s{0,2}(?:[^\\s/]|/[^/*]))",
           "beginCaptures": {
             "1": {
               "name": "storage.type.function"
@@ -189,8 +189,8 @@
         },
         {
           "name": "meta.member.signature",
-          "begin": "(\\bconstructor\\b)(\\._?\\p{Alpha}\\w*)?|(_?\\p{Alpha}\\w*[=]?|==|<<|>>>|>>|<=|>=|<|>|\\+|-|\\*|/|%|\\^|&|\\||\\[\\]\\=|\\[\\]|\\[\\.\\.\\])",
-          "end": "(?=\\:(?![_\\p{Alpha}])|^\\s{0,4}(?:[^\\s/]|/[^/*]))",
+          "begin": "(\\bconstructor\\b)(\\._?\\p{L}\\w*)?|(_?\\p{L}\\w*[=]?|==|<<|>>>|>>|<=|>=|<|>|\\+|-|\\*|/|%|\\^|&|\\||\\[\\]\\=|\\[\\]|\\[\\.\\.\\])",
+          "end": "(?=\\:(?![_\\p{L}])|^\\s{0,4}(?:[^\\s/]|/[^/*]))",
           "beginCaptures": {
             "1": {
               "name": "keyword.control.toit"
@@ -239,7 +239,7 @@
         },
         {
           "name": "meta.parameter.setting.toit",
-          "match": "(--)?(this)?\\.(_?\\p{Alpha}\\w*)",
+          "match": "(--)?(this)?\\.(_?\\p{L}\\w*)",
           "captures": {
             "1": {
               "name": "variable.parameter.named.setting.toit"
@@ -263,7 +263,7 @@
         },
         {
           "name": "variable.parameter.toit",
-          "match": "(--)?(:)?(_?\\p{Alpha}\\w*)",
+          "match": "(--)?(:)?(_?\\p{L}\\w*)",
           "captures": {
             "2": {
               "name": "keyword.control.block_marker.toit"
@@ -319,7 +319,7 @@
       "patterns": [
         {
           "name": "entity.name.type.annotation.toit",
-          "begin": "(/|->) *(?=_?\\p{Alpha})",
+          "begin": "(/|->) *(?=_?\\p{L})",
           "end": "(?=[^\\w.?])",
           "beginCaptures": {
             "1": {
