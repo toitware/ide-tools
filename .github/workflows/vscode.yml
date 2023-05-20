@@ -12,7 +12,7 @@ jobs:
       vscode-dir: ./vscode
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up constants
         shell: bash
@@ -28,8 +28,8 @@ jobs:
           echo $NIGHTLY
           echo $VERSION
 
-          echo ::set-output name=nightly_version::$NIGHTLY
-          echo ::set-output name=version::$VERSION
+          echo "nightly_version=$NIGHTLY" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
         working-directory: ${{ env.vscode-dir }}
@@ -61,9 +61,14 @@ jobs:
         run: |
           npm version ${{ steps.constants.outputs.version }} --allow-same-version
           npm run package
+          # The output of the 'run package' doesn't include the 'v' of the version.
+          # For simplicity just make a copy.
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            cp toit-*.vsix toit-${{ steps.constants.outputs.version }}.vsix
+          fi
 
       - name: Upload vsix artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: vsix
           path: ${{ env.vscode-dir }}/toit-${{ steps.constants.outputs.version }}.vsix
