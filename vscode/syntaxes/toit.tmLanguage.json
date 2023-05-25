@@ -2,7 +2,7 @@
   "comment": "Don't edit the JSON file, but edit the YAML file instead. Use npx js-yaml < syntaxes/toit.tmLanguage.yaml > syntaxes/toit.tmLanguage.json Use the scope inspector from the command palette with the Developer: Inspect Editor Tokens and Scopes\n",
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
   "name": "Toit",
-  "firstLineMatch": "^#!/.*\\btoitc?\\b|(^#!/usr/bin/env toitc?)",
+  "firstLineMatch": "^#!/.*\\btoit([.]run)?$",
   "patterns": [
     {
       "include": "#comment"
