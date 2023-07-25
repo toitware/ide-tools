@@ -45,12 +45,12 @@
     var atoms = makeJsObject("true|false|null");
     var specialVars = makeJsObject("this|super|it");
 
-    var IDENTIFIER = /[a-zA-Z_]\w*/;
-    var TYPE = /[a-zA-Z_]\w*(\.[a-zA-Z_]\w*)?/;
+    var IDENTIFIER = /[a-zA-Z_][\w-]*/;
+    var TYPE = /[a-zA-Z_][\w-]*(\.[a-zA-Z_][\w-]*)?/;
     var OVERRIDABLE_OPERATOR = /==|>=|<=|<<|>>>|>>|\*|\+|-|%|\/|<|>|&|\||\^|~|\[\]\=|\[\]|\[\.\.\]/
 
     var CONSTANT_HEURISTIC = /_?[A-Z][A-Z_0-9]+/;
-    var TYPE_HEURISTIC = /_?[A-Z]\w*[a-z]\w*/;
+    var TYPE_HEURISTIC = /_?[A-Z]\w*[a-z][\w-]*/;
     var CONTROL = /[?:;]/;
 
     function isKeyword(str) {
