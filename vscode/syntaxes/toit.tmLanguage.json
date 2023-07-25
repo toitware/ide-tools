@@ -654,7 +654,7 @@
     "multi-line-string": {
       "name": "string.quoted.double.toit",
       "begin": "\"\"\"",
-      "end": "\"\"\"",
+      "end": "\"\"\"(?!\")|\"\"\"\"\"",
       "patterns": [
         {
           "name": "constant.character.escape.toit",
