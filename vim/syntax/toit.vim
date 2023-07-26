@@ -20,6 +20,10 @@ endif
 " Look at least 500 lines back.
 syn sync minlines=500
 
+# Make it clear that words include '-'.
+# The name 'iskeyword' is badly named. It's for all words.
+setlocal iskeyword=a-z,A-Z,48-57,_,-
+
 syntax keyword toitKeyword it super extends implements as return abstract static unreachable break continue
 highlight link toitKeyword Keyword
 
@@ -44,13 +48,13 @@ highlight link toitbool Boolean
 syntax keyword toitAssert assert
 highlight link toitAssert Conditional
 
-syntax match toitIdentifier "\v<[a-zA-Z_]\w*>"
+syntax match toitIdentifier "\v<[a-zA-Z_][a-zA-Z0-9_-]*>"
 
-syntax match toitConstantIdentifier "\v<([A-Z][A-Z0-9_]*)>"
+syntax match toitConstantIdentifier "\v<([A-Z][A-Z0-9_-]*)>"
 highlight link toitConstantIdentifier Constant
 
 syntax match toitClassIdentifier "\v<[A-Z][0-9]*(\?|>)"
-syntax match toitClassIdentifier "\v<[A-Z]\w*[a-z]\w*[?]?"
+syntax match toitClassIdentifier "\v<[A-Z][a-zA-Z0-9_-]*[a-z][a-zA-Z0-9_-]*[?]?"
 highlight link toitClassIdentifier Type
 
 syntax match toitNoneType "\v<none>"
@@ -120,7 +124,7 @@ syntax match toitCharacter "'\\u[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9]'"
 highlight link toitCharacter Character
 
 syntax match toitNamedArgument "--i"
-syntax match toitNamedArgument "\v--(no-)?[a-zA-Z_]\w*>"
+syntax match toitNamedArgument "\v--(no-)?[a-zA-Z_][a-zA-Z0-9_-]*>"
 " Couldn't find a good color, so just made it uncolored.
 "highlight link toitNamedArgument Identifier
 
@@ -151,8 +155,8 @@ syntax match toitString /"""\@!/
 syntax region toitString start=/""\@!/ skip=/\\./ end=/"\|\n/
 " Now match multi-line strings.
 syntax region toitString start=/"""/ skip=/\\./ end=/"""/
-syntax match toitInterpolatedIdentifier "\v\$[a-zA-Z_]\w*" contained containedin=toitString nextgroup=toitInterpolatedDot,toitInterpolatedIndex
-syntax match toitInterpolatedDot "\.[a-zA-Z_]\w*" contained nextgroup=toitInterpolatedDot,toitInterpolatedIndex
+syntax match toitInterpolatedIdentifier "\v\$[a-zA-Z_][a-zA-Z0-9_-]*" contained containedin=toitString nextgroup=toitInterpolatedDot,toitInterpolatedIndex
+syntax match toitInterpolatedDot "\.[a-zA-Z_][a-zA-Z0-9_-]*" contained nextgroup=toitInterpolatedDot,toitInterpolatedIndex
 syntax region toitInterpolatedIndex matchgroup=toitInterpolatedWrapperDelimiters start="\[" end="\]" contained contains=TOP nextgroup=toitInterpolatedDot,toitInterpolatedIndex
 syntax region toitInterpolatedWrapper matchgroup=toitInterpolatedWrapperDelimiters start=/\v\$\((\%[-^]?[0-9.]*[a-zA-Z] )?/ end=")" contained containedin=toitString contains=TOP
 highlight link toitString String
@@ -160,21 +164,21 @@ highlight link toitInterpolatedIdentifier Identifier
 highlight link toitInterpolatedDot Identifier
 highlight link toitInterpolatedWrapperDelimiters Operator
 
-syntax match toitDeclaration "\zs\v[a-zA-Z_]\w*[=]?\ze(\s*(/|->)[a-zA-Z_]\w*(\.[a-zA-Z_]\w*)*)?(\s*::?\=)@="
+syntax match toitDeclaration "\zs\v[a-zA-Z_][a-zA-Z0-9_-]*[=]?\ze(\s*(/|->)[a-zA-Z_][a-zA-Z0-9_-]*(\.[a-zA-Z_][a-zA-Z0-9_-]*)*)?(\s*::?\=)@="
 highlight link toitDeclaration Identifier
 
-syntax match toitToplevelDeclaration "\v^[a-zA-Z_]\w*"
+syntax match toitToplevelDeclaration "\v^[a-zA-Z_][a-zA-Z0-9_-]*"
 highlight link toitToplevelDeclaration Identifier
 
 syntax region toitClass matchgroup=toitStructure start=/\v(^|^abstract[ ]+)@<=(class|interface)>/ end=/\v^[^ ]@=/ contains=toitComment,toitMultiComment,toitMemberDeclaration,toitKeyword
 highlight link toitStructure Structure
 
-syntax region toitMemberBody start="" end=/\v(^ ? ?\w)@=/ contained contains=TOP
+syntax region toitMemberBody start="" end=/\v(^ ? ?[a-zA-Z0-9_-])@=/ contained contains=TOP
 
 "TODO(florian): currently the signature goes immediately into body mode once
 "it has found the member name. We could try to be more intelligent and have a
 "different coloring for the signature, as we did in VSCode.
-syntax match toitMemberName "\v[a-zA-Z_]\w*[=]?" contained nextgroup=toitMemberBody
+syntax match toitMemberName "\v[a-zA-Z_][a-zA-Z0-9_-]*[=]?" contained nextgroup=toitMemberBody
 highlight link toitMemberName Identifier
 syntax match toitConstructorName "\vconstructor" contained nextgroup=toitMemberBody
 highlight link toitConstructorName Keyword
@@ -184,7 +188,7 @@ highlight link toitOperatorMemberName Identifier
 syntax match toitOperatorKeyword "operator" contained
 highlight link toitOperatorKeyword Keyword
 
-syntax region toitMemberDeclaration start=/\v^  [^ ]@=/ end=/\v(^ ? ?\w)@=/ contained contains=toitComment,toitMultiComment,toitKeyword,toitOperatorKeyword,toitConstructorName,toitMemberName,toitOperatorMemberName
+syntax region toitMemberDeclaration start=/\v^  [^ ]@=/ end=/\v(^ ? ?[a-zA-Z0-9_-])@=/ contained contains=toitComment,toitMultiComment,toitKeyword,toitOperatorKeyword,toitConstructorName,toitMemberName,toitOperatorMemberName
 
 "syntax match toitTodo "TODO|FIXME" containedin=toitComment
 syntax match toitTodo /\v\_.<(TODO|FIXME).*/hs=s+1 containedin=toitComment
