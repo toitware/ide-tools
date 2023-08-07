@@ -10,6 +10,14 @@ comment: >
 
 "$schema": https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json
 
+# Reminder: '\p{L}'' stands for Unicode "Letter" characters.
+# Toit only supports ASCII, but the `\p{Alpha} category is not defined for unicode
+# input in vscode.
+# Identifiers in Toit will typically be `[\p{L}_][\w-]*`: A letter or underscore,
+# followed by any number of letters, digits, underscores or dashes. Toit actually doesn't
+# allow multiple dashes in a row (or the dash to be the last character), but we don't
+# enforce that here. The syntax highlighter only needs to render valid code correctly.
+
 name: Toit
 
 firstLineMatch: ^#!/.*\btoit([.]run)?$
@@ -67,6 +75,10 @@ repository:
       patterns:
       - include: "#comment"
       - include: "#member-section"
+    # The signature contains the 'extends' and 'implements' clauses.
+    # We try to detect the `extends Foo` clause, where we mark the `Foo` as
+    # "inherited-class". Otherwise we just mark "extends" and "implements" as
+    # keywords and the rest as types.
     - name: meta.class.signature
       begin: (\b\w+\b)
       end: ":"
@@ -76,7 +88,7 @@ repository:
       patterns:
       - include: "#comment"
       - name: meta.extends.clause.toit
-        match: \b(extends)\s+(\w+)\b
+        match: \b(extends)\s+([\p{L}_][\w+-]*)\b
         captures:
           1:
             name: keyword.control.extends.toit
@@ -94,10 +106,10 @@ repository:
     - include: "#comment"
     - include: "#type-annotation"
     - name: meta.toplevel.signature
-      begin: (_?\p{L}\w*[=]?)
+      begin: ([\p{L}_][\w-]*[=]?)
       # Ends (and thus starts the body) with a ":" (unless that's for a block),
       #   or something that isn't intended by 2.
-      end: (?=\:(?![_\p{L}])|^\s{0,2}(?:[^\s/]|/[^/*]))
+      end: (?=\:(?![\p{L}_])|^\s{0,2}(?:[^\s/]|/[^/*]))
       beginCaptures:
         1:
           name: storage.type.function
@@ -123,10 +135,12 @@ repository:
     - name: keyword.control.toit
       match: (\bstatic\b|\babstract\b|\boperator\b)
     - name: meta.member.signature
-      begin: (\bconstructor\b)(\._?\p{L}\w*)?|(_?\p{L}\w*[=]?|==|<<|>>>|>>|<=|>=|<|>|\+|-|\*|/|%|\^|&|\||\[\]\=|\[\]|\[\.\.\])
+      # A constructor (potentially named), or a function, setter, or operator.
+      # We don't handle operators specially, and just require the symbols to be after some whitespace.
+      begin: (\bconstructor\b)(\.[\p{L}_][\w-]*)?|([\p{L}_][\w-]*[=]?|==|<<|>>>|>>|<=|>=|<|>|\+|-|\*|/|%|\^|&|\||\[\]\=|\[\]|\[\.\.\])
       # Ends (and thus starts the body) with a ":" (unless that's for a block),
       #   or something that isn't intended by 4.
-      end: (?=\:(?![_\p{L}])|^\s{0,4}(?:[^\s/]|/[^/*]))
+      end: (?=\:(?![\p{L}_])|^\s{0,4}(?:[^\s/]|/[^/*]))
       beginCaptures:
         1:
           name: keyword.control.toit
@@ -140,7 +154,7 @@ repository:
     - name: meta.member.body
       # Starts with
       #  - a `:=` or `::=`  (a global), or
-      #  - code that is intended by 2.
+      #  - code that is intended by 2 more.
       begin: (:=|::=)|(:)|^\s{4}(?=[^\s/])
       # Ends if we reach something that is indented by two or less *unless* it's a comment.
       end: (?=^\s{0,2}([^\s/]|/[^/*]))
@@ -159,7 +173,7 @@ repository:
     - include: "#type-annotation"
     - include: "#comment"
     - name: meta.parameter.setting.toit
-      match: (--)?(this)?\.(_?\p{L}\w*)  # Don't color the dot. Makes it nicer?
+      match: (--)?(this)?\.([\p{L}_][\w-]*)  # Don't color the dot. Makes it nicer?
       captures:
         1:
           name: variable.parameter.named.setting.toit
@@ -171,7 +185,7 @@ repository:
           patterns:
           - include: "#invalid_non_expression"
     - name: variable.parameter.toit
-      match: (--)?(:)?(_?\p{L}\w*)
+      match: (--)?(:)?([\p{L}_][\w-]*)
       captures:
         2:
           name: keyword.control.block_marker.toit
@@ -197,8 +211,8 @@ repository:
   type-annotation:
     patterns:
     - name: entity.name.type.annotation.toit
-      begin: '(/|->) *(?=_?\p{L})'
-      end: (?=[^\w.?])
+      begin: '(/|->) *(?=[\p{L}_])'
+      end: (?=[^\w-.?])
       beginCaptures:
         1:
           name: keyword.control.return_type.toit
@@ -238,18 +252,19 @@ repository:
     - include: "#primitive"
     - include: "#special-variable"
     - include: "#type-name"
+    - include: "#variable"
 
   variable-declaration:
     patterns:
     - name: meta.variable.toit
-      match: (\w+)\s*(\:=|\:\:=)
+      match: ([\p{L}_][\w-]*)\s*(\:=|\:\:=)
       captures:
         1:
           name: variable.other.toit
         2:
           name: keyword.control.toit
     - name: meta.variable.toit
-      match: (\w+)\s*(\/)\s*([_\w.]+[?]?)\s*(\:=|\:\:=)
+      match: ([\p{L}_][\w-]*)\s*(\/)\s*([_\w.]+[?]?)\s*(\:=|\:\:=)
       captures:
         1:
           name: variable.other.toit
@@ -407,11 +422,15 @@ repository:
       patterns:
       - include: "#expressions"
     - name: variable.other.interpolated.color_hack.toit
-      match: (\$)(\w+(?:\.\w+|\[[^]]*\])*)
+      # This match isn't completely correct. It doesn't handle nested ']' correctly.
+      # For example `"$foo[bar[baz]]"` will be colored incorrectly.
+      match: (\$)([\p{L}_][\w-]*(?:\.[\p{L}_][\w-]*|\[([^]]*)\])*)
       captures:
         1:
           name: keyword.control.string_interpolation.toit
         2:
+          name: meta.interpolated.expression
+        3:
           name: meta.interpolated.expression
           patterns:
           - include: "#expressions"
@@ -423,11 +442,11 @@ repository:
 
   named-arg:
     patterns:
-    # Alternative would be variable.paramater.function-call.named.toit, but that sticks out too much.
+    # Alternative would be variable.parameter.function-call.named.toit, but that sticks out too much.
     - name: variable.language.special.named.toit
-      match: --no-[a-zA-Z_]\w*
+      match: --no-[\p{L}_][\w-]*
     - name: variable.language.special.named.toit
-      match: --\w+
+      match: --[\p{L}_][\w-]*
 
   type-name:
     patterns:
@@ -439,11 +458,16 @@ repository:
     - name: entity.name.type.toit
       match: \b_?[A-Z][0-9]*\b[?]?
     - name: entity.name.type.toit
-      match: \b_?[A-Z][A-Z_]*[a-z]\w*\b[?]?
+      match: \b_?[A-Z][A-Z_-]*[a-z][\w-]*\b[?]?
     - name: entity.name.type.shorts.toit
       match: \b(int|bool|float|string)\b[?]?
     - name: entity.name.type.any_none.toit
       match: \b(any|none)\b
+
+  variable:
+    patterns:
+      - name: entity.name.function.call.toit
+        match: \b[\p{L}_][\w-]*\b
 
   primitive:
     patterns:
