@@ -382,7 +382,7 @@ repository:
   multi-line-string:
     name: string.quoted.double.toit
     begin: '"""'
-    end: '"""'
+    end: '"""(?!")|"""""' # Triple quotes, unless followed by a ". However, at most 5 quotes.
     patterns:
     - name: constant.character.escape.toit
       match: \\.
