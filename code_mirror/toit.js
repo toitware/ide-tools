@@ -45,12 +45,12 @@
     var atoms = makeJsObject("true|false|null");
     var specialVars = makeJsObject("this|super|it");
 
-    var IDENTIFIER = /[a-zA-Z_]\w*/;
-    var TYPE = /[a-zA-Z_]\w*(\.[a-zA-Z_]\w*)?/;
+    var IDENTIFIER = /[a-zA-Z_]([\w-]*\w)?/;
+    var TYPE = /[a-zA-Z_]([\w-]*\w)?(\.[a-zA-Z_]([\w-]*\w)?)?/;
     var OVERRIDABLE_OPERATOR = /==|>=|<=|<<|>>>|>>|\*|\+|-|%|\/|<|>|&|\||\^|~|\[\]\=|\[\]|\[\.\.\]/
 
-    var CONSTANT_HEURISTIC = /_?[A-Z][A-Z_0-9]+/;
-    var TYPE_HEURISTIC = /_?[A-Z]\w*[a-z]\w*/;
+    var CONSTANT_HEURISTIC = /^_?[A-Z][A-Z_0-9-]*$/;
+    var TYPE_HEURISTIC = /^_?[A-Z][\w-]*[a-z][\w-]*$/;
     var CONTROL = /[?:;]/;
 
     function isKeyword(str) {
@@ -419,15 +419,10 @@
       if (isKeyword(id)) return "keyword";
       if (isSpecialVar(id)) return "special_var";
       if (isAtom(id)) return "atom";
-      if (id.match(CONSTANT_HEURISTIC)) {
-        return "constant";
-      }
-      if (id.match(TYPE_HEURISTIC)) {
-        return "type";
-      }
-      if (stream.match(/[ ]*:?:=/, false)) {
-        return "declaration";
-      }
+      if (id.match(CONSTANT_HEURISTIC)) return "constant";
+      if (id.match(TYPE_HEURISTIC)) return "type";
+      if (stream.match(/[ ]*:?:=/, false)) return "declaration";
+
       if (stream.match(/[ ]*[/][ ]*[\w_.]+[?]?[ ]*:?:=/, false)) {
         state.context.push([localAnnotation, -1]);
         state.subState.push(LOCAL_ANNOTATION_DIV);
