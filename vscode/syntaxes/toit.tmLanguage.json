@@ -548,7 +548,7 @@
         },
         {
           "name": "constant.numeric.capitalized_user_constants.toit",
-          "match": "\\b[A-Z][A-Z0-9_]+\\b"
+          "match": "\\b_*[A-Z](-?[A-Z0-9_])+\\b"
         }
       ]
     },
