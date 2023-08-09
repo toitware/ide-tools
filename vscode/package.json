@@ -3,7 +3,7 @@
 	"displayName": "Toit",
 	"description": "Toit Programming Language Support",
 	"publisher": "toit",
-	"version": "1.7.0",
+	"version": "1.8.2",
 	"license": "MIT",
 	"type": "commonjs",
 	"engines": {
@@ -17,15 +17,21 @@
 		"url": "https://github.com/toitware/ide-tools.git"
 	},
 	"activationEvents": [
-		"onLanguage:toit",
 		"workspaceContains:**/*.toit",
 		"onView:toitView",
-		"onCommand:toit.ensureAuth",
 		"onCommand:toit.refreshView"
 	],
 	"icon": "images/toitware_logo.png",
 	"main": "./dist/extension.js",
 	"contributes": {
+		"configurationDefaults": {
+			"[toit]": {
+				"editor.wordSeparators": "`~!@#$%^&*()=+[{]}\\|;:'\",.<>/?",
+				"editor.indentSize": 2,
+				"editor.insertSpaces": true,
+				"editor.detectIndentation": false
+			}
+		},
 		"viewsContainers": {
 			"activitybar": [
 				{
