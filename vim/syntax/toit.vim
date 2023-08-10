@@ -20,8 +20,8 @@ endif
 " Look at least 500 lines back.
 syn sync minlines=500
 
-# Make it clear that words include '-'.
-# The name 'iskeyword' is badly named. It's for all words.
+" Make it clear that words include '-'.
+" The name 'iskeyword' is badly named. It's for all words.
 setlocal iskeyword=a-z,A-Z,48-57,_,-
 
 syntax keyword toitKeyword it super extends implements as return abstract static unreachable break continue
