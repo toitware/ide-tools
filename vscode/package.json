@@ -26,7 +26,6 @@
 	"contributes": {
 		"configurationDefaults": {
 			"[toit]": {
-				"editor.wordSeparators": "`~!@#$%^&*()=+[{]}\\|;:'\",.<>/?",
 				"editor.indentSize": 2,
 				"editor.insertSpaces": true,
 				"editor.detectIndentation": false
