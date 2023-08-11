@@ -7,8 +7,6 @@ See [vscode/README.md](vscode/README.md).
 ## Vim
 See [vim/README.md](start/vim/README.md).
 
-## Misc. tools
-
 ## Development
 To have automatic checks for copyright and MIT notices, run
 
