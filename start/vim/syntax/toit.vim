@@ -12,7 +12,9 @@
 "   instructions on how to install it.
 " Once installed, invoke `:HLT!` to enable tracing in the status line.
 
-import "../indent/toit.vim"
+if !has('nvim')
+    import "../indent/toit.vim"
+endif
 
 if exists("b:current_syntax")
     finish

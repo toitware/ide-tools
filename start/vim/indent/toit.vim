@@ -4,9 +4,9 @@
 "
 " Vim indent file
 " Language:		Toit
-" Maintainer:		Bram Moolenaar <Bram@vim.org>
-" Original Author:	David Bustos <bustos@caltech.edu>
-" Last Change:		2021 Sep 26
+" Maintainer:		Erik Corry <erik@toit.io>
+" Original Authors:	David Bustos <bustos@caltech.edu>, Bram Moolenaar <Bram@vim.org>
+" Last Change:		2023 Aug 11
 
 " Only load this indent file when no other was loaded.
 if exists("b:did_indent")
@@ -44,7 +44,7 @@ let s:disable_parentheses_indenting = 0
 
 let b:undo_indent = "setl ai< inde< indk< lisp<"
 
-" Support for Python indenting, see runtime/indent/python.vim
+" Support for Toit indenting.
 
 let s:maxoff = 50       " maximum number of lines to look backwards for ()
 
