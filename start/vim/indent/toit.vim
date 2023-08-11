@@ -18,8 +18,8 @@ let b:did_indent = 1
 setlocal nolisp		" Make sure lisp indenting doesn't supersede us
 setlocal autoindent	" indentexpr isn't much help otherwise
 
-setlocal indentexpr=ToitGetIndent(v:lnum)
-setlocal indentkeys+=<:>,=elif,=except
+setlocal indentexpr=ToitGetIndent(v:lnum))
+setlocal indentkeys+=<:>,=<\|>
 
 if exists("*ToitGetIndent")
  finish
@@ -60,12 +60,7 @@ function s:Dedented(lnum, expected)
   return indent(a:lnum) <= a:expected - s:normal_indent
 endfunction
 
-" Some other filetypes which embed Python have slightly different indent
-" rules (e.g. bitbake). Those filetypes can pass an extra funcref to this
-" function which is evaluated below.
-function ToitGetIndent(lnum, ...)
-  let ExtraFunc = a:0 > 0 ? a:1 : 0
-
+function ToitGetIndent(lnum)
   " If this line is explicitly joined: If the previous line was also joined,
   " line it up with that one, otherwise add two 'shiftwidth'
   if getline(a:lnum - 1) =~ '\\$'
@@ -118,16 +113,8 @@ function ToitGetIndent(lnum, ...)
     " line.
     let [parlnum, _] = s:SearchBracket(plnum, 'nbW')
     if parlnum > 0
-      if a:0 > 0 && ExtraFunc(parlnum)
-        " We may have found the opening brace of a bitbake Python task, e.g. 'python do_task {'
-        " If so, ignore it here - it will be handled later.
-        let parlnum = 0
-        let plindent = indent(plnum)
-        let plnumstart = plnum
-      else
-        let plindent = indent(parlnum)
-        let plnumstart = parlnum
-      endif
+      let plindent = indent(parlnum)
+      let plnumstart = parlnum
     else
       let plindent = indent(plnum)
       let plnumstart = plnum
@@ -141,35 +128,18 @@ function ToitGetIndent(lnum, ...)
     call cursor(a:lnum, 1)
     let [p, _] = s:SearchBracket(a:lnum, 'bW')
     if p > 0
-      if a:0 > 0 && ExtraFunc(p)
-        " Currently only used by bitbake
-        " Handle first non-empty line inside a bitbake Python task
-        if p == plnum
-          return s:normal_indent
-        endif
-
-        " Handle the user actually trying to close a bitbake Python task
-        let line = getline(a:lnum)
-        if line =~ '^\s*}'
-          return -2
-        endif
-
-        " Otherwise ignore the brace
-        let p = 0
-      else
-        if p == plnum
-          " When the start is inside parenthesis, only indent one 'shiftwidth'.
-          let [pp, _] = s:SearchBracket(a:lnum, 'bW')
-          if pp > 0
-            return indent(plnum) + s.nested_paren
-          endif
-          return indent(plnum) + s:open_paren
-        endif
-        if plnumstart == p
-          return indent(plnum)
-        endif
-        return plindent
+      if p == plnum
+	" When the start is inside parenthesis, only indent one 'shiftwidth'.
+	let [pp, _] = s:SearchBracket(a:lnum, 'bW')
+	if pp > 0
+	  return indent(plnum) + s:nested_paren
+	endif
+	return indent(plnum) + s:open_paren
       endif
+      if plnumstart == p
+	return indent(plnum)
+      endif
+      return plindent
     endif
   endif
 
@@ -208,13 +178,13 @@ function ToitGetIndent(lnum, ...)
     endwhile
   endif
 
-  " If the previous line ended with a colon, indent this line
-  if pline =~ ':\s*$'
+  " If the previous line ended with a colon or a block argument pipe, indent this line
+  if pline =~ '[:|]\s*$'
     return plindent + s:normal_indent
   endif
 
   " If the previous line was a stop-execution statement...
-  if getline(plnum) =~ '^\s*\(break\|continue\|raise\|return\|pass\)\>'
+  if getline(plnum) =~ '^\s*\(break\|continue\|throw\|return\)\>'
     " See if the user has already dedented
     if s:Dedented(a:lnum, indent(plnum))
       " If so, trust the user
@@ -224,27 +194,11 @@ function ToitGetIndent(lnum, ...)
     return indent(plnum) - s:normal_indent
   endif
 
-  " If the current line begins with a keyword that lines up with "try"
-  if getline(a:lnum) =~ '^\s*\(except\|finally\)\>'
-    let lnum = a:lnum - 1
-    while lnum >= 1
-      if getline(lnum) =~ '^\s*\(try\|except\)\>'
-	let ind = indent(lnum)
-	if ind >= indent(a:lnum)
-	  return -1	" indent is already less than this
-	endif
-	return ind	" line up with previous try or except
-      endif
-      let lnum = lnum - 1
-    endwhile
-    return -1		" no matching "try"!
-  endif
-
   " If the current line begins with a header keyword, dedent
-  if getline(a:lnum) =~ '^\s*\(elif\|else\)\>'
+  if getline(a:lnum) =~ '^\s*\(else\)\>'
 
     " Unless the previous line was a one-liner
-    if getline(plnumstart) =~ '^\s*\(for\|if\|elif\|try\)\>'
+    if getline(plnumstart) =~ '^\s*\(for\|if\|try\)\>'
       return plindent
     endif
 
