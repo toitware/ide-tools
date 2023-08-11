@@ -18,7 +18,7 @@ let b:did_indent = 1
 setlocal nolisp		" Make sure lisp indenting doesn't supersede us
 setlocal autoindent	" indentexpr isn't much help otherwise
 
-setlocal indentexpr=ToitGetIndent(v:lnum))
+setlocal indentexpr=ToitGetIndent(v:lnum)
 setlocal indentkeys+=<:>,=<\|>
 
 if exists("*ToitGetIndent")
@@ -195,14 +195,9 @@ function ToitGetIndent(lnum)
   endif
 
   " If the current line begins with a header keyword, dedent
-  if getline(a:lnum) =~ '^\s*\(else\)\>'
+  if getline(a:lnum) =~ '^\s*\(else\|finally\)\>'
 
-    " Unless the previous line was a one-liner
-    if getline(plnumstart) =~ '^\s*\(for\|if\|try\)\>'
-      return plindent
-    endif
-
-    " Or the user has already dedented
+    " Unless the user has already dedented
     if s:Dedented(a:lnum, plindent)
       return -1
     endif
