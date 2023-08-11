@@ -7,14 +7,23 @@ Vim 8 or later
 ==============
 
 If you are using Vim 8, or later, you can use the builtin
-package support.  Check out this package somewhere with git,
-then link it into your .vim directory:
+package support:
 
 ```shell
-cd somewhere-suitable
-git clone https://github.com/toitware/ide-tools.git
-mkdir -p $HOME/.vim/pack/foo/start
-ln -s `pwd`/ide-tools/vim $HOME/.vim/pack/foo/start/toit
+mkdir -p $HOME/.vim/pack/
+cd $HOME/.vim/pack/
+git clone https://github.com/toitware/ide-tools.git toit-ide-tools
+```
+
+NeoVim
+======
+
+Checkout this repository in your `~/.local/share/nvim/site/pack` directory:
+
+```shell
+mkdir -p $HOME/.local/share/nvim/site/pack
+cd $HOME/.local/share/nvim/site/pack
+git clone https://github.com/toitware/ide-tools.git toit-ide-tools
 ```
 
 Vim 7 or earlier
