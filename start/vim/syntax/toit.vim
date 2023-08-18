@@ -26,7 +26,8 @@ syntax sync minlines=500
 
 " Make it clear that words include '-'.
 " The name 'iskeyword' is badly named. It's for all words.
-syntax iskeyword=a-z,A-Z,48-57,_,-
+" TODO: Find out why 'syntax iskeyword' doesn't work.
+setlocal iskeyword=a-z,A-Z,48-57,_,-
 
 syntax keyword toitKeyword it super extends implements as return abstract static unreachable break continue
 highlight link toitKeyword Keyword
