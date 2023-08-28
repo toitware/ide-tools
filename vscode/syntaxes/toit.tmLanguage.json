@@ -23,7 +23,7 @@
   "repository": {
     "import-section": {
       "name": "meta.import.toit",
-      "begin": "^import\\b",
+      "begin": "^import(?!-)\\b",
       "end": "^(?!\\s)",
       "beginCaptures": {
         "0": {
@@ -36,11 +36,11 @@
         },
         {
           "name": "constant.language.import-export-all.show.toit",
-          "match": "\\bshow\\b"
+          "match": "\\b(?<!-)show(?!-)\\b"
         },
         {
           "name": "constant.language.import-export-all.as.toit",
-          "match": "\\bas\\b"
+          "match": "\\b(?<!)as(?!-)\\b"
         },
         {
           "name": "constant.language.import-export-all.import_all.toit",
@@ -50,7 +50,7 @@
     },
     "export-section": {
       "name": "meta.export.toit",
-      "begin": "^export\\b",
+      "begin": "^export(?!-)\\b",
       "end": "^(?!\\s)",
       "beginCaptures": {
         "0": {
@@ -69,7 +69,7 @@
     },
     "class-section": {
       "name": "meta.class.toit",
-      "begin": "^(?:(abstract)[ ]+)?(class|monitor|interface)\\b",
+      "begin": "^(?:(abstract)[ ]+)?(class|monitor|interface)(?!-)\\b",
       "end": "^(?=[^\\s/]|/[^/*])",
       "beginCaptures": {
         "1": {
@@ -98,7 +98,7 @@
         },
         {
           "name": "meta.class.signature",
-          "begin": "(\\b\\w+\\b)",
+          "begin": "(\\b(?<!-)[\\w-]+(?!-)\\b)",
           "end": ":",
           "beginCaptures": {
             "1": {
@@ -111,7 +111,7 @@
             },
             {
               "name": "meta.extends.clause.toit",
-              "match": "\\b(extends)\\s+([\\p{L}_][\\w+-]*)\\b",
+              "match": "\\b(?<!-)(extends)\\s+([\\p{L}_][\\w-]*)(?!-)\\b",
               "captures": {
                 "1": {
                   "name": "keyword.control.extends.toit"
@@ -123,11 +123,11 @@
             },
             {
               "name": "keyword.control.extends.toit",
-              "match": "\\bextends\\b"
+              "match": "\\b(?<!-)extends(?!-)\\b"
             },
             {
               "name": "keyword.control.implements.toit",
-              "match": "\\bimplements\\b"
+              "match": "\\b(?<!-)implements(?!-)\\b"
             },
             {
               "include": "#type-name"
@@ -185,11 +185,11 @@
         },
         {
           "name": "keyword.control.toit",
-          "match": "(\\bstatic\\b|\\babstract\\b|\\boperator\\b)"
+          "match": "\\b(?<!-)(static|abstract|operator)(?!-)\\b"
         },
         {
           "name": "meta.member.signature",
-          "begin": "(\\bconstructor\\b)(\\.[\\p{L}_][\\w-]*)?|([\\p{L}_][\\w-]*[=]?|==|<<|>>>|>>|<=|>=|<|>|\\+|-|\\*|/|%|\\^|&|\\||\\[\\]\\=|\\[\\]|\\[\\.\\.\\])",
+          "begin": "(?<!-)\\b(constructor)(?!-)\\b(\\.[\\p{L}_][\\w-]*)?|([\\p{L}_][\\w-]*[=]?|==|<<|>>>|>>|<=|>=|<|>|\\+|-|\\*|/|%|\\^|&|\\||\\[\\]\\=|\\[\\]|\\[\\.\\.\\])",
           "end": "(?=\\:(?![\\p{L}_])|^\\s{0,4}(?:[^\\s/]|/[^/*]))",
           "beginCaptures": {
             "1": {
@@ -333,15 +333,15 @@
       "patterns": [
         {
           "name": "keyword.control.toit",
-          "match": "\\b(assert|and|or|not|if|for|else|try|finally|call|while|break|continue|throw|static|abstract|return)\\b"
+          "match": "\\b(?<!-)(assert|and|or|not|if|for|else|try|finally|call|while|break|continue|throw|static|abstract|return)(?!-)\\b"
         },
         {
           "name": "keyword.control.pseudo.toit",
-          "match": "\\bunreachable\\b"
+          "match": "\\b(?<!-)unreachable(?!-)\\b"
         },
         {
           "name": "keyword.control.type_check.toit",
-          "match": "\\b(is|as)\\b"
+          "match": "\\b(?<!-)(is|as)(?!-)\\b"
         }
       ]
     },
@@ -349,15 +349,15 @@
       "patterns": [
         {
           "name": "invalid.illegal.non_expression.toit",
-          "match": "\\b(assert|and|or|not|if|for|else|try|finally|call|while|break|continue|throw|static|abstract|return)\\b"
+          "match": "\\b(?<!-)(assert|and|or|not|if|for|else|try|finally|call|while|break|continue|throw|static|abstract|return)(?!-)\\b"
         },
         {
           "name": "invalid.illegal.non_expression.toit",
-          "match": "\\b(is|as)\\b"
+          "match": "\\b(?<!-)(is|as)(?!-)\\b"
         },
         {
           "name": "invalid.illegal.non_expression.toit",
-          "match": "\\b(super|this)\\b"
+          "match": "\\b(?<!-)(super|this)(?!-)\\b"
         }
       ]
     },
@@ -544,11 +544,11 @@
       "patterns": [
         {
           "name": "constant.language.toit",
-          "match": "\\b(null|true|false)\\b"
+          "match": "\\b(?<!-)(null|true|false)(?!-)\\b"
         },
         {
           "name": "constant.numeric.capitalized_user_constants.toit",
-          "match": "\\b_*[A-Z](-?[A-Z0-9_])+\\b"
+          "match": "\\b(?<!-)_*[A-Z](-?[A-Z0-9_])+(?!-)\\b"
         }
       ]
     },
@@ -595,15 +595,15 @@
       "patterns": [
         {
           "name": "constant.numeric.dec.toit",
-          "match": "(?<!\\w)-?([0-9](_(?=[0-9]))?)+\\b"
+          "match": "(?<!\\w)-?([0-9](_(?=[0-9]))?)+(?!-)\\b"
         },
         {
           "name": "constant.numeric.dec.hex.toit",
-          "match": "(?<!\\w)-?0[xX]([0-9a-fA-F](_(?=[0-9a-fA-F]))?)+\\b"
+          "match": "(?<!\\w)-?0[xX]([0-9a-fA-F](_(?=[0-9a-fA-F]))?)+(?!-)\\b"
         },
         {
           "name": "constant.numeric.dec.bin.toit",
-          "match": "(?<!\\w)-?0[bB]([01](_(?=[01]))?)+\\b"
+          "match": "(?<!\\w)-?0[bB]([01](_(?=[01]))?)+(?!-)\\b"
         }
       ]
     },
@@ -717,7 +717,7 @@
       "patterns": [
         {
           "name": "variable.language.special.toit",
-          "match": "\\b(this|it|super)\\b"
+          "match": "\\b(?<!-)(this|it|super)(?!-)\\b"
         }
       ]
     },
@@ -737,19 +737,19 @@
       "patterns": [
         {
           "name": "entity.name.type.toit",
-          "match": "\\b_?[A-Z][0-9]*\\b[?]?"
+          "match": "\\b(?<!-)_?[A-Z][0-9]*(?!-)\\b[?]?"
         },
         {
           "name": "entity.name.type.toit",
-          "match": "\\b_?[A-Z][A-Z_-]*[a-z][\\w-]*\\b[?]?"
+          "match": "\\b(?<!-)_?[A-Z][A-Z_-]*[a-z][\\w-]*(?!-)\\b[?]?"
         },
         {
           "name": "entity.name.type.shorts.toit",
-          "match": "\\b(int|bool|float|string)\\b[?]?"
+          "match": "\\b(?<!-)(int|bool|float|string)(?!-)\\b[?]?"
         },
         {
           "name": "entity.name.type.any_none.toit",
-          "match": "\\b(any|none)\\b"
+          "match": "\\b(?<!-)(any|none)(?!-)\\b"
         }
       ]
     },
@@ -757,7 +757,7 @@
       "patterns": [
         {
           "name": "entity.name.function.call.toit",
-          "match": "\\b[\\p{L}_][\\w-]*\\b"
+          "match": "\\b(?<!-)[\\p{L}_][\\w-]*(?!-)\\b"
         }
       ]
     },
@@ -765,7 +765,7 @@
       "patterns": [
         {
           "name": "support.function.builtin.toit",
-          "match": "\\#primitive\\b"
+          "match": "\\#primitive(?!-)\\b"
         }
       ]
     },
