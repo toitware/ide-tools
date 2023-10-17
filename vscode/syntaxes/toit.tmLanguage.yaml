@@ -62,7 +62,7 @@ repository:
 
   class-section:
     name: meta.class.toit
-    begin: ^(?:(abstract)[ ]+)?(class|monitor|interface)(?!-)\b
+    begin: ^(?:(abstract)[ ]+)?(class|monitor|interface|mixin)(?!-)\b
     end: ^(?=[^\s/]|/[^/*])        # Ends with a non-indented different section. (Note the negative look-ahead to avoid consuming the next token).
     beginCaptures:
       1:
@@ -100,6 +100,8 @@ repository:
         match: \b(?<!-)extends(?!-)\b
       - name: keyword.control.implements.toit
         match: \b(?<!-)implements(?!-)\b
+      - name: keyword.control.with.toit
+        match: \bwith\b
       - include: "#type-name"
 
   toplevel-section:
