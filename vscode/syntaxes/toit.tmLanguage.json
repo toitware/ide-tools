@@ -69,7 +69,7 @@
     },
     "class-section": {
       "name": "meta.class.toit",
-      "begin": "^(?:(abstract)[ ]+)?(class|monitor|interface|mixin)(?!-)\\b",
+      "begin": "^(?:(abstract)[ ]+)?(class|interface|mixin|monitor)(?!-)\\b",
       "end": "^(?=[^\\s/]|/[^/*])",
       "beginCaptures": {
         "1": {

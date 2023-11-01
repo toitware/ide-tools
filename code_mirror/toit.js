@@ -582,7 +582,7 @@
     var CLASS_SIGNATURE_AFTER_FIRST_IMPLEMENTS_NAME = 7;
     var CLASS_BODY = 8;
     function tryClass(stream, state) {
-      if (stream.match(/(abstract[ ]+)?class\b/) || stream.match(/interface\b/) || stream.match(/monitor\b/) || stream.match(/mixin\b/)) {
+      if (stream.match(/(abstract[ ]+)?class\b/) || stream.match(/interface\b/) || stream.match(/mixin\b/) || stream.match(/monitor\b/)) {
         state.context.push([tokenizeClass, 2]);
         state.subState.push(CLASS_SIGNATURE_AFTER_CLASS);
         return "keyword"
