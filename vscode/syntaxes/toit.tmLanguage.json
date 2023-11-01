@@ -69,7 +69,7 @@
     },
     "class-section": {
       "name": "meta.class.toit",
-      "begin": "^(?:(abstract)[ ]+)?(class|monitor|interface)(?!-)\\b",
+      "begin": "^(?:(abstract)[ ]+)?(class|interface|mixin|monitor)(?!-)\\b",
       "end": "^(?=[^\\s/]|/[^/*])",
       "beginCaptures": {
         "1": {
@@ -128,6 +128,10 @@
             {
               "name": "keyword.control.implements.toit",
               "match": "\\b(?<!-)implements(?!-)\\b"
+            },
+            {
+              "name": "keyword.control.with.toit",
+              "match": "\\bwith\\b"
             },
             {
               "include": "#type-name"

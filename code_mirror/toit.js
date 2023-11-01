@@ -576,11 +576,13 @@
     var CLASS_SIGNATURE_AFTER_NAME = 1;
     var CLASS_SIGNATURE_AFTER_EXTENDS = 2;
     var CLASS_SIGNATURE_AFTER_EXTENDS_TYPE = 3
-    var CLASS_SIGNATURE_AFTER_IMPLEMENTS = 4;
-    var CLASS_SIGNATURE_AFTER_FIRST_IMPLEMENTS_NAME = 5;
-    var CLASS_BODY = 6;
+    var CLASS_SIGNATURE_AFTER_WITH = 4
+    var CLASS_SIGNATURE_AFTER_FIRST_WITH_NAME = 5;
+    var CLASS_SIGNATURE_AFTER_IMPLEMENTS = 6;
+    var CLASS_SIGNATURE_AFTER_FIRST_IMPLEMENTS_NAME = 7;
+    var CLASS_BODY = 8;
     function tryClass(stream, state) {
-      if (stream.match(/(abstract[ ]+)?class\b/) || stream.match(/interface\b/)) {
+      if (stream.match(/(abstract[ ]+)?class\b/) || stream.match(/interface\b/) || stream.match(/mixin\b/) || stream.match(/monitor\b/)) {
         state.context.push([tokenizeClass, 2]);
         state.subState.push(CLASS_SIGNATURE_AFTER_CLASS);
         return "keyword"
@@ -617,9 +619,13 @@
             setSubState(state, CLASS_SIGNATURE_AFTER_EXTENDS);
             return "keyword";
           }
-        // Fall through.
+          // Fall through.
 
         case CLASS_SIGNATURE_AFTER_EXTENDS_TYPE:
+          if (stream.match(/with\b/)) {
+            setSubState(state, CLASS_SIGNATURE_AFTER_WITH);
+            return "keyword";
+          }
           if (stream.match(/implements\b/)) {
             setSubState(state, CLASS_SIGNATURE_AFTER_IMPLEMENTS);
             return "keyword";
@@ -635,12 +641,17 @@
           setSubState(state, CLASS_SIGNATURE_AFTER_EXTENDS_TYPE);
           return tokenizeType(stream, state, false);
 
+        case CLASS_SIGNATURE_AFTER_WITH:
         case CLASS_SIGNATURE_AFTER_IMPLEMENTS:
           // The first *requires* an type.
           if (!stream.match(TYPE, false)) return signatureError();
-          setSubState(state, CLASS_SIGNATURE_AFTER_FIRST_IMPLEMENTS_NAME);
+          const nextSubState = subState(state) == CLASS_SIGNATURE_AFTER_WITH
+              ? CLASS_SIGNATURE_AFTER_FIRST_WITH_NAME
+              : CLASS_SIGNATURE_AFTER_FIRST_IMPLEMENTS_NAME;
+          setSubState(state, nextSubState);
           return tokenizeType(stream, state, false);
 
+        case CLASS_SIGNATURE_AFTER_FIRST_WITH_NAME:
         case CLASS_SIGNATURE_AFTER_FIRST_IMPLEMENTS_NAME:
           if (stream.match(TYPE, false)) {
             return tokenizeType(stream, state, false);
@@ -648,6 +659,12 @@
           if (stream.match(":")) {
             setSubState(state, CLASS_BODY);
             return "class_body_colon";
+          }
+          if (subState(state) == CLASS_SIGNATURE_AFTER_FIRST_WITH_NAME) {
+            if (stream.match(/implements\b/)) {
+              setSubState(state, CLASS_SIGNATURE_AFTER_IMPLEMENTS);
+              return "keyword";
+            }
           }
           return signatureError();
 

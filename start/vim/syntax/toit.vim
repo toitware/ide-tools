@@ -29,7 +29,7 @@ syntax sync minlines=500
 " TODO: Find out why 'syntax iskeyword' doesn't work.
 setlocal iskeyword=a-z,A-Z,48-57,_,-
 
-syntax keyword toitKeyword it super extends implements as return abstract static unreachable break continue
+syntax keyword toitKeyword it super extends implements as return abstract static unreachable break continue with
 highlight link toitKeyword Keyword
 
 syntax keyword toitNull null
@@ -175,7 +175,7 @@ highlight link toitDeclaration Identifier
 syntax match toitToplevelDeclaration "\v^[a-zA-Z_][a-zA-Z0-9_-]*"
 highlight link toitToplevelDeclaration Identifier
 
-syntax region toitClass matchgroup=toitStructure start=/\v(^|^abstract[ ]+)@<=(class|interface)>/ end=/\v^[^ ]@=/ contains=toitComment,toitMultiComment,toitMemberDeclaration,toitKeyword
+syntax region toitClass matchgroup=toitStructure start=/\v(^|^abstract[ ]+)@<=(class|interface|mixin|monitor)>/ end=/\v^[^ ]@=/ contains=toitComment,toitMultiComment,toitMemberDeclaration,toitKeyword
 highlight link toitStructure Structure
 
 syntax region toitMemberBody start="" end=/\v(^ ? ?[a-zA-Z0-9_-])@=/ contained contains=TOP
