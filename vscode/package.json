@@ -28,7 +28,8 @@
 			"[toit]": {
 				"editor.indentSize": 2,
 				"editor.insertSpaces": true,
-				"editor.detectIndentation": false
+				"editor.detectIndentation": false,
+				"editor.wordSeparators": "`~!@#$%^&*()=+[{]}\\|;:'\",.<>/?"
 			}
 		},
 		"viewsContainers": {
