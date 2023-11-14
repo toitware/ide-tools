@@ -3,7 +3,7 @@
 	"displayName": "Toit",
 	"description": "Toit Programming Language Support",
 	"publisher": "toit",
-	"version": "1.8.6",
+	"version": "1.8.7",
 	"license": "MIT",
 	"type": "commonjs",
 	"engines": {
@@ -336,9 +336,9 @@
 	},
 	"dependencies": {
 		"@vscode/test-electron": "^2.1.5",
+		"@vscode/vsce": "^2.22.0",
 		"ovsx": "^0.2.0",
 		"semver": "^7.3.5",
-		"vsce": "^1.77.0",
 		"vscode-languageclient": "^5.2.1"
 	},
 	"__metadata": {
