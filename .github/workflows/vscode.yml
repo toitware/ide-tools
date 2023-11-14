@@ -59,7 +59,7 @@ jobs:
       - name: Build package
         working-directory: ${{ env.vscode-dir }}
         run: |
-          yarn version ${{ steps.constants.outputs.version }} --allow-same-version
+          yarn version --new-version ${{ steps.constants.outputs.version }} --allow-same-version
           yarn run package
           # The output of the 'run package' doesn't include the 'v' of the version.
           # For simplicity just make a copy.
