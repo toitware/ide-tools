@@ -7,7 +7,7 @@
 	"license": "MIT",
 	"type": "commonjs",
 	"engines": {
-		"vscode": "^1.77.0"
+		"vscode": "^1.82.0"
 	},
 	"categories": [
 		"Programming Languages"
@@ -313,7 +313,7 @@
 	"devDependencies": {
 		"@types/jest": "^29.5.8",
 		"@types/node": "*",
-		"@types/vscode": "1.77.0",
+		"@types/vscode": "1.82.0",
 		"@types/webpack": "^5.28.5",
 		"@types/which": "^3.0.2",
 		"@typescript-eslint/eslint-plugin": "^6.11.0",
