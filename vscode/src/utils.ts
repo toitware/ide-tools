@@ -284,7 +284,8 @@ export async function getSerialInfo(ctx: Context, port: SerialPort): Promise<Ser
     const serialInfo = JSON.parse(stdout) as ConsoleSerialInfo;
     const deviceInfo = await getDeviceInfo(ctx, serialInfo.hardware_id);
     return new SerialInfo(serialInfo, deviceInfo);
-  } catch(e) {
+  } catch(e:unknown) {
+    if (!(e instanceof Error)) throw e;
     return e.message.endsWith("Is the hardware connected?") ? SerialStatus.disconnected : SerialStatus.busy;
   }
 }

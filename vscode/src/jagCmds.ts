@@ -25,8 +25,9 @@ async function executeJagWatch(ctx: JagContext) {
     const terminal = Window.createTerminal(`jag watch${prefix}`);
     terminal.show(false);
     terminal.sendText(`${ctx.jagExec} watch ${filePath} --device ${device.id}`);
-  } catch (e) {
-    return Window.showErrorMessage(`Unable to watch: ${e.message}`);
+  } catch (e: unknown) {
+    const errorMessage = (e instanceof Error) ? e.message : String(e);
+    return Window.showErrorMessage(`Unable to watch: ${errorMessage}`);
   }
 }
 
@@ -47,8 +48,9 @@ async function executeJagRun(ctx: JagContext) {
     const terminal = ctx.ensureSharedTerminal();
     terminal.show(false);
     terminal.sendText(`${ctx.jagExec} run ${filePath} --device ${device.id}`);
-  } catch (e) {
-    return Window.showErrorMessage(`Unable to watch: ${e.message}`);
+  } catch (e: unknown) {
+    const errorMessage = (e instanceof Error) ? e.message : String(e);
+    return Window.showErrorMessage(`Unable to run: ${errorMessage}`);
   }
 }
 
@@ -60,8 +62,9 @@ async function executeJagMonitor(ctx: JagContext) {
     const terminal = ctx.portTerminal(port);
     terminal.show(false);
     terminal.sendText(`${ctx.jagExec} monitor --port '${port}'`);
-  } catch (e) {
-    return Window.showErrorMessage(`Unable to monitor: ${e.message}`);
+  } catch (e: unknown) {
+    const errorMessage = (e instanceof Error) ? e.message : String(e);
+    return Window.showErrorMessage(`Unable to monitor: ${errorMessage}`);
   }
 }
 
@@ -71,8 +74,9 @@ function executeJagScan(ctx: JagContext) {
 
     terminal.show(false);
     terminal.sendText(`${ctx.jagExec} scan`);
-  } catch (e) {
-    return Window.showErrorMessage(`Unable to scan: ${e.message}`);
+  } catch (e: unknown) {
+    const errorMessage = (e instanceof Error) ? e.message : String(e);
+    return Window.showErrorMessage(`Unable to scan: ${errorMessage}`);
   }
 }
 
@@ -94,8 +98,9 @@ async function executeJagFlash(ctx: JagContext) {
     const terminal = ctx.portTerminal(port);
     terminal.show(false);
     terminal.sendText(`${ctx.jagExec} flash --port '${port}' ${nameFlag} --wifi-ssid '${wifiInfo.ssid}' --wifi-password '${wifiInfo.password}'`);
-  } catch (e) {
-    return Window.showErrorMessage(`Unable to flash: ${e.message}`);
+  } catch (e: unknown) {
+    const errorMessage = (e instanceof Error) ? e.message : String(e);
+    return Window.showErrorMessage(`Unable to flash: ${errorMessage}`);
   }
 }
 

@@ -2,14 +2,14 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file.
 
-import { mocked } from "ts-jest/utils";
+import "jest-mock";
 import * as cli from "../../src/cli";
 import { Context, DeviceItem, listDevices } from "../../src/utils";
 import { device1, device2, strDevice1, strDevice2 } from "./testUtils";
 
 jest.mock("../../src/cli");
 
-const mockedCLI = mocked(cli.toitExecFilePromise);
+const mockedCLI = jest.mocked(cli.toitExecFilePromise);
 
 
 

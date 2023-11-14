@@ -33,8 +33,9 @@ async function executeCommand(ctx: Context) {
     await setProject(ctx, project);
     await updateStatus(ctx);
     ctx.views.refreshViews();
-  } catch (e) {
-    return Window.showErrorMessage(`Unable to change project: ${e.message}.`);
+  } catch (e: unknown) {
+    const errorMessage = (e instanceof Error) ? e.message : String(e);
+    return Window.showErrorMessage(`Unable to set project: ${errorMessage}`);
   }
 }
 
