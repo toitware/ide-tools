@@ -34,14 +34,14 @@ jobs:
       - name: Install dependencies
         working-directory: ${{ env.vscode-dir }}
         run: |
-          npm install
+          yarn install
           sudo apt-get update
           sudo apt-get install xvfb
 
       - name: Lint
         working-directory: ${{ env.vscode-dir }}
         run: |
-          npm run lint
+          yarn run lint
 
       - name: Test
         working-directory: ${{ env.vscode-dir }}
@@ -49,18 +49,18 @@ jobs:
           DISPLAY: ":99.0"
         run: |
           /usr/bin/Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-          npm run ci-test
+          yarn run ci-test
 
       - name: Compile
         working-directory: ${{ env.vscode-dir }}
         run: |
-          npm run compile-prod
+          yarn run compile-prod
 
       - name: Build package
         working-directory: ${{ env.vscode-dir }}
         run: |
-          npm version ${{ steps.constants.outputs.version }} --allow-same-version
-          npm run package
+          yarn version --new-version ${{ steps.constants.outputs.version }} --allow-same-version
+          yarn run package
           # The output of the 'run package' doesn't include the 'v' of the version.
           # For simplicity just make a copy.
           if [[ "${{ github.event_name }}" == "release" ]]; then
@@ -79,7 +79,7 @@ jobs:
         env:
           AZURE_TOKEN: ${{ secrets.VSCODE_AZURE_LEON_ACCESS_TOKEN }}
         run:
-          npm run vsce-publish
+          yarn run vsce-publish
 
       - name: Publish to open-vsx.org
         working-directory: ${{ env.vscode-dir }}
@@ -87,4 +87,4 @@ jobs:
         env:
           OPEN_VSX_TOKEN: ${{ secrets.VSCODE_OPEN_VSX_TOKEN }}
         run:
-          npm run ovsx-publish
+          yarn run ovsx-publish

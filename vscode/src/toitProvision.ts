@@ -20,8 +20,9 @@ async function serialProvision(ctx: Context, serialPort?: SerialPort) {
     terminal.show(true);
     const provisionCmd = `${ctx.toitExec} serial provision --port ${port} --model esp32-4mb -p wifi.ssid='${wifiInfo.ssid}' -p wifi.password='${wifiInfo.password}'`;
     terminal.sendText(provisionCmd);
-  } catch (e) {
-    return Window.showErrorMessage(`Unable to provision: ${e.message}`);
+  } catch (e: unknown) {
+    const errorMessage = (e instanceof Error) ? e.message : String(e);
+    return Window.showErrorMessage(`Unable to provision: ${errorMessage}`);
   }
 }
 

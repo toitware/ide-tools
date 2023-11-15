@@ -1,4 +1,4 @@
-const NodeEnvironment = require("jest-environment-node");
+const NodeEnvironment = require("jest-environment-node").TestEnvironment;
 const vscode = require("vscode");
 
 class VsCodeEnvironment extends NodeEnvironment {
