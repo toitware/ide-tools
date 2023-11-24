@@ -26,8 +26,24 @@ cd $HOME/.local/share/nvim/site/pack
 git clone https://github.com/toitware/ide-tools.git toit-ide-tools
 ```
 
-Vim 7 or earlier
-================
+If you're using [lazy.nvim](https://github.com/folke/lazy.nvim)(a popular
+plugin manager for Neovim), this is an example of a plugin spec you could add
+to your configuration:
+
+```lua
+{
+    "toitware/ide-tools",
+    ft = { "toit" },
+    config = function(plugin)
+        vim.opt.rtp:append(plugin.dir .. "/start/vim")
+    end,
+    init = function(plugin)
+        require("lazy.core.loader").ftdetect(plugin.dir .. "/start/vim")
+    end,
+}
+```
+
+# Vim 7 or earlier
 
 If you are using an older vim, you can use Pathogen to manage your vim plugins.
 In that case, it's enough to recursively copy this directory to a
