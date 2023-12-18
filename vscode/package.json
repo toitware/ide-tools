@@ -293,6 +293,11 @@
 					],
 					"default": "off",
 					"description": "Traces the communication between VSCode and the ToitLanguageServer service."
+				},
+				"toitLanguageServer.reportPackageDiagnostics": {
+					"type": "boolean",
+					"default": false,
+					"description": "Report diagnostics for files in '.packages' folders."
 				}
 			}
 		}
