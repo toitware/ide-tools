@@ -64,8 +64,13 @@ jobs:
       - name: Build package
         working-directory: ${{ env.vscode-dir }}
         run: |
-          yarn version --new-version ${{ steps.constants.outputs.version }} --allow-same-version
+          VERSION=${{ steps.constants.outputs.version }}
+          VERSION_WITHOUT_V=$(echo $VERSION | sed 's/^v//')
+          yarn version --new-version $VERSION_WITHOUT_V --allow-same-version
           yarn run package
+          if [[ "${{ github.event_name }}" == "release" && "$VERSION_WITHOUT_V" != "$VERSION" ]]; then
+            cp toit-*.vsix toit-${{ steps.constants.outputs.version }}.vsix
+          fi
 
       - name: Upload vsix artifact
         uses: actions/upload-artifact@v3
