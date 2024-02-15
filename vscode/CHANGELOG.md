@@ -4,6 +4,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.7] - 2024-02-15
+### Changed
+- Remove '-' as wordSeparator. This undoes part of the 1.8.3 release.
+- Fix syntax highlighting for `foo-bar--` (an identifier containing a '-'
+  followed by '--').
+
+## [1.8.6] - 2023-11-02
+### Changed
+- Don't indent after empty lines.
+
+## [1.8.5] - 2023-11-01
+### Added
+- Support for mixins.
+
+## [1.8.4] - 2023-09-18
+### Changed
+- Fix word-boundary regular expressions.
+
+## [1.8.3] - 2023-08-10
+### Changed
+- Improve "word" experience. VSCode and Toit don't completely agree on what a
+  word-boundary is, and this change tries to improve the experience.
+
+## [1.8.2] - 2023-08-09
+### Changed
+- Add auto-indent.
+
+## [1.8.1] - 2023-08-09
+### Changed
+- Fix for constant syntax highlighting.
+
+## [1.8.0] - 2023-08-09
+### Added
+- Support Kebab identifiers.
+
 ## [1.7.0] - 2023-05-19
 ### Changed
 - Use unicode category to match letters in the syntax highlighting.
