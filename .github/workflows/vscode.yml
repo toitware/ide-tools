@@ -66,7 +66,7 @@ jobs:
         run: |
           VERSION=${{ steps.constants.outputs.version }}
           VERSION_WITHOUT_V=$(echo $VERSION | sed 's/^v//')
-          yarn version --new-version $VERSION_WITHOUT_V --allow-same-version
+          yarn version --no-git-tag-version --new-version $VERSION_WITHOUT_V --allow-same-version
           yarn run package
           if [[ "${{ github.event_name }}" == "release" && "$VERSION_WITHOUT_V" != "$VERSION" ]]; then
             cp toit-*.vsix toit-${{ steps.constants.outputs.version }}.vsix
