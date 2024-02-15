@@ -741,19 +741,19 @@
       "patterns": [
         {
           "name": "entity.name.type.toit",
-          "match": "\\b(?<!-)_?[A-Z][0-9]*(?!-)\\b[?]?"
+          "match": "\\b(?<!-)_?[A-Z][0-9]*(?<!-)\\b[?]?"
         },
         {
           "name": "entity.name.type.toit",
-          "match": "\\b(?<!-)_?[A-Z][A-Z_-]*[a-z][\\w-]*(?!-)\\b[?]?"
+          "match": "\\b(?<!-)_?[A-Z][A-Z_-]*[a-z][\\w-]*(?<!-)\\b[?]?"
         },
         {
           "name": "entity.name.type.shorts.toit",
-          "match": "\\b(?<!-)(int|bool|float|string)(?!-)\\b[?]?"
+          "match": "\\b(?<!-)(int|bool|float|string)(?<!-)\\b[?]?"
         },
         {
           "name": "entity.name.type.any_none.toit",
-          "match": "\\b(?<!-)(any|none)(?!-)\\b"
+          "match": "\\b(?<!-)(any|none)(?<!-)\\b"
         }
       ]
     },
@@ -761,7 +761,7 @@
       "patterns": [
         {
           "name": "entity.name.function.call.toit",
-          "match": "\\b(?<!-)[\\p{L}_][\\w-]*(?!-)\\b"
+          "match": "\\b(?<!-)[\\p{L}_][\\w-]*(?<!-)\\b"
         }
       ]
     },
