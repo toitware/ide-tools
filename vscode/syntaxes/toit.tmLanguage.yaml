@@ -459,10 +459,12 @@ repository:
     #  - single capitalized character -> a type: 'class A'.
     #  - single capitalized character followed by a number -> also a type: `class C1`.
     #  - capitalized identifier with at least on lower-case character: a type.
-    - name: entity.name.type.toit
-      match: \b(?<!-)_?[A-Z][0-9]*(?<!-)\b[?]?
+
+    # Match the longer type first, so that we match something like `X-Of`.
     - name: entity.name.type.toit
       match: \b(?<!-)_?[A-Z][A-Z_-]*[a-z][\w-]*(?<!-)\b[?]?
+    - name: entity.name.type.toit
+      match: \b(?<!-)_?[A-Z][0-9]*(?<!-)\b[?]?
     - name: entity.name.type.shorts.toit
       match: \b(?<!-)(int|bool|float|string)(?<!-)\b[?]?
     - name: entity.name.type.any_none.toit
