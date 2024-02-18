@@ -741,11 +741,11 @@
       "patterns": [
         {
           "name": "entity.name.type.toit",
-          "match": "\\b(?<!-)_?[A-Z][0-9]*(?<!-)\\b[?]?"
+          "match": "\\b(?<!-)_?[A-Z][A-Z_-]*[a-z][\\w-]*(?<!-)\\b[?]?"
         },
         {
           "name": "entity.name.type.toit",
-          "match": "\\b(?<!-)_?[A-Z][A-Z_-]*[a-z][\\w-]*(?<!-)\\b[?]?"
+          "match": "\\b(?<!-)_?[A-Z][0-9]*_?(?<!-)\\b[?]?"
         },
         {
           "name": "entity.name.type.shorts.toit",
