@@ -40,7 +40,7 @@
         },
         {
           "name": "constant.language.import-export-all.as.toit",
-          "match": "\\b(?<!)as(?!-)\\b"
+          "match": "\\b(?<!-)as(?!-)\\b"
         },
         {
           "name": "constant.language.import-export-all.import_all.toit",
@@ -324,7 +324,7 @@
         {
           "name": "entity.name.type.annotation.toit",
           "begin": "(/|->) *(?=[\\p{L}_])",
-          "end": "(?=[^\\w-.?])",
+          "end": "(?=[^\\w\\-.?])",
           "beginCaptures": {
             "1": {
               "name": "keyword.control.return_type.toit"
