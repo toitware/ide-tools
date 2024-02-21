@@ -12,7 +12,7 @@ jobs:
       vscode-dir: ./vscode
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up constants
         shell: bash
@@ -73,7 +73,7 @@ jobs:
           fi
 
       - name: Upload vsix artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: vsix
           path: ${{ env.vscode-dir }}/toit-${{ steps.constants.outputs.version }}.vsix
