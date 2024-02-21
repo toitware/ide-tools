@@ -522,4 +522,24 @@ repository:
           name: comment.line.double-slash.toit
       contentName: comment.line.double-slash.toit
 
+  punctuation:
+    - name: punctuation.delimiter.period.dot.toit
+      match: \.
+    - name: punctuation.delimiter.comma.toit
+      match: \,
+    - name: punctuation.definition.other.semicolon.toit
+      match: \;
+    - name: punctuation.separator.key-value.colon.toit
+      match: ':'
+    - name: punctuation.section.parens.begin.toit
+      match: \(
+    - name: punctuation.section.parens.end.toit
+      match: \)
+    - name: punctuation.section.brackets.begin.toit
+      match: \[
+    - name: punctuation.section.brackets.end.toit
+      match: \]
+    - name: punctuation.definition.other.questionmark.toit
+      match: \?
+
 scopeName: source.toit
