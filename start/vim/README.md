@@ -64,26 +64,27 @@ Language Server
 ===============
 
 There are many LSP clients for VIM. The following instructions are for
-`vim-lsc`, but they should be easy to adapt for other clients.
+`lsp`, but they should be easy to adapt for other clients.
 
 
-As described in the [readme](https://github.com/natebosch/vim-lsc) the preferred
-way to install the plugin is with a plugin manager.
+As described in the [readme](https://github.com/yegappan/lsp) you can
+simply clone the plugin into the 'pack' directory:
 
-Here, we use `vim-plug`:
-
+``` bash
+mkdir -p $HOME/.vim/pack/downloads/opt
+cd $HOME/.vim/pack/downloads/opt
+git clone https://github.com/yegappan/lsp
 ```
-Plug 'natebosch/vim-lsc'
-```
 
-Don't forget to run `:PlugInstall`.
+Then add `packadd lsp` to your vimrc, followed by the following
+`LspAddServer` command:
 
-Then add the following section to your `.vimrc`:
-```
-let g:lsc_server_commands = {
-  \ 'toit': {
-  \    'name': 'toit-language-server',
-  \    'command': 'toit tool lsp'
-  \  }
-  \}
+``` vim
+" Toit language server
+call LspAddServer([#{
+        \    name: 'toit',
+        \    filetype: ['toit'],
+        \    path: 'jag',
+        \    args: ['toit', 'lsp']
+        \  }])
 ```
