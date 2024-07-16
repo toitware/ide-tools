@@ -508,7 +508,7 @@
 
       switch (subState(state)) {
         case IMPORT_AFTER_IMPORT:
-          if (!stream.match(/\.*(\.?[a-zA-Z_]\w*)+/)) return importError();
+          if (!stream.match(/\.*(\.?[-a-zA-Z_]\w*)+/)) return importError();
           setSubState(state, IMPORT_AFTER_PATH);
           return "import_path";
         case IMPORT_AFTER_PATH:
