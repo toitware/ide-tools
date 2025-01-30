@@ -17,10 +17,8 @@
 		"url": "https://github.com/toitware/ide-tools.git"
 	},
 	"activationEvents": [
-		"workspaceContains:**/*.toit",
-		"onView:toitView",
-		"onCommand:toit.refreshView"
-	],
+		"workspaceContains:**/*.toit"
+  ],
 	"icon": "images/toitware_logo.png",
 	"main": "./dist/extension.js",
 	"contributes": {
@@ -32,101 +30,7 @@
 				"editor.wordSeparators": "`~!@#$%^&*()=+[{]}\\|;:'\",.<>/?"
 			}
 		},
-		"viewsContainers": {
-			"activitybar": [
-				{
-					"id": "toitView",
-					"title": "Toit",
-					"icon": "./resources/logo.svg",
-					"when": "toit.extensionActive"
-				}
-			]
-		},
-		"views": {
-			"toitView": [
-				{
-					"id": "toitDeviceView",
-					"name": "Devices",
-					"when": "toit.extensionActive"
-				},
-				{
-					"id": "toitSerialView",
-					"name": "Serial Ports",
-					"when": "toit.extensionActive",
-					"visibility": "collapsed"
-				}
-			]
-		},
-		"viewsWelcome": [
-			{
-				"view": "toitDeviceView",
-				"contents": "No devices found.\n\nTry to log in\n[Log in](command:toit.ensureAuth)",
-				"when": "toit.extensionActive"
-			}
-		],
 		"commands": [
-			{
-				"command": "toit.uninstallApp",
-				"title": "Uninstall",
-				"category": "Toit",
-				"icon": "$(trash)",
-				"enablement": "toit.extensionActive"
-			},
-			{
-				"command": "toit.refreshDeviceView",
-				"title": "Refresh",
-				"category": "Toit",
-				"icon": "$(refresh)",
-				"enablement": "toit.extensionActive"
-			},
-			{
-				"command": "toit.refreshSerialView",
-				"title": "Refresh",
-				"category": "Toit",
-				"icon": "$(refresh)",
-				"enablement": "toit.extensionActive"
-			},
-			{
-				"command": "toit.ensureAuth",
-				"title": "Log in to toit.io",
-				"category": "Toit",
-				"enablement": "toit.extensionActive"
-			},
-			{
-				"command": "toit.devRun",
-				"title": "Run",
-				"category": "Toit",
-				"icon": "$(run)",
-				"enablement": "toit.extensionActive"
-			},
-			{
-				"command": "toit.devDeploy",
-				"title": "Deploy",
-				"category": "Toit",
-				"icon": "$(run-all)",
-				"enablement": "toit.extensionActive"
-			},
-			{
-				"command": "toit.devLogs",
-				"title": "Logs",
-				"category": "Toit",
-				"icon": "$(output)",
-				"enablement": "toit.extensionActive"
-			},
-			{
-				"command": "toit.serialProvision",
-				"title": "Provision device",
-				"category": "Toit",
-				"icon": "$(add)",
-				"enablement": "toit.extensionActive"
-			},
-			{
-				"command": "toit.serialMonitor",
-				"title": "Monitor serial output",
-				"category": "Toit",
-				"icon": "$(selection)",
-				"enablement": "toit.extensionActive"
-			},
 			{
 				"command": "jag.watch",
 				"title": "Watch for changes and rerun",
@@ -163,58 +67,6 @@
 				"enablement": "jag.execPresent"
 			}
 		],
-		"menus": {
-			"view/title": [
-				{
-					"command": "toit.refreshDeviceView",
-					"when": "view == toitDeviceView",
-					"group": "navigation@1"
-				},
-				{
-					"command": "toit.refreshSerialView",
-					"when": "view == toitSerialView",
-					"group": "navigation@1"
-				}
-			],
-			"view/item/context": [
-				{
-					"command": "toit.serialProvision",
-					"when": "view == toitSerialView && viewItem == serial-port",
-					"group": "inline@0"
-				},
-				{
-					"command": "toit.serialMonitor",
-					"when": "view == toitSerialView && viewItem == serial-port",
-					"group": "inline@1"
-				},
-				{
-					"command": "toit.uninstallApp",
-					"when": "view == toitDeviceView && viewItem == application",
-					"group": "inline"
-				},
-				{
-					"command": "toit.devRun",
-					"when": "view == toitDeviceView && viewItem =~ /device.*/",
-					"group": "inline@2"
-				},
-				{
-					"command": "toit.devDeploy",
-					"when": "view == toitDeviceView && viewItem =~ /device.*/",
-					"group": "inline@1"
-				},
-				{
-					"command": "toit.devLogs",
-					"when": "view == toitDeviceView && viewItem =~ /device.*/",
-					"group": "inline@0"
-				}
-			],
-			"commandPalette": [
-				{
-					"command": "toit.uninstallApp",
-					"when": "false"
-				}
-			]
-		},
 		"languages": [
 			{
 				"id": "toit",
@@ -308,7 +160,6 @@
 		"watch": "webpack --mode development --watch",
 		"test-watch": "tsc -p ./ -watch",
 		"test-compile": "tsc -p ./",
-		"ci-test": "tsc -p ./ && ts-node ./test/runTest.ts",
 		"lint": "eslint src --ext ts",
 		"lint-fix": "eslint src --ext ts --fix",
 		"package": "vsce package --yarn",
