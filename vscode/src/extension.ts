@@ -3,19 +3,10 @@
 // found in the LICENSE file.
 
 import { commands as Commands, env, ExtensionContext, Uri, window as Window, workspace as Workspace } from "vscode";
-import { activateTreeView, deactivateTreeView } from "./deviceView";
 import { createJagFlashCommand, createJagMonitorCommand, createJagRunCommand, createJagScanCommand, createJagWatchCommand } from "./jagCmds";
 import { JagContext } from "./jagCtx";
 import { activateLsp, deactivateLsp } from "./lspClient";
-import { createOutputCommand } from "./output";
-import { activateToitStatusBar, createSetProjectCommand } from "./projectCmd";
-import { activateSerialView } from "./serialView";
-import { createEnsureAuth } from "./toitAuth";
-import { createDeployCommand, createRunCommand } from "./toitExec";
-import { createSerialMonitor } from "./toitMonitor";
-import { createSerialProvision } from "./toitProvision";
-import { createUninstallCommand } from "./toitUninstall";
-import { Context, revealDevice, TOIT_LSP_ARGS } from "./utils";
+import { TOIT_LSP_ARGS } from "./utils";
 
 import cp = require("child_process");
 import wh = require("which");
@@ -242,27 +233,6 @@ async function findExecutables(): Promise<Executables> {
 
 export async function activate(extContext: ExtensionContext): Promise<void> {
   const executables = await findExecutables();
-  if (executables.cli !== null) {
-    const ctx = new Context(executables.cli);
-    Commands.executeCommand("setContext", "toit.extensionActive", true);
-
-    activateTreeView(ctx);
-    activateSerialView(ctx);
-
-    extContext.subscriptions.push(Commands.registerCommand("toit.serialProvision", createSerialProvision(ctx)));
-    extContext.subscriptions.push(Commands.registerCommand("toit.serialMonitor", createSerialMonitor(ctx)));
-    extContext.subscriptions.push(Commands.registerCommand("toit.ensureAuth", createEnsureAuth(ctx)));
-    extContext.subscriptions.push(Commands.registerCommand("toit.refreshDeviceView", () => ctx.views.refreshDeviceView()));
-    extContext.subscriptions.push(Commands.registerCommand("toit.refreshSerialView", () => ctx.views.refreshSerialView()));
-    extContext.subscriptions.push(Commands.registerCommand("toit.uninstallApp", createUninstallCommand(ctx)));
-    extContext.subscriptions.push(Commands.registerCommand("toit.devRun", createRunCommand(ctx)));
-    extContext.subscriptions.push(Commands.registerCommand("toit.devDeploy", createDeployCommand(ctx)));
-    extContext.subscriptions.push(Commands.registerCommand("toit.devLogs", createOutputCommand(ctx)));
-    extContext.subscriptions.push(Commands.registerCommand("toit.setProject", createSetProjectCommand(ctx)));
-    extContext.subscriptions.push(Commands.registerCommand("toit.revealDevice", async(hwID) => await revealDevice(ctx, hwID)));
-
-    activateToitStatusBar(ctx, extContext);
-  }
   if (executables.lspCommand !== null) {
     activateLsp(extContext, executables.lspCommand);
   }
@@ -281,6 +251,5 @@ export async function activate(extContext: ExtensionContext): Promise<void> {
 
 export function deactivate(): Thenable<void> {
   Commands.executeCommand("setContext", "toit.extensionActive", false);
-  deactivateTreeView();
   return deactivateLsp();
 }
