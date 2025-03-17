@@ -12,7 +12,7 @@ The easiest way to set it up is to download the [Jaguar](https://github.com/toit
 tool and install it, so that `jag` or `jag.exe` is in your path.
 
 * Windows: `winget install --id=Toit.Jaguar -e`
-* macOS: `brew install toitlang/toit/jag`
+* macOS: `brew install jaguar`
 * Archlinux: `yay -S jaguar-bin`
 
 If the Jaguar executable is not in your path, you can also update the `jag.path` setting, so it
