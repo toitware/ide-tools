@@ -63,7 +63,7 @@ jobs:
           fi
 
       - name: Upload vsix artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: vsix
           path: ${{ env.vscode-dir }}/toit-${{ steps.constants.outputs.version }}.vsix
