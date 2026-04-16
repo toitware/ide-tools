@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "toit": {
+      "command": ["toit", "tool", "lsp"],
+      "url": "https://toit.io",
+      "highlightingModeRegex": "^toit$"
+    }
+  }
+}

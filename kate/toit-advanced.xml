@@ -1,0 +1,489 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language>
+
+<language
+    name="toit"
+    version="1"
+    kateversion="5.0"
+    section="Sources"
+    author="Florian Loitsch (florian@toitware.com)"
+    license="MIT"
+    extensions="*.toit">
+
+<highlighting>
+  <list name="keywords">
+    <item> import </item>
+    <item> export </item>
+    <item> assert </item>
+    <item> if </item>
+    <item> for </item>
+    <item> else </item>
+    <item> try </item>
+    <item> finally </item>
+    <item> while </item>
+    <item> break </item>
+    <item> continue </item>
+    <item> throw </item>
+    <item> static </item>
+    <item> abstract </item>
+  </list>
+
+  <list name="operators">
+    <item> and </item>
+    <item> or </item>
+    <item> not </item>
+  </list>
+
+  <list name="constants">
+    <item> true </item>
+    <item> false </item>
+    <item> null </item>
+  </list>
+
+  <list name="special vars">
+    <item> this </item>
+    <item> super </item>
+  </list>
+
+  <contexts>
+    <!--
+    Conventions:
+    - @: means, pops context.
+      This means that these contexts should not be included with `IncludeRules` unless the
+      goal is to switch to this context (which is often semantically equivalent to popping first).
+    -->
+    <context name="Main">
+      <IncludeRules context="Comments" />
+      <WordDetect attribute="Import"
+                  String="import"
+                  context="@Import"
+                  column="0"
+                  beginRegion="Import"
+                  />
+
+      <WordDetect attribute="Export"
+                  String="export"
+                  context="@Export"
+                  column="0"
+                  beginRegion="Export"
+                  />
+
+      <WordDetect attribute="Class"
+                  String="class"
+                  context="@Class"
+                  column="0"
+                  beginRegion="Class"
+                  />
+
+      <WordDetect attribute="Class"
+                  String="interface"
+                  context="@Class"
+                  column="0"
+                  beginRegion="Class"
+                  />
+
+      <WordDetect attribute="Class"
+                  String="mixin"
+                  context="@Class"
+                  column="0"
+                  beginRegion="Class"
+                  />
+
+      <WordDetect attribute="Monitor"
+                  String="monitor"
+                  context="@Class"
+                  column="0"
+                  beginRegion="Class"
+                  />
+
+      <IncludeRules context="Toplevel" />
+    </context>
+
+    <context name="Operators">
+      <Keyword attribute="Operator Keyword" String="operators" context="#stay" />
+<!--       TODO -->
+      <AnyChar attribute="Operator" String="&lt;&gt;=/*%!^~" context="#stay" />
+    </context>
+
+    <context name="@Character">
+      <HlCChar attribute="Character" context="#pop" />
+    </context>
+    <context name="Character">
+      <HlCChar attribute="Character" />
+    </context>
+
+    <context name="@Number">
+      <Float attribute="Number" context="#pop" />
+      <Int attribute="Number" context="#pop" />
+      <HlCHex attribute="Number" context="#pop" />
+    </context>
+    <context name="Number">
+      <Float attribute="Number" />
+      <Int attribute="Number" />
+      <HlCHex attribute="Number" />
+    </context>
+
+    <context name="@Constants">
+<!--       TODO -->
+    </context>
+
+    <context name="@Strings" >
+<!--       TODO -->
+    </context>
+
+    <context name="@Delimited_Parens" >
+      <IncludeRules context="Expressions" />
+      <DetectChar char=")" context="#pop" />
+    </context>
+    <context name="@Delimited_Brack" >
+      <IncludeRules context="Expressions" />
+      <DetectChar char="]" context="#pop" />
+    </context>
+    <context name="@Delimited_Brace" >
+      <IncludeRules context="Expressions" />
+      <DetectChar char="}" context="#pop" />
+    </context>
+
+    <context name="@Delimited" >
+      <!-- The #pop!@Delimited... only works because we know that this context is
+          used with `IncludeRules`. Otherwise it would be an error.-->
+      <DetectChar char="(" context="#pop!@Delimited_Parens" attribute="Delim" />
+      <DetectChar char="[" context="#pop!@Delimited_Brack" attribute="Delim" />
+      <DetectChar char="{" context="#pop!@Delimited_Brace" attribute="Delim" />
+    </context>
+    <context name="Delimited" >
+      <DetectChar char="(" context="@Delimited_Parens" attribute="Delim" />
+      <DetectChar char="[" context="@Delimited_Brack" attribute="Delim" />
+      <DetectChar char="{" context="@Delimited_Brace" attribute="Delim" />
+    </context>
+
+    <context name="@Keywords">
+      <keyword attribute="Keyword" String="keywords" context="#pop" />
+    </context>
+    <context name="Keywords">
+      <keyword attribute="Keyword" String="keywords" />
+    </context>
+
+    <context name="Constants">
+      <keyword attribute="Constants" String="constants" />
+    </context>
+
+    <context name="Special Vars">
+      <keyword attribute="Special Vars" String="special vars" />
+    </context>
+
+    <context name="Expressions" >
+      <IncludeRules context="Comments" />
+      <IncludeRules context="Delimited" />
+      <IncludeRules context="Character" />
+      <IncludeRules context="Number" />
+      <IncludeRules context="Keywords" />
+      <IncludeRules context="Constants" />
+      <IncludeRules context="Special Vars" />
+    </context>
+
+    <context name="Types" >
+      <RegExpr attribute="Type" String="([A-Z]|_[A-Z])\w*[a-z]\w*" />
+      <WordDetect attribute="Type" String="any" />
+      <WordDetect attribute="Type" String="void" />
+    </context>
+
+    <context name="@Types" >
+      <RegExpr attribute="Type" String="([A-Z]|_[A-Z])\w*[a-z]\w*" context="#pop" />
+      <WordDetect attribute="Type" String="any" context="#pop" />
+      <WordDetect attribute="Type" String="void" context="#pop" />
+    </context>
+
+    <context name="Type Annotations">
+      <RegExpr String="~|\^"
+               context="@Types" />
+    </context>
+
+    <context name="@Default Value"
+             fallthrough="true"
+             fallthroughContext="#pop"
+             >
+      <DetectSpaces attribute="Normal Text" context="#stay" />
+      <IncludeRules context="Comments" />
+      <IncludeRules context="@Character" />
+      <IncludeRules context="@Number" />
+      <IncludeRules context="@Constants" />
+      <IncludeRules context="@Strings" />
+      <IncludeRules context="@Types" />
+      <IncludeRules context="@Delimited" />
+      <IncludeRules context="@Keywords" />
+    </context>
+
+    <context name="Parameters"
+             >
+      <IncludeRules context="Type Annotations" />
+      <DetectIdentifier attribute="Parameter" />
+      <RegExpr attribute="Named Parameter"
+               String="--[a-zA-Z_][a-zA-Z0-9_]*" />
+      <DetectChar char="="
+                  attribute="Operator"
+                  context="@Default Value" />
+    </context>
+
+    <context name="@Single Comment"
+             attribute="Single Comment"
+             lineEndContext="#pop"
+             >
+    </context>
+    <context name="@Single Doc Comment"
+             attribute="Single Doc Comment"
+             lineEndContext="#pop"
+             >
+    </context>
+    <context name="@Multi Comment"
+             attribute="Multi Comment"
+             >
+      <Detect2Chars char="/" char1="*" beginRegion="Comment" context="@Multi Comment" />
+      <Detect2Chars attribute="Multi Comment"
+                    char="*" char1="/"
+                    endRegion="Comment"
+                    context="#pop"
+                    />
+    </context>
+    <context name="@Multi Doc Comment"
+             attribute="Multi Doc Comment"
+             >
+      <Detect2Chars char="/"
+                    char1="*"
+                    beginRegion="Comment"
+                    context="@Multi Doc Comment" />
+      <Detect2Chars attribute="Multi Doc Comment"
+                    char="*" char1="/"
+                    endRegion="Comment"
+                    context="#pop"
+                    />
+    </context>
+
+    <context name="Comments">
+      <WordDetect attribute="Multi Comment"
+                  String="///"
+                  context="@Single Doc Comment" />
+      <Detect2Chars char="/" char1="/" lookAhead="true" context="@Single Comment" />
+      <WordDetect attribute="Multi Comment"
+                  String="/**/"
+                  />
+      <WordDetect attribute="Multi Doc Comment"
+                  String="/**"
+                  context="@Multi Doc Comment"
+                  beginRegion="Comment"
+                  />
+      <Detect2Chars char="/" char1="*"
+                    attribute="Multi Comment"
+                    context="@Multi Comment"
+                    beginRegion="Comment"
+                    />
+    </context>
+
+    <!--
+    A Toplevel goes through the following steps:
+    - Signature
+      Possibly:
+        - Signature without ":": to determine whether the parameters are spread over multiple lines.
+        - Multi Toplevel Signature: When the parameters are spread over multiple lines.
+    - Body
+    -->
+    <context name="Toplevel"
+             attribute="Error"
+             >
+      <DetectIdentifier attribute="Toplevel Declaration"
+                        context="@Toplevel Declaration"
+                        beginRegion="Toplevel Declaration"
+                        column="0"
+                        />
+    </context>
+
+    <!-- Toplevel automatically ends when there is something a column 0.  -->
+    <context name="@Toplevel End">
+      <RegExpr String="[^ ]"
+               column="0"
+               context="#pop"
+               lookAhead="true"
+               endRegion="Toplevel Declaration"
+               />
+    </context>
+
+    <context name="@Toplevel Declaration">
+      <!-- Start with signature. Will automatically transition to body (eventually)  -->
+      <IncludeRules context="@Toplevel Signature" />
+    </context>
+
+    <context name="@Toplevel Signature"
+             attribute="Normal Text"
+             lineEndContext="#pop!@Toplevel Signature without :"
+             >
+      <IncludeRules context="Comments" />
+      <IncludeRules context="@Toplevel End" />
+      <IncludeRules context="Parameters" />
+      <WordDetect String="::=" attribute="Assign" context="#pop!@Toplevel Body" />
+      <Detect2Chars char=":" char1="=" attribute="Assign" context="#pop!@Toplevel Body" />
+      <DetectChar char=":" attribute="Colon" context="#pop!@Toplevel Body" />
+    </context>
+
+    <context name="@Toplevel Signature without :"
+             attribute="Normal Text"
+             fallthrough="true"
+             fallthroughContext="@Toplevel Body"
+             >
+      <IncludeRules context="Comments" />
+      <IncludeRules context="@Toplevel End" />
+      <RegExpr String="^    [^ ]" lookAhead="true" context="#pop!@Toplevel Signature Multi"/>
+    </context>
+
+    <context name="@Toplevel Signature Multi"
+             attribute="Error"
+             >
+      <IncludeRules context="Comments" />
+      <IncludeRules context="@Toplevel End" />
+      <IncludeRules context="Parameters" />
+      <WordDetect String="::=" attribute="Assign" context="#pop!@Toplevel Body" />
+      <Detect2Chars char=":" char1="=" attribute="Assign" context="#pop!@Toplevel Body" />
+      <DetectChar char=":" attribute="Colon" context="#pop!@Toplevel Body" />
+    </context>
+
+    <context name="@Toplevel Body"
+             attribute="Normal Text"
+             >
+      <IncludeRules context="Comments" />
+      <IncludeRules context="@Toplevel End" />
+      <IncludeRules context="Expressions" />
+    </context>
+
+    <context name="@End Import">
+      <RegExpr String="[^ ]"
+               column="0"
+               context="#pop"
+               lookAhead="true"
+               endRegion="Import"
+               />
+    </context>
+
+    <context name="@Import"
+             attribute="Normal Text"
+             >
+      <IncludeRules context="Comments" />
+      <IncludeRules context="@End Import" />
+
+      <WordDetect String="show" attribute="Keyword" context="#pop!@Import shows" />
+      <WordDetect String="as" attribute="Keyword" context="#pop!@Import as" />
+      <RegExpr String="\.*(\w+\.?)+" attribute="Module Name" context="#stay" />
+    </context>
+
+    <context name="@Import shows"
+             attribute="Show Identifiers"
+             >
+      <IncludeRules context="Comments" />
+      <IncludeRules context="@End Import" />
+    </context>
+
+    <context name="@Import as">
+      <IncludeRules context="Comments" />
+      <IncludeRules context="@End Import" />
+      <DetectIdentifier attribute="Prefix Name" context="#pop!@Import Trailing" />
+    </context>
+
+    <context name="@Import Trailing"
+             attribute="Illegal Import"
+             >
+      <IncludeRules context="Comments" />
+      <IncludeRules context="@End Import" />
+      <DetectSpaces attribute="Normal Text" context="#stay" />
+    </context>
+
+    <!-- The export context is mainly to have a region. -->
+    <context name="@Export"
+             attribute="Normal Text"
+             >
+      <IncludeRules context="Comments" />
+
+      <RegExpr String="[^ ]"
+               column="0"
+               context="#pop"
+               lookAhead="true"
+               endRegion="Export"
+               />
+    </context>
+
+    <!-- The `lineEndContext` is only because we still allow single-line class signatures -->
+    <context name="@Class"
+             attribute="Normal Text"
+             lineEndContext="@Class Body"
+             >
+      <IncludeRules context="Comments" />
+
+      <RegExpr String="[^ ]"
+               column="0"
+               context="#pop"
+               lookAhead="true"
+               endRegion="Class"
+               />
+      <DetectIdentifier attribute="Class Name" context="@Class Heritance" />
+    </context>
+
+    <!-- The `lineEndContext` is only because we still allow single-line class signatures -->
+    <context name="@Class Heritance"
+             attribute="Normal Text"
+             lineEndContext="#pop!@Class Body"
+             >
+      <WordDetect attribute="Extends" String="extends" />
+      <WordDetect attribute="Implements" String="implements" />
+      <IncludeRules context="Types" />
+      <DetectChar attribute="Colon" context="#pop!@Class Body" char=":" />
+    </context>
+
+    <context name="@Class Body"
+             attribute="Normal Text"
+             >
+    </context>
+  </contexts>
+
+  <itemDatas>
+    <itemData name="Normal Text" defStyleNum="dsNormal" />
+    <itemData name="Module Name" defStyleNum="dsNormal" />
+    <itemData name="Import" defStyleNum="dsImport" />
+    <itemData name="Show Identifiers" defStyleNum="dsNormal" />
+    <itemData name="Export" defStyleNum="dsImporft" />
+    <itemData name="Colon" defStyleNum="dsKeyword" />
+    <itemData name="Class" defStyleNum="dsKeyword" />
+    <itemData name="Interface" defStyleNum="dsKeyword" />
+    <itemData name="Monitor" defStyleNum="dsKeyword" />
+    <itemData name="Extends" defStyleNum="dsKeyword" />
+    <itemData name="Implements" defStyleNum="dsKeyword" />
+    <itemData name="Keyword" defStyleNum="dsKeyword" />
+    <itemData name="String" defStyleNum="dsString" />
+    <itemData name="Multi Comment" defStyleNum="dsComment" />
+    <itemData name="Single Comment" defStyleNum="dsComment" />
+    <itemData name="Single Doc Comment" defStyleNum="dsDocumentation" />
+    <itemData name="Multi Doc Comment" defStyleNum="dsDocumentation" />
+    <itemData name="Class Name" defStyleNum="dsFunction" />
+    <itemData name="Type" defStyleNum="dsVariable" />
+    <itemData name="Type Annotation" defStyleNum="dsVariable" />
+    <itemData name="Return Type" defStyleNum="dsVariable" />
+    <itemData name="Toplevel Declaration" defStyleNum="dsFunction" />
+    <itemData name="Illegal Import" defStyleNum="dsError" />
+    <itemData name="Error" defStyleNum="dsError" />
+    <itemData name="Type Annotation Char" defStyleNum="dsOperator" />
+    <itemData name="Operator" defStyleNum="dsOperator" />
+    <itemData name="Assign" defStyleNum="dsOperator" />
+    <itemData name="Character" defStyleNum="dsChar" />
+    <itemData name="Number" defStyleNum="dsDecVal" />
+    <itemData name="Parameter" defStyleNum="dsVariable" />
+    <itemData name="Named Parameter" defStyleNum="dsVariable" />
+    <itemData name="Constants" defStyleNum="dsKeyword" />
+    <itemData name="Special Vars" defStyleNum="dsConstant" />
+  </itemDatas>
+</highlighting>
+
+<general>
+  <comments>
+    <comment name="singleLine" start="//"/>
+  </comments>
+  <keywords casesensitive="1" weakDeliminator="-" />
+  <folding indentationsensitive="true" />
+</general>
+
+</language>
